@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sparkles, RefreshCw, Lightbulb, CheckCircle2 } from 'lucide-react';
 import { AIAdvisory } from '../../types';
 import { triggerManualAdvisory } from '../../services/api';
@@ -11,7 +11,27 @@ interface AdvisoryCardProps {
 
 export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, onRefresh }) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [formattedTime, setFormattedTime] = useState<string>('');
   const { showToast } = useToast();
+
+  useEffect(() => {
+    if (advisory?.generated_at) {
+      const date = new Date(advisory.generated_at);
+      const time = date.toLocaleString('fa-IR', {
+        timeZone: 'Asia/Tehran',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+      setFormattedTime(time);
+    } else {
+      setFormattedTime('');
+    }
+  }, [advisory?.generated_at]);
 
   const handleManualTrigger = async () => {
     setLoading(true);
@@ -75,16 +95,9 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, onRefresh 
           <span>بررسی شده با خلاصه ۷ روز گذشته (عدم تکرار)</span>
         </span>
         {advisory?.generated_at && (
-          <span>تاریخ بروزرسانی: {new Date(advisory.generated_at).toLocaleString('fa-IR', {
-            timeZone: 'Asia/Tehran',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
-          })}</span>
+          <span suppressHydrationWarning>
+            تاریخ بروزرسانی: {formattedTime || 'در حال بارگذاری...'}
+          </span>
         )}
       </div>
     </div>
