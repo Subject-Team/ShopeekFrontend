@@ -75,7 +75,16 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, onRefresh 
           <span>بررسی شده با خلاصه ۷ روز گذشته (عدم تکرار)</span>
         </span>
         {advisory?.generated_at && (
-          <span>تاریخ بروزرسانی: {new Date(new Date(advisory.generated_at).getTime() + (3.5 * 60 * 60 * 1000)).toISOString().replace('T', ' ').slice(0, 19)}</span>
+          <span>تاریخ بروزرسانی: {new Date(advisory.generated_at).toLocaleString('fa-IR', {
+            timeZone: 'Asia/Tehran',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          })}</span>
         )}
       </div>
     </div>
