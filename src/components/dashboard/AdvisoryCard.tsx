@@ -16,7 +16,11 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, onRefresh 
 
   useEffect(() => {
     if (advisory?.generated_at) {
-      const date = new Date(advisory.generated_at);
+      const utcString = advisory.generated_at.endsWith('Z')
+        ? advisory.generated_at
+        : advisory.generated_at + 'Z';
+
+      const date = new Date(utcString);
       const time = date.toLocaleString('fa-IR', {
         timeZone: 'Asia/Tehran',
         year: 'numeric',
