@@ -98,7 +98,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.5} />
             <XAxis
               dataKey="date"
-              tick={{ fontSize: 11, fill: '#94a3b8', textAnchor: 'start' }}
+              tick={{ fontSize: 11, fill: '#94a3b8' }}
               tickLine={false}
               axisLine={{ stroke: '#cbd5e1' }}
               tickFormatter={(dateStr: string) => {
@@ -110,7 +110,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
               }}
             />
             <YAxis
-              tick={{ fontSize: 11, fill: '#94a3b8' }}
+              tick={{ fontSize: 11, fill: '#94a3b8', textAnchor: 'end' }}
               tickFormatter={formatToman}
               tickLine={false}
               axisLine={{ stroke: '#cbd5e1' }}
