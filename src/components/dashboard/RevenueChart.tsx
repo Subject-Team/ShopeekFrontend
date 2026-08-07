@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -15,18 +15,72 @@ interface RevenueChartProps {
   title?: string;
 }
 
+const toPersianDigits = (num: number | string): string => {
+  const persianMap: { [key: string]: string } = {
+    '0': '۰',
+    '1': '۱',
+    '2': '۲',
+    '3': '۳',
+    '4': '۴',
+    '5': '۵',
+    '6': '۶',
+    '7': '۷',
+    '8': '۸',
+    '9': '۹'
+  };
+
+  return String(num)
+    .split('')
+    .map(char => persianMap[char] || char)
+    .join('');
+};
+
+const toPersianDate = (dateStr: string): string => {
+  try {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+
+    return date.toLocaleDateString('fa-IR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+  } catch {
+    return dateStr;
+  }
+};
+
+const formatPersianNumber = (num: number): string => {
+  return toPersianDigits(num.toLocaleString('fa-IR'));
+};
+
 export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'روند فروش و پیش‌بینی هوشمند' }) => {
+  const [formattedData, setFormattedData] = useState<RevenuePoint[]>([]);
+
+  useEffect(() => {
+    const translated = data.map(item => ({
+      ...item,
+      date: toPersianDate(item.date)
+    }));
+    setFormattedData(translated);
+  }, [data]);
+
   const formatToman = (val: number) => {
-    if (val >= 1000000) return `${(val / 1000000).toFixed(1)}M`;
-    if (val >= 1000) return `${(val / 1000).toFixed(0)}K`;
-    return val.toString();
+    if (val === undefined || val === null || isNaN(val)) return '';
+
+    if (val >= 1000000) {
+      return `${toPersianDigits((val / 1000000).toFixed(1))}M`;
+    }
+    if (val >= 1000) {
+      return `${toPersianDigits(Math.round(val / 1000).toString())}K`;
+    }
+    return toPersianDigits(val.toString());
   };
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const filteredPayload = payload.filter((entry: any) => {
         if (entry.value === undefined || entry.value === null) return false;
-        // Don't duplicate forecast line entry on historical bridge point
         if (entry.dataKey === 'forecast_revenue' && entry.payload.revenue !== null && entry.payload.revenue !== undefined) {
           return false;
         }
@@ -35,9 +89,11 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
 
       if (filteredPayload.length === 0) return null;
 
+      const persianLabel = toPersianDate(label);
+
       return (
         <div className="glass-card p-3 rounded-xl shadow-xl text-xs space-y-1.5 border border-slate-200 dark:border-slate-700">
-          <p className="font-bold text-slate-800 dark:text-slate-200">{label}</p>
+          <p className="font-bold text-slate-800 dark:text-slate-200">{persianLabel}</p>
           {filteredPayload.map((entry: any, index: number) => (
             <div key={index} className="flex items-center justify-between gap-4">
               <span className="flex items-center gap-1.5" style={{ color: entry.color }}>
@@ -45,7 +101,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
                 <span>{entry.name}:</span>
               </span>
               <span className="font-extrabold text-slate-900 dark:text-white">
-                {Number(entry.value).toLocaleString('fa-IR')} تومان
+                {formatPersianNumber(Number(entry.value))} تومان
               </span>
             </div>
           ))}
@@ -78,7 +134,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
 
       <div className="h-72 w-full pt-2">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <AreaChart data={formattedData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
@@ -92,10 +148,16 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.5} />
             <XAxis
               dataKey="date"
-              tickFormatter={(dateStr: string) => (dateStr && dateStr.length >= 10 ? dateStr.slice(5) : dateStr)}
               tick={{ fontSize: 11, fill: '#94a3b8' }}
               tickLine={false}
               axisLine={{ stroke: '#cbd5e1' }}
+              tickFormatter={(dateStr: string) => {
+                const parts = dateStr.split('/');
+                if (parts.length === 3) {
+                  return `${parts[1]}/${parts[2]}`;
+                }
+                return dateStr;
+              }}
             />
             <YAxis
               tick={{ fontSize: 11, fill: '#94a3b8' }}
