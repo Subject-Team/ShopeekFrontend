@@ -1,5 +1,6 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, LucideIcon } from 'lucide-react';
+import { toPersianDigits } from '../../utils';
 
 interface KpiCardProps {
   title: string;
@@ -45,7 +46,7 @@ export const KpiCard: React.FC<KpiCardProps> = ({
         <div className="flex items-center justify-between text-xs pt-3 border-t border-slate-100 dark:border-slate-800/80">
           <div className={`flex items-center gap-1 font-bold ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
             {isPositive ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
-            <span>{isPositive ? '+' : ''}{changePercentage}%</span>
+            <span>{toPersianDigits(changePercentage)}%{isPositive ? '+' : ''}</span>
           </div>
           <span className="text-slate-400 dark:text-slate-500">{subtitle || 'نسبت به دوره قبل'}</span>
         </div>
