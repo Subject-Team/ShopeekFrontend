@@ -9,50 +9,12 @@ import {
   CartesianGrid
 } from 'recharts';
 import { RevenuePoint } from '../../types';
+import { toPersianDate, formatToman, formatPersianNumber } from '../../utils';
 
 interface RevenueChartProps {
   data: RevenuePoint[];
   title?: string;
 }
-
-const toPersianDigits = (num: number | string): string => {
-  const persianMap: { [key: string]: string } = {
-    '0': '۰',
-    '1': '۱',
-    '2': '۲',
-    '3': '۳',
-    '4': '۴',
-    '5': '۵',
-    '6': '۶',
-    '7': '۷',
-    '8': '۸',
-    '9': '۹'
-  };
-
-  return String(num)
-    .split('')
-    .map(char => persianMap[char] || char)
-    .join('');
-};
-
-const toPersianDate = (dateStr: string): string => {
-  try {
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return dateStr;
-
-    return date.toLocaleDateString('fa-IR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
-  } catch {
-    return dateStr;
-  }
-};
-
-const formatPersianNumber = (num: number): string => {
-  return toPersianDigits(num.toLocaleString('fa-IR'));
-};
 
 export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'روند فروش و پیش‌بینی هوشمند' }) => {
   const [formattedData, setFormattedData] = useState<RevenuePoint[]>([]);
@@ -64,18 +26,6 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
     }));
     setFormattedData(translated);
   }, [data]);
-
-  const formatToman = (val: number) => {
-    if (val === undefined || val === null || isNaN(val)) return '';
-
-    if (val >= 1000000) {
-      return `${toPersianDigits((val / 1000000).toFixed(1))}M`;
-    }
-    if (val >= 1000) {
-      return `${toPersianDigits(Math.round(val / 1000).toString())}K`;
-    }
-    return toPersianDigits(val.toString());
-  };
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -148,7 +98,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.5} />
             <XAxis
               dataKey="date"
-              tick={{ fontSize: 11, fill: '#94a3b8', textAnchor: 'end' }}
+              tick={{ fontSize: 11, fill: '#94a3b8', textAnchor: 'start' }}
               tickLine={false}
               axisLine={{ stroke: '#cbd5e1' }}
               tickFormatter={(dateStr: string) => {
@@ -164,7 +114,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
               tickFormatter={formatToman}
               tickLine={false}
               axisLine={{ stroke: '#cbd5e1' }}
-              tickMargin={20}
+              tickMargin={30}
             />
             <Tooltip content={<CustomTooltip />} />
             <Area
