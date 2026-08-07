@@ -22,7 +22,7 @@ export const SubscriptionWarningBanner: React.FC<SubscriptionWarningBannerProps>
   const formattedDate = user.subscription_expires_at ? formatJalaliDate(user.subscription_expires_at) : '';
 
   return (
-    <div className="glass-card p-4.5 rounded-2xl bg-amber-500/10 dark:bg-amber-950/30 border border-amber-500/30 text-amber-900 dark:text-amber-200 space-y-2 mb-6">
+    <div className="glass-card p-6 rounded-2xl bg-amber-500/10 dark:bg-amber-950/30 border border-amber-500/30 text-amber-900 dark:text-amber-200 space-y-2 mb-6">
       <div className="flex items-center gap-3">
         <div className="p-2 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 shrink-0">
           <AlertTriangle className="w-5 h-5" />
