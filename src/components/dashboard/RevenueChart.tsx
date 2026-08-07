@@ -110,7 +110,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
               }}
             />
             <YAxis
-              tick={{ fontSize: 11, fill: '#94a3b8', textAnchor: 'end' }}
+              tick={{ fontSize: 11, fill: '#94a3b8', textAnchor: 'start', direction: 'rtl' }}
               tickFormatter={formatToman}
               tickLine={false}
               axisLine={{ stroke: '#cbd5e1' }}

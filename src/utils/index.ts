@@ -41,10 +41,10 @@ export const formatToman = (val: number) => {
   if (val === undefined || val === null || isNaN(val)) return '';
 
   if (val >= 1000000) {
-    return `${toPersianDigits((val / 1000000).toFixed(1))}M`;
+    return `${toPersianDigits((val / 1000000).toFixed(1))}م`;
   }
   if (val >= 1000) {
-    return `${toPersianDigits(Math.round(val / 1000).toString())}K`;
+    return `${toPersianDigits(Math.round(val / 1000).toString())}ه`;
   }
   return toPersianDigits(val.toString());
 };
