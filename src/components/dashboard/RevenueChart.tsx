@@ -114,7 +114,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
               tickFormatter={formatToman}
               tickLine={false}
               axisLine={{ stroke: '#cbd5e1' }}
-              tickMargin={30}
+              tickMargin={5}
             />
             <Tooltip content={<CustomTooltip />} />
             <Area
