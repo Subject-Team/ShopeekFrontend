@@ -6,8 +6,7 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  CartesianGrid,
-  Legend
+  CartesianGrid
 } from 'recharts';
 import { RevenuePoint } from '../../types';
 
