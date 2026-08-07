@@ -3,6 +3,7 @@ import { X, Sparkles, Send, Bot, User, Layers, RefreshCw } from 'lucide-react';
 import { usePageContext } from '../../context/PageContext';
 import { sendChatMessage, fetchChatHistory } from '../../services/api';
 import { ChatMessage } from '../../types';
+import { toPersianDigits } from '../../utils';
 
 export const ChatDrawer: React.FC = () => {
   const { isChatOpen, setIsChatOpen, activePage, dateRangeDays, pageMetricsSnapshot } = usePageContext();
@@ -97,7 +98,7 @@ export const ChatDrawer: React.FC = () => {
                 <h3 className="font-extrabold text-slate-900 dark:text-white text-sm">دستیار هوشمند شاپیک</h3>
                 <div className="flex items-center gap-1.5 text-[10px] text-slate-400 mt-0.5">
                   <Layers className="w-3 h-3 text-indigo-500" />
-                  <span>زمینه فعال: {activePage} ({dateRangeDays} روز)</span>
+                  <span>زمینه فعال: {activePage} ({toPersianDigits(dateRangeDays)} روز)</span>
                 </div>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, UserCheck, Phone, Mail, ChevronLeft, Plus } from 'lucide-react';
 import { Customer } from '../../types';
+import { toPersianDigits } from '../../utils';
 
 interface CustomerListProps {
   customers: Customer[];
@@ -103,7 +104,7 @@ export const CustomerList: React.FC<CustomerListProps> = ({
                     </div>
                   </td>
                   <td className="p-3.5 font-bold text-slate-700 dark:text-slate-300">
-                    {c.transactions_count} فاکتور
+                    {toPersianDigits(c.transactions_count)} فاکتور
                   </td>
                   <td className="p-3.5 font-extrabold text-emerald-600 dark:text-emerald-400">
                     {Number(c.total_lifetime_value || 0).toLocaleString('fa-IR')} تومان
