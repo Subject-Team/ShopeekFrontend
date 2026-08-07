@@ -4,6 +4,10 @@ export interface User {
   full_name: string;
   role: string;
   created_at: string;
+  subscription_expires_at?: string | null;
+  is_subscription_active?: boolean;
+  is_infinite_subscription?: boolean;
+  remaining_days?: number | null;
 }
 
 export interface AuthTokenResponse {
