@@ -38,9 +38,9 @@ export interface KPISummary {
 
 export interface RevenuePoint {
   date: string;
-  revenue: number;
+  revenue: number | null;
   orders: number;
-  forecast_revenue?: number;
+  forecast_revenue?: number | null;
 }
 
 export interface Interaction {

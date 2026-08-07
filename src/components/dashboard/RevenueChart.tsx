@@ -25,17 +25,28 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
+      const filteredPayload = payload.filter((entry: any) => {
+        if (entry.value === undefined || entry.value === null) return false;
+        // Don't duplicate forecast line entry on historical bridge point
+        if (entry.dataKey === 'forecast_revenue' && entry.payload.revenue !== null && entry.payload.revenue !== undefined) {
+          return false;
+        }
+        return true;
+      });
+
+      if (filteredPayload.length === 0) return null;
+
       return (
         <div className="glass-card p-3 rounded-xl shadow-xl text-xs space-y-1.5 border border-slate-200 dark:border-slate-700">
           <p className="font-bold text-slate-800 dark:text-slate-200">{label}</p>
-          {payload.map((entry: any, index: number) => (
+          {filteredPayload.map((entry: any, index: number) => (
             <div key={index} className="flex items-center justify-between gap-4">
               <span className="flex items-center gap-1.5" style={{ color: entry.color }}>
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
                 <span>{entry.name}:</span>
               </span>
               <span className="font-extrabold text-slate-900 dark:text-white">
-                {entry.value ? Number(entry.value).toLocaleString('fa-IR') : 0} تومان
+                {Number(entry.value).toLocaleString('fa-IR')} تومان
               </span>
             </div>
           ))}
@@ -82,6 +93,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.5} />
             <XAxis
               dataKey="date"
+              tickFormatter={(dateStr: string) => (dateStr && dateStr.length >= 10 ? dateStr.slice(5) : dateStr)}
               tick={{ fontSize: 11, fill: '#94a3b8' }}
               tickLine={false}
               axisLine={{ stroke: '#cbd5e1' }}
@@ -101,6 +113,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
               strokeWidth={3}
               fillOpacity={1}
               fill="url(#colorRevenue)"
+              connectNulls={false}
             />
             <Area
               type="monotone"
@@ -111,6 +124,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
               strokeDasharray="5 5"
               fillOpacity={1}
               fill="url(#colorForecast)"
+              connectNulls={false}
             />
           </AreaChart>
         </ResponsiveContainer>
