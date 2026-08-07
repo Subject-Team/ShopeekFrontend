@@ -106,16 +106,6 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
             <Tooltip content={<CustomTooltip />} />
             <Area
               type="monotone"
-              dataKey="revenue"
-              name="فروش واقعی"
-              stroke="#10b981"
-              strokeWidth={3}
-              fillOpacity={1}
-              fill="url(#colorRevenue)"
-              connectNulls={false}
-            />
-            <Area
-              type="monotone"
               dataKey="forecast_revenue"
               name="پیش‌بینی AI"
               stroke="#6366f1"
@@ -123,6 +113,16 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
               strokeDasharray="5 5"
               fillOpacity={1}
               fill="url(#colorForecast)"
+              connectNulls={false}
+            />
+            <Area
+              type="monotone"
+              dataKey="revenue"
+              name="فروش واقعی"
+              stroke="#10b981"
+              strokeWidth={3}
+              fillOpacity={1}
+              fill="url(#colorRevenue)"
               connectNulls={false}
             />
           </AreaChart>
