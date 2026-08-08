@@ -9,6 +9,7 @@ import { usePageContext } from '../context/PageContext';
 import { useAuth } from '../context/AuthContext';
 import { fetchKPISummary, fetchRevenueTrend, fetchLatestAdvisory, fetchCustomers } from '../services/api';
 import { KPISummary, RevenuePoint, AIAdvisory, Customer } from '../types';
+import { toPersianDigits } from '../utils';
 
 export const DashboardPage: React.FC = () => {
   const { dateRangeDays, setPageMetricsSnapshot, setActivePage } = usePageContext();
@@ -78,7 +79,7 @@ export const DashboardPage: React.FC = () => {
         />
         <KpiCard
           title="میانگین ارزش فاکتور (AOV)"
-          value={kpi ? Number(kpi.average_order_value).toLocaleString('fa-IR') : '0'}
+          value={kpi ? toPersianDigits(kpi.average_order_value.toFixed(0)) : '0'}
           changePercentage={kpi?.aov_change_percentage}
           subtitle="تومان"
           icon={CreditCard}
