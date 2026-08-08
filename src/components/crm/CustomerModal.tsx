@@ -139,7 +139,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
                       </p>
                       <span className="text-[10px] text-slate-400 flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        <span>{new Date(item.timestamp).toLocaleString('fa-IR')}</span>
+                        <span>{new Date(item.timestamp.endsWith('Z') ? item.timestamp : item.timestamp + 'Z').toLocaleString('fa-IR')}</span>
                       </span>
                     </div>
                   </div>
