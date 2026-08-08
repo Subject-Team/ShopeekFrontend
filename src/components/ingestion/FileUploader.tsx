@@ -149,7 +149,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
                   {preview.sample_rows?.map((row: any, idx: number) => (
                     <tr key={idx}>
                       {preview.headers?.map((h: string) => (
-                        <td key={h} className="p-2.5 text-slate-700 dark:text-slate-300">{row[h]}</td>
+                        <td key={h + "Test"} className="p-2.5 text-slate-700 dark:text-slate-300">{row[h]}</td>
                       ))}
                     </tr>
                   ))}
