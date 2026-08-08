@@ -1,7 +1,7 @@
 import React from 'react';
 import { AlertTriangle, Clock } from 'lucide-react';
 import { User } from '../../types';
-import { formatJalaliDate, toPersianDigits } from '../../utils/dateUtils';
+import { formatPersianDate, formatPersianNumber } from '../../utils';
 
 interface SubscriptionWarningBannerProps {
   user: User | null;
@@ -19,7 +19,7 @@ export const SubscriptionWarningBanner: React.FC<SubscriptionWarningBannerProps>
     return null;
   }
 
-  const formattedDate = user.subscription_expires_at ? formatJalaliDate(user.subscription_expires_at) : '';
+  const formattedDate = user.subscription_expires_at ? formatPersianDate(user.subscription_expires_at, true) : '';
 
   return (
     <div className="glass-card p-6 rounded-2xl bg-amber-500/10 dark:bg-amber-950/30 border border-amber-500/30 text-amber-900 dark:text-amber-200 space-y-2 mb-6">
@@ -31,7 +31,7 @@ export const SubscriptionWarningBanner: React.FC<SubscriptionWarningBannerProps>
           <div className="flex items-center gap-2 font-extrabold text-sm text-amber-800 dark:text-amber-300">
             <span>هشدار تمدید اشتراک</span>
             <span className="text-xs px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-900/60 font-bold">
-              {toPersianDigits(remainingDays)} روز تا انقضا
+              {formatPersianNumber(remainingDays)} روز تا انقضا
             </span>
           </div>
           <p className="text-xs leading-relaxed mt-1 text-slate-700 dark:text-amber-200/90">

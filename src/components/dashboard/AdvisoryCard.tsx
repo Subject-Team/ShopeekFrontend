@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Sparkles, RefreshCw, Lightbulb, CheckCircle2 } from 'lucide-react';
 import { AIAdvisory } from '../../types';
 import { triggerManualAdvisory } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { formatPersianTimeAsUTC } from '../../utils';
 
 interface AdvisoryCardProps {
   advisory: AIAdvisory | null;
@@ -11,31 +12,7 @@ interface AdvisoryCardProps {
 
 export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, onRefresh }) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [formattedTime, setFormattedTime] = useState<string>('');
   const { showToast } = useToast();
-
-  useEffect(() => {
-    if (advisory?.generated_at) {
-      const utcString = advisory.generated_at.endsWith('Z')
-        ? advisory.generated_at
-        : advisory.generated_at + 'Z';
-
-      const date = new Date(utcString);
-      const time = date.toLocaleString('fa-IR', {
-        timeZone: 'Asia/Tehran',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-      });
-      setFormattedTime(time);
-    } else {
-      setFormattedTime('');
-    }
-  }, [advisory?.generated_at]);
 
   const handleManualTrigger = async () => {
     setLoading(true);
@@ -100,7 +77,7 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, onRefresh 
         </span>
         {advisory?.generated_at && (
           <span suppressHydrationWarning>
-            تاریخ بروزرسانی: {formattedTime || 'در حال بارگذاری...'}
+            تاریخ بروزرسانی: {formatPersianTimeAsUTC(advisory.generated_at)}
           </span>
         )}
       </div>
