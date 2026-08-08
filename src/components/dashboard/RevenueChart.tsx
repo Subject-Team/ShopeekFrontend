@@ -9,7 +9,7 @@ import {
   CartesianGrid
 } from 'recharts';
 import { RevenuePoint } from '../../types';
-import { toPersianDate, formatToman, formatPersianNumber } from '../../utils';
+import { formatPersianDate, formatCompressedToman, formatPersianNumber } from '../../utils';
 
 interface RevenueChartProps {
   data: RevenuePoint[];
@@ -22,7 +22,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
   useEffect(() => {
     const translated = data.map(item => ({
       ...item,
-      date: toPersianDate(item.date)
+      date: formatPersianDate(item.date)
     }));
     setFormattedData(translated);
   }, [data]);
@@ -39,7 +39,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
 
       if (filteredPayload.length === 0) return null;
 
-      const persianLabel = toPersianDate(label);
+      const persianLabel = formatPersianDate(label);
 
       return (
         <div className="glass-card p-3 rounded-xl shadow-xl text-xs space-y-1.5 border border-slate-200 dark:border-slate-700">
@@ -111,7 +111,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
             />
             <YAxis
               tick={{ fontSize: 11, fill: '#94a3b8', textAnchor: 'start', direction: 'rtl' }}
-              tickFormatter={formatToman}
+              tickFormatter={formatCompressedToman}
               tickLine={false}
               axisLine={{ stroke: '#cbd5e1' }}
               tickMargin={3}

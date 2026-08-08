@@ -4,7 +4,7 @@ import { RevenueChart } from '../components/dashboard/RevenueChart';
 import { fetchRevenueTrend, fetchKPISummary } from '../services/api';
 import { RevenuePoint, KPISummary } from '../types';
 import { usePageContext } from '../context/PageContext';
-import { toPersianDigits } from '../utils';
+import { formatPersianNumber } from '../utils';
 
 export const AnalyticsPage: React.FC = () => {
   const { dateRangeDays, setPageMetricsSnapshot } = usePageContext();
@@ -35,7 +35,7 @@ export const AnalyticsPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-400 font-bold text-xs flex items-center gap-2">
             <Filter className="w-4 h-4" />
-            <span>بازه ارزیابی: {toPersianDigits(dateRangeDays)} روز گذشته</span>
+            <span>بازه ارزیابی: {formatPersianNumber(dateRangeDays)} روز گذشته</span>
           </div>
         </div>
       </div>
@@ -47,21 +47,21 @@ export const AnalyticsPage: React.FC = () => {
         <div className="glass-card p-5 rounded-2xl space-y-2">
           <span className="text-xs font-semibold text-slate-400">رشد درآمد در این دوره</span>
           <h4 className="text-2xl font-extrabold text-slate-900 dark:text-white">
-            {kpi ? `${toPersianDigits(kpi.revenue_change_percentage)}%` : '0%'}
+            {kpi ? `${formatPersianNumber(kpi.revenue_change_percentage)}%` : '0%'}
           </h4>
           <p className="text-xs text-slate-500">تغییر خالص نسبت به دوره قبلی ({dateRangeDays} روز قبل)</p>
         </div>
         <div className="glass-card p-5 rounded-2xl space-y-2">
           <span className="text-xs font-semibold text-slate-400">تغییر مطلق فروش (تومان)</span>
           <h4 className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">
-            {kpi ? toPersianDigits(kpi.revenue_change_absolute) : '0'}
+            {kpi ? formatPersianNumber(kpi.revenue_change_absolute) : '0'}
           </h4>
           <p className="text-xs text-slate-500">افزایش یا کاهش ریالی کل فاکتورها</p>
         </div>
         <div className="glass-card p-5 rounded-2xl space-y-2">
           <span className="text-xs font-semibold text-slate-400">رشد تعداد سفارشات</span>
           <h4 className="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400">
-            {kpi ? `${toPersianDigits(kpi.order_count_change_percentage)}%` : '0%'}
+            {kpi ? `${formatPersianNumber(kpi.order_count_change_percentage)}%` : '0%'}
           </h4>
           <p className="text-xs text-slate-500">تعداد کل سفارشات ثبت‌شده در بازه فعلی</p>
         </div>

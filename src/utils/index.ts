@@ -1,50 +1,67 @@
-export const toPersianDigits = (num: number | string): string => {
-  const persianMap: { [key: string]: string } = {
-    '0': '۰',
-    '1': '۱',
-    '2': '۲',
-    '3': '۳',
-    '4': '۴',
-    '5': '۵',
-    '6': '۶',
-    '7': '۷',
-    '8': '۸',
-    '9': '۹'
-  };
+/**
+ * Utility functions for Persian digits and Solar (Jalali) date formatting.
+ */
 
-  return String(num)
-    .split('')
-    .map(char => persianMap[char] || char)
-    .join('');
+/**
+ * Converts English digits in a string or number to Persian digits with separators.
+ */
+export const formatPersianNumber = (input: string | number | null | undefined): string => {
+  if (input === null || input === undefined) return '';
+
+  const num = typeof input === "string" ? parseFloat(input.replace(/,/g, "")) : input;
+
+  if (isNaN(num)) return String(input);
+
+  return num.toLocaleString("fa-IR");
 };
 
-export const toPersianDate = (dateStr: string): string => {
+/**
+ * Formats a Date object or ISO date string into Persian Solar Jalali format.
+ */
+export const formatPersianDate = (dateInput: string | Date | null | undefined, namedMonths: boolean = false): string => {
+  if (!dateInput) return 'نامشخص';
   try {
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return dateStr;
+    const d = new Date(dateInput);
+    if (isNaN(d.getTime())) return String(dateInput);
 
-    return date.toLocaleDateString('fa-IR', {
+    return new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
       year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
+      month: namedMonths? 'long' : 'numeric',
+      day: 'numeric',
+    }).format(d);
   } catch {
-    return dateStr;
+    return String(dateInput);
   }
 };
 
-export const formatPersianNumber = (num: number): string => {
-  return toPersianDigits(num.toLocaleString('fa-IR'));
+export const formatPersianDateAsUTC = (dateStr: string): string => {
+  return formatPersianDate(dateStr.endsWith('Z')? dateStr : dateStr + 'Z')
+}
+
+/**
+ * Returns a human-readable Persian remaining subscription text.
+ */
+export const formatSubscriptionRemainingDays = (
+  remainingDays: number | null | undefined,
+  isInfinite?: boolean
+): string => {
+  if (isInfinite) {
+    return 'نامحدود (کاربر دمو)';
+  }
+  if (remainingDays === null || remainingDays === undefined || remainingDays <= 0) {
+    return 'اشتراک منقضی شده (بدون اعتبار)';
+  }
+  return `${formatPersianNumber(remainingDays)} روز باقی مانده`;
 };
 
-export const formatToman = (val: number) => {
+export const formatCompressedToman = (val: number) => {
   if (val === undefined || val === null || isNaN(val)) return '';
 
   if (val >= 1000000) {
-    return `${toPersianDigits((val / 1000000).toFixed(1))}م`;
+    return `${formatPersianNumber((val / 1000000).toFixed(1))}م`;
   }
   if (val >= 1000) {
-    return `${toPersianDigits(Math.round(val / 1000).toString())}ه`;
+    return `${formatPersianNumber(Math.round(val / 1000).toString())}ه`;
   }
-  return toPersianDigits(val.toString());
+  return formatPersianNumber(val.toString());
 };

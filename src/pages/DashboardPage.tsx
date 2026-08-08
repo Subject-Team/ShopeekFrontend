@@ -9,7 +9,7 @@ import { usePageContext } from '../context/PageContext';
 import { useAuth } from '../context/AuthContext';
 import { fetchKPISummary, fetchRevenueTrend, fetchLatestAdvisory, fetchCustomers } from '../services/api';
 import { KPISummary, RevenuePoint, AIAdvisory, Customer } from '../types';
-import { toPersianDigits } from '../utils';
+import { formatPersianNumber } from '../utils';
 
 export const DashboardPage: React.FC = () => {
   const { dateRangeDays, setPageMetricsSnapshot, setActivePage } = usePageContext();
@@ -63,7 +63,7 @@ export const DashboardPage: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard
           title="فروش کل (تومان)"
-          value={kpi ? Number(kpi.total_revenue).toLocaleString('fa-IR') : '0'}
+          value={kpi ? formatPersianNumber(kpi.total_revenue) : '۰'}
           changePercentage={kpi?.revenue_change_percentage}
           subtitle={`در ${dateRangeDays} روز گذشته`}
           icon={DollarSign}
@@ -71,7 +71,7 @@ export const DashboardPage: React.FC = () => {
         />
         <KpiCard
           title="تعداد کل سفارشات"
-          value={kpi ? kpi.order_count.toLocaleString('fa-IR') : '0'}
+          value={kpi ? formatPersianNumber(kpi.order_count) : '۰'}
           changePercentage={kpi?.order_count_change_percentage}
           subtitle={`در ${dateRangeDays} روز گذشته`}
           icon={ShoppingBag}
@@ -79,7 +79,7 @@ export const DashboardPage: React.FC = () => {
         />
         <KpiCard
           title="میانگین ارزش فاکتور (AOV)"
-          value={kpi ? toPersianDigits(kpi.average_order_value.toFixed(0)) : '0'}
+          value={kpi ? formatPersianNumber(kpi.average_order_value.toFixed(0)) : '۰'}
           changePercentage={kpi?.aov_change_percentage}
           subtitle="تومان"
           icon={CreditCard}
@@ -87,7 +87,7 @@ export const DashboardPage: React.FC = () => {
         />
         <KpiCard
           title="تعداد مشتریان فعال"
-          value={kpi ? kpi.total_customers.toLocaleString('fa-IR') : '0'}
+          value={kpi ? formatPersianNumber(kpi.total_customers) : '۰'}
           changePercentage={kpi?.customer_count_change_percentage}
           subtitle="مشتری ثبت‌شده"
           icon={Users}
@@ -129,7 +129,7 @@ export const DashboardPage: React.FC = () => {
                       <span className="font-bold text-slate-800 dark:text-slate-200">{c.name}</span>
                     </div>
                     <span className="font-extrabold text-emerald-600 dark:text-emerald-400">
-                      {Number(c.total_lifetime_value).toLocaleString('fa-IR')} ت
+                      {formatPersianNumber(c.total_lifetime_value)} ت
                     </span>
                   </div>
                 ))

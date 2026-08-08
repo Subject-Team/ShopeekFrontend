@@ -3,6 +3,7 @@ import { X, Phone, Mail, MessageSquare, Send, Calendar, Clock } from 'lucide-rea
 import { Customer } from '../../types';
 import { addCustomerInteraction } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { formatPersianDateAsUTC, formatPersianNumber } from '../../utils';
 
 interface CustomerModalProps {
   customer: Customer | null;
@@ -47,7 +48,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
             <div>
               <h3 className="font-extrabold text-slate-900 dark:text-white text-lg">{customer.name}</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                ارزش کل طول عمر (LTV): {Number(customer.total_lifetime_value || 0).toLocaleString('fa-IR')} تومان
+                ارزش کل طول عمر (LTV): {formatPersianNumber(customer.total_lifetime_value || 0)} تومان
               </p>
             </div>
           </div>
@@ -139,7 +140,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
                       </p>
                       <span className="text-[10px] text-slate-400 flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        <span>{new Date(item.timestamp.endsWith('Z') ? item.timestamp : item.timestamp + 'Z').toLocaleString('fa-IR')}</span>
+                        <span>{formatPersianDateAsUTC(item.timestamp)}</span>
                       </span>
                     </div>
                   </div>
