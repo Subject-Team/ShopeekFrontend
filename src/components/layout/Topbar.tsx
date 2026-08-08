@@ -3,7 +3,7 @@ import { Menu, Sun, Moon, Sparkles, Calendar, LogOut, User as UserIcon } from 'l
 import { useTheme } from '../../context/ThemeContext';
 import { usePageContext } from '../../context/PageContext';
 import { useAuth } from '../../context/AuthContext';
-import { toPersianDigits } from '../../utils';
+import { formatPersianNumber } from '../../utils';
 
 interface TopbarProps {
   onMenuClick: () => void;
@@ -56,7 +56,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
                     : 'hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
-                {toPersianDigits(d)} روز
+                {formatPersianNumber(d)} روز
               </button>
             ))}
           </div>
