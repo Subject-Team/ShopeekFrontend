@@ -151,7 +151,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
                     <tr key={idx}>
                       {preview.headers?.map((h: string) => (
                         <td key={h} className="p-2.5 text-slate-700 dark:text-slate-300">{
-                          h in ["مبلغ", "تاریخ"] ? formatPersianNumber(formatPersianDate(row[h], false, true)) : row[h]
+                          (h === "مبلغ" || h == "تاریخ") ? formatPersianNumber(formatPersianDate(row[h], false, true)) : row[h]
                         }</td>
                       ))}
                     </tr>
