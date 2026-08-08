@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { DollarSign, ShoppingBag, CreditCard, Users, UploadCloud, RefreshCw } from 'lucide-react';
+import { DollarSign, ShoppingBag, CreditCard, Users, UploadCloud } from 'lucide-react';
 import { KpiCard } from '../components/dashboard/KpiCard';
 import { RevenueChart } from '../components/dashboard/RevenueChart';
 import { AdvisoryCard } from '../components/dashboard/AdvisoryCard';
+import { SubscriptionWarningBanner } from '../components/dashboard/SubscriptionWarningBanner';
+import { SubscriptionStatusCard } from '../components/dashboard/SubscriptionStatusCard';
 import { usePageContext } from '../context/PageContext';
+import { useAuth } from '../context/AuthContext';
 import { fetchKPISummary, fetchRevenueTrend, fetchLatestAdvisory, fetchCustomers } from '../services/api';
 import { KPISummary, RevenuePoint, AIAdvisory, Customer } from '../types';
 
 export const DashboardPage: React.FC = () => {
   const { dateRangeDays, setPageMetricsSnapshot, setActivePage } = usePageContext();
+  const { user } = useAuth();
   const [kpi, setKpi] = useState<KPISummary | null>(null);
   const [trend, setTrend] = useState<RevenuePoint[]>([]);
   const [advisory, setAdvisory] = useState<AIAdvisory | null>(null);
@@ -48,6 +52,9 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* 7-Day Expiration Warning Banner (if applicable) */}
+      <SubscriptionWarningBanner user={user} />
+
       {/* 3-Hour AI Advisory Widget */}
       <AdvisoryCard advisory={advisory} onRefresh={loadDashboardData} />
 
@@ -93,7 +100,7 @@ export const DashboardPage: React.FC = () => {
           <RevenueChart data={trend} />
         </div>
 
-        {/* Side Widget: Top Customers Summary & Data Import CTA */}
+        {/* Side Widget: Top Customers Summary, Data Import CTA, & Subscription Card */}
         <div className="space-y-6">
           <div className="glass-card p-5 rounded-2xl shadow-xs space-y-4">
             <div className="flex items-center justify-between">
@@ -145,6 +152,9 @@ export const DashboardPage: React.FC = () => {
               بارگذاری فایل CSV
             </button>
           </div>
+
+          {/* Remaining Subscription Status Card (Under Data Entry Section) */}
+          <SubscriptionStatusCard user={user} />
         </div>
       </div>
     </div>
