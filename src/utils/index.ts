@@ -1,5 +1,5 @@
 /**
- * Utility functions for Persian digits and Solar (Jalali) date formatting.
+ * Utility functions for Persian formatting.
  */
 
 /**
