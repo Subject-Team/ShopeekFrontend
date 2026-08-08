@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { UploadCloud, FileText, CheckCircle2, ArrowLeft, Download, AlertCircle } from 'lucide-react';
 import { uploadCSVFile, previewCSVFile, getSampleCSV } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
-import { formatPersianNumber } from '../../utils';
+import { formatPersianNumber, formatPersianDate } from '../../utils';
 
 interface FileUploaderProps {
   onSuccess?: () => void;
@@ -150,7 +150,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
                   {preview.sample_rows?.map((row: any, idx: number) => (
                     <tr key={idx}>
                       {preview.headers?.map((h: string) => (
-                        <td key={h} className="p-2.5 text-slate-700 dark:text-slate-300">{formatPersianNumber(row[h])}</td>
+                        <td key={h} className="p-2.5 text-slate-700 dark:text-slate-300">{formatPersianNumber(formatPersianDate(row[h]))}</td>
                       ))}
                     </tr>
                   ))}
