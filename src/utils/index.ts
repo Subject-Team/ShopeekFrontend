@@ -55,6 +55,14 @@ export const formatPersianDateAsUTC = (
   return formatPersianDate(dateStr.endsWith('Z')? dateStr : dateStr + 'Z', namedMonths, showTime)
 }
 
+export const formatPersianTime = (timeStr: string): string => {
+  return new Date(timeStr).toLocaleTimeString('fa-IR')
+}
+
+export const formatPersianTimeAsUTC = (timeStr: string): string => {
+  return formatPersianTime(timeStr.endsWith('Z') ? timeStr : timeStr + 'Z')
+}
+
 /**
  * Returns a human-readable Persian remaining subscription text.
  */

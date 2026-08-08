@@ -3,6 +3,7 @@ import { Sparkles, RefreshCw, Lightbulb, CheckCircle2 } from 'lucide-react';
 import { AIAdvisory } from '../../types';
 import { triggerManualAdvisory } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { formatPersianTimeAsUTC } from '../../utils';
 
 interface AdvisoryCardProps {
   advisory: AIAdvisory | null;
@@ -76,7 +77,7 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, onRefresh 
         </span>
         {advisory?.generated_at && (
           <span suppressHydrationWarning>
-            تاریخ بروزرسانی: {new Date(advisory.generated_at.endsWith('Z') ? advisory.generated_at : advisory.generated_at + 'Z').toLocaleTimeString('fa-IR')}
+            تاریخ بروزرسانی: {formatPersianTimeAsUTC(advisory.generated_at)}
           </span>
         )}
       </div>
