@@ -18,24 +18,41 @@ export const formatPersianNumber = (input: string | number | null | undefined): 
 /**
  * Formats a Date object or ISO date string into Persian Solar Jalali format.
  */
-export const formatPersianDate = (dateInput: string | Date | null | undefined, namedMonths: boolean = false): string => {
+export const formatPersianDate = (
+  dateInput: string | Date | null | undefined,
+  namedMonths: boolean = false,
+  showTime: boolean = false
+): string => {
   if (!dateInput) return 'نامشخص';
   try {
     const d = new Date(dateInput);
     if (isNaN(d.getTime())) return String(dateInput);
 
-    return new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+    const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
-      month: namedMonths? 'long' : 'numeric',
+      month: namedMonths ? 'long' : 'numeric',
       day: 'numeric',
-    }).format(d);
+    };
+
+    if (showTime) {
+      options.hour = 'numeric';
+      options.minute = 'numeric';
+      options.second = 'numeric';
+      options.hour12 = false;
+    }
+
+    return new Intl.DateTimeFormat('fa-IR-u-ca-persian', options).format(d);
   } catch {
     return String(dateInput);
   }
 };
 
-export const formatPersianDateAsUTC = (dateStr: string): string => {
-  return formatPersianDate(dateStr.endsWith('Z')? dateStr : dateStr + 'Z')
+export const formatPersianDateAsUTC = (
+  dateStr: string,
+  namedMonths: boolean = false,
+  showTime: boolean = false
+): string => {
+  return formatPersianDate(dateStr.endsWith('Z')? dateStr : dateStr + 'Z', namedMonths, showTime)
 }
 
 /**

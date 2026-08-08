@@ -140,7 +140,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
                       </p>
                       <span className="text-[10px] text-slate-400 flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        <span>{formatPersianDateAsUTC(item.timestamp)}</span>
+                        <span>{formatPersianDateAsUTC(item.timestamp, false, true)}</span>
                       </span>
                     </div>
                   </div>
