@@ -1,5 +1,14 @@
-import React from 'react';
-import { Menu, Sun, Moon, Sparkles, Calendar, LogOut, User as UserIcon } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  Menu,
+  Sun,
+  Moon,
+  Sparkles,
+  Calendar,
+  LogOut,
+  User as UserIcon,
+  ChevronDown,
+} from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { usePageContext } from '../../context/PageContext';
 import { useAuth } from '../../context/AuthContext';
@@ -11,18 +20,42 @@ interface TopbarProps {
 
 export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   const { theme, toggleTheme } = useTheme();
-  const { activePage, dateRangeDays, setDateRangeDays, setIsChatOpen } = usePageContext();
+  const { activePage, dateRangeDays, setDateRangeDays, setIsChatOpen } =
+    usePageContext();
   const { user, logout } = useAuth();
+  const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 1024);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const getPageTitle = () => {
     switch (activePage) {
-      case 'dashboard': return 'داشبورد تحلیل فروش';
-      case 'analytics': return 'تحلیل جامع و آمار';
-      case 'customers': return 'مدیریت مشتریان (CRM)';
-      case 'ingestion': return 'ورود و مدیریت داده‌ها';
-      default: return 'داشبورد';
+      case 'dashboard':
+        return 'داشبورد تحلیل فروش';
+      case 'analytics':
+        return 'تحلیل جامع و آمار';
+      case 'customers':
+        return 'مدیریت مشتریان (CRM)';
+      case 'ingestion':
+        return 'ورود و مدیریت داده‌ها';
+      default:
+        return 'داشبورد';
     }
   };
+
+  const dateRangeOptions = [
+    { value: 7, label: '۷ روز' },
+    { value: 14, label: '۱۴ روز' },
+    { value: 30, label: '۳۰ روز' },
+  ];
+
+  const showDateFilter =
+    activePage === 'dashboard' || activePage === 'analytics';
 
   return (
     <header className="h-16 sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 lg:px-8 flex items-center justify-between transition-colors duration-200 dir-rtl">
@@ -42,27 +75,45 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
       </div>
 
       <div className="flex items-center gap-3">
-        {/* Date Filter Selection */}
-        {activePage === 'dashboard' || activePage === 'analytics' ? (
+        {/* Date Filter Selection - Desktop (buttons) */}
+        {showDateFilter && !isMobile && (
           <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300">
             <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" />
-            {[7, 14, 30].map(d => (
+            {dateRangeOptions.map((opt) => (
               <button
-                key={d}
-                onClick={() => setDateRangeDays(d)}
+                key={opt.value}
+                onClick={() => setDateRangeDays(opt.value)}
                 className={`px-2.5 py-1 rounded-lg transition-all ${
-                  dateRangeDays === d
+                  dateRangeDays === opt.value
                     ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-bold'
                     : 'hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
-                {formatPersianNumber(d)} روز
+                {opt.label}
               </button>
             ))}
           </div>
-        ) : null}
+        )}
 
-        {/* Theme Toggle Button (Light/Dark Mode) */}
+        {/* Date Filter Selection - Mobile (dropdown) */}
+        {showDateFilter && isMobile && (
+          <div className="relative">
+            <select
+              value={dateRangeDays}
+              onChange={(e) => setDateRangeDays(Number(e.target.value))}
+              className="appearance-none pl-7 pr-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300 border-0 focus:ring-2 focus:ring-brand-500 outline-none cursor-pointer"
+            >
+              {dateRangeOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+          </div>
+        )}
+
+        {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
           className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200"
