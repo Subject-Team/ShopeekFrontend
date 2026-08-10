@@ -41,13 +41,13 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, onRefresh 
           </div>
           <div className="min-w-0">
             <h3 className="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base lg:text-lg flex flex-wrap items-center gap-2">
-              <span>پیشنهاد هوشمند مشاوره کسب‌وکار</span>
+              <span>پیشنهاد هوشمند بهبود کسب‌وکار</span>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 shrink-0">
                 هر ۳ ساعت
               </span>
             </h3>
             <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-              تولید شده توسط موتور هوش مصنوعی شاپیک
+              از هوش مصنوعی شاپیک
             </p>
           </div>
         </div>
