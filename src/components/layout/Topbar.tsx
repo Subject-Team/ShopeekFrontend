@@ -36,13 +36,13 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   const getPageTitle = () => {
     switch (activePage) {
       case 'dashboard':
-        return 'داشبورد تحلیل فروش';
+        return 'داشبورد';
       case 'analytics':
-        return 'تحلیل جامع و آمار';
+        return 'تحلیل فروش';
       case 'customers':
         return 'مدیریت مشتریان (CRM)';
       case 'ingestion':
-        return 'ورود و مدیریت داده‌ها';
+        return 'ورود داده‌ها';
       default:
         return 'داشبورد';
     }
