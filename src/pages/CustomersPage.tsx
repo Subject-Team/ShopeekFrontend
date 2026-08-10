@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { CustomerList } from '../components/crm/CustomerList';
 import { CustomerModal } from '../components/crm/CustomerModal';
+import { CreateCustomerModal } from '../components/crm/CreateCustomerModal';
 import { fetchCustomers, fetchCustomerDetail } from '../services/api';
 import { Customer } from '../types';
 import { usePageContext } from '../context/PageContext';
@@ -9,6 +10,7 @@ export const CustomersPage: React.FC = () => {
   const { setPageMetricsSnapshot } = usePageContext();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const loadCustomers = async () => {
     try {
@@ -38,14 +40,21 @@ export const CustomersPage: React.FC = () => {
       <CustomerList
         customers={customers}
         onSelectCustomer={handleSelectCustomer}
-        onAddCustomerClick={() => {}}
+        onAddCustomerClick={() => setIsCreateModalOpen(true)}
       />
 
-      {/* Customer Profile & Timeline Modal */}
+      {/* Customer Profile Modal */}
       <CustomerModal
         customer={selectedCustomer}
         onClose={() => setSelectedCustomer(null)}
         onRefresh={() => selectedCustomer && handleSelectCustomer(selectedCustomer)}
+      />
+
+      {/* Create Customer Modal */}
+      <CreateCustomerModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={loadCustomers}
       />
     </div>
   );
