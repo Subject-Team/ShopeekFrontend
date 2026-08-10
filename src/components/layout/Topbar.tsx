@@ -116,7 +116,8 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
         {/* Floating Chat Drawer Trigger */}
         <button
           onClick={() => setIsChatOpen(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-brand-500 hover:from-indigo-700 hover:to-brand-600 text-white font-bold text-xs shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all duration-200 border border-white/10"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all duration-200"
+          title="دستیار هوشمند"
         >
           <Sparkles className="w-4 h-4" />
           <span className="hidden md:inline">دستیار هوشمند</span>
