@@ -32,20 +32,23 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, onRefresh 
   };
 
   return (
-    <div className="glass-card p-6 rounded-2xl shadow-xs relative overflow-hidden bg-gradient-to-br from-indigo-50/60 via-white to-emerald-50/60 dark:from-indigo-950/30 dark:via-slate-900 dark:to-emerald-950/30 border border-indigo-100 dark:border-indigo-900/40">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-500/20">
+    <div className="glass-card p-4 sm:p-6 rounded-2xl shadow-xs relative overflow-hidden bg-gradient-to-br from-indigo-50/60 via-white to-emerald-50/60 dark:from-indigo-950/30 dark:via-slate-900 dark:to-emerald-950/30 border border-indigo-100 dark:border-indigo-900/40">
+      {/* Header */}
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <div className="p-2.5 rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-500/20 shrink-0">
             <Lightbulb className="w-5 h-5" />
           </div>
-          <div>
-            <h3 className="font-extrabold text-slate-900 dark:text-white text-base lg:text-lg flex items-center gap-2">
+          <div className="min-w-0">
+            <h3 className="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base lg:text-lg flex flex-wrap items-center gap-2">
               <span>پیشنهاد هوشمند مشاوره کسب‌وکار</span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 shrink-0">
                 هر ۳ ساعت
               </span>
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">تولید شده توسط موتور هوش مصنوعی شاپیک</p>
+            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+              تولید شده توسط موتور هوش مصنوعی شاپیک
+            </p>
           </div>
         </div>
 
@@ -53,31 +56,34 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, onRefresh 
         <button
           onClick={handleManualTrigger}
           disabled={loading}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-xs font-semibold shadow-xs transition-all disabled:opacity-60"
+          className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-[10px] sm:text-xs font-semibold shadow-xs transition-all disabled:opacity-60 shrink-0"
         >
           <RefreshCw className={`w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 ${loading ? 'animate-spin' : ''}`} />
-          <span>{loading ? 'در حال تحلیل...' : 'به‌روزرسانی دستی'}</span>
+          <span className="hidden xs:inline">{loading ? 'در حال تحلیل...' : 'به‌روزرسانی دستی'}</span>
+          <span className="xs:hidden">{loading ? '...' : 'بروزرسانی'}</span>
         </button>
       </div>
 
-      <div className="bg-white/80 dark:bg-slate-800/80 rounded-xl p-4 border border-indigo-50 dark:border-indigo-950 shadow-xs space-y-2">
-        <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-300 font-bold text-sm">
-          <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />
-          <span>{advisory?.summary || 'خلاصه پیشنهاد'}</span>
+      {/* Content Card */}
+      <div className="bg-white/80 dark:bg-slate-800/80 rounded-xl p-3 sm:p-4 border border-indigo-50 dark:border-indigo-950 shadow-xs space-y-2">
+        <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-300 font-bold text-xs sm:text-sm">
+          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500 shrink-0" />
+          <span className="truncate">{advisory?.summary || 'خلاصه پیشنهاد'}</span>
         </div>
-        <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed font-medium">
+        <p className="text-slate-700 dark:text-slate-300 text-xs sm:text-sm leading-relaxed font-medium">
           {advisory?.recommendation_text || 'در حال تحلیل داده‌های اخیر فروش برای ارائه پیشنهادات کاربردی...'}
         </p>
       </div>
 
-      <div className="mt-3 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500">
+      {/* Footer */}
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-[11px] text-slate-400 dark:text-slate-500">
         <span className="flex items-center gap-1">
-          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-          <span>بررسی شده با خلاصه ۷ روز گذشته (عدم تکرار)</span>
+          <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-500 shrink-0" />
+          <span>بر اساس خلاصه ۷ روز گذشته</span>
         </span>
         {advisory?.generated_at && (
-          <span suppressHydrationWarning>
-            تاریخ بروزرسانی: {formatPersianTimeAsUTC(advisory.generated_at)}
+          <span suppressHydrationWarning className="shrink-0">
+            بروزرسانی: {formatPersianTimeAsUTC(advisory.generated_at)}
           </span>
         )}
       </div>
