@@ -68,7 +68,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
           <Menu className="w-6 h-6" />
         </button>
         <div>
-          <h2 className="font-bold text-slate-900 dark:text-white text-base lg:text-lg">
+          <h2 className="hidden sm:block font-bold text-slate-900 dark:text-white text-sm md:text-base lg:text-lg truncate max-w-[120px] md:max-w-[200px]">
             {getPageTitle()}
           </h2>
         </div>
