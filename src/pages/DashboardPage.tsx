@@ -150,7 +150,7 @@ export const DashboardPage: React.FC = () => {
               onClick={() => setActivePage('ingestion')}
               className="w-full py-2.5 px-4 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition-all"
             >
-              بارگذاری فایل CSV
+              وارد کردن داده‌ها
             </button>
           </div>
 
