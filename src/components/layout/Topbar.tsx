@@ -113,6 +113,15 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
           </div>
         )}
 
+        {/* Floating Chat Drawer Trigger */}
+        <button
+          onClick={() => setIsChatOpen(true)}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-brand-500 hover:from-indigo-700 hover:to-brand-600 text-white font-bold text-xs shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all duration-200 border border-white/10"
+        >
+          <Sparkles className="w-4 h-4" />
+          <span className="hidden md:inline">دستیار هوشمند</span>
+        </button>
+
         {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
@@ -124,15 +133,6 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
           ) : (
             <Sun className="w-5 h-5 text-amber-400" />
           )}
-        </button>
-
-        {/* Floating Chat Drawer Trigger */}
-        <button
-          onClick={() => setIsChatOpen(true)}
-          className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200"
-          title="دستیار هوشمند"
-        >
-          <Sparkles className="w-5 h-5" />
         </button>
 
         {/* User Profile & Logout Controls */}
