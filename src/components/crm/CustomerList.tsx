@@ -63,28 +63,28 @@ export const CustomerList: React.FC<CustomerListProps> = ({
               onClick={() => onSelectCustomer(c)}
               className="bg-white dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 p-4 space-y-3 cursor-pointer hover:border-brand-500 transition-colors"
             >
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 font-bold flex items-center justify-center text-sm">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 font-bold flex items-center justify-center text-sm shrink-0">
                     {c.name.charAt(0)}
                   </div>
-                  <div>
-                    <p className="font-bold text-slate-900 dark:text-white">{c.name}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold text-slate-900 dark:text-white truncate">{c.name}</p>
                     {c.email && (
-                      <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
-                        <Mail className="w-3 h-3" />
-                        <span>{c.email}</span>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5 truncate">
+                        <Mail className="w-3 h-3 shrink-0" />
+                        <span className="truncate">{c.email}</span>
                       </p>
                     )}
                     {c.phone && !c.email && (
-                      <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
-                        <Phone className="w-3 h-3" />
-                        <span>{c.phone}</span>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5 truncate">
+                        <Phone className="w-3 h-3 shrink-0" />
+                        <span className="truncate">{c.phone}</span>
                       </p>
                     )}
                   </div>
                 </div>
-                <span className="text-xs px-2 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 font-bold shrink-0">
+                <span className="text-xs px-2 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 font-bold shrink-0 whitespace-nowrap">
                   {formatPersianNumber(c.total_lifetime_value || 0)} ت
                 </span>
               </div>
