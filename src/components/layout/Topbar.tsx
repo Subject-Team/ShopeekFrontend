@@ -116,7 +116,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
         {/* Floating Chat Drawer Trigger */}
         <button
           onClick={() => setIsChatOpen(true)}
-          className="flex items-center gap-2 p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all duration-200"
+          className="flex items-center gap-2 p-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-500/25 transition-all duration-200"
           title="دستیار هوشمند"
         >
           <Sparkles className="w-4 h-4" />
@@ -126,7 +126,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
         {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
-          className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200"
+          className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/60 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200"
           title={theme === 'light' ? 'تغییر به حالت تاریک' : 'تغییر به حالت روشن'}
         >
           {theme === 'light' ? (
