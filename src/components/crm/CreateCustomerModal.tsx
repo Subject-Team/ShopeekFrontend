@@ -56,8 +56,8 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
       />
 
       {/* Modal container - centered with proper spacing */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-        <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden pointer-events-auto mx-auto">
+      <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+        <div className="w-full max-w-md mx-4 pointer-events-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
           {/* Header */}
           <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <h3 className="font-extrabold text-slate-900 dark:text-white text-lg">ثبت مشتری جدید</h3>
