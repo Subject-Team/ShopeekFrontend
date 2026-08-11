@@ -192,3 +192,16 @@ export const fetchChatHistory = async (sessionId: string): Promise<ChatMessage[]
   if (!res.ok) return [];
   return res.json();
 };
+
+export const createCustomer = async (data: { name: string; email?: string; phone?: string; address?: string }) => {
+  const res = await authFetch(`${API_BASE}/customers`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در ایجاد مشتری' }));
+    throw new Error(err.detail || 'خطا در ایجاد مشتری');
+  }
+  return res.json();
+};

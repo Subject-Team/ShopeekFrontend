@@ -18,6 +18,15 @@ interface RevenueChartProps {
 
 export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'روند فروش و پیش‌بینی هوشمند' }) => {
   const [formattedData, setFormattedData] = useState<RevenuePoint[]>([]);
+  const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 640);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const translated = data.map(item => ({
@@ -61,30 +70,38 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
     return null;
   };
 
+  const xAxisTickFormatter = (dateStr: string) => {
+    const parts = dateStr.split('/');
+    if (parts.length === 3) {
+      return `${parts[1]}/${parts[2]}`;
+    }
+    return dateStr;
+  };
+
   return (
-    <div className="glass-card p-6 rounded-2xl shadow-xs space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="glass-card p-4 sm:p-6 rounded-2xl shadow-xs space-y-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         <div>
-          <h3 className="font-extrabold text-slate-900 dark:text-white text-base lg:text-lg">{title}</h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <h3 className="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base lg:text-lg">{title}</h3>
+          <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             داده‌های واقعی به همراه خط‌چین پیش‌بینی هوشمند برای روز آینده
           </p>
         </div>
-        <div className="flex items-center gap-4 text-xs font-semibold">
+        <div className="flex items-center gap-3 text-[10px] sm:text-xs font-semibold">
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-brand-500" />
-            <span className="text-slate-600 dark:text-slate-400">فروش واقعی</span>
+            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-brand-500" />
+            <span className="text-slate-600 dark:text-slate-400">واقعی</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-accent-500" />
-            <span className="text-slate-600 dark:text-slate-400">پیش‌بینی هوشمند AI</span>
+            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-accent-500" />
+            <span className="text-slate-600 dark:text-slate-400">پیش‌بینی</span>
           </div>
         </div>
       </div>
 
-      <div className="h-72 w-full pt-2">
+      <div className="h-64 sm:h-72 w-full pt-1">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={formattedData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <AreaChart data={formattedData} margin={{ top: 5, right: isMobile ? 0 : 10, left: isMobile ? -15 : -20, bottom: 0 }}>
             <defs>
               <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
@@ -95,26 +112,37 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
                 <stop offset="95%" stopColor="#6366f1" stopOpacity={0.0}/>
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.5} />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="#e2e8f0"
+              opacity={0.5}
+              vertical={false}
+              horizontal={true}
+            />
             <XAxis
               dataKey="date"
-              tick={{ fontSize: 11, fill: '#94a3b8' }}
+              tick={{
+                fontSize: isMobile ? 9 : 11,
+                fill: '#94a3b8'
+              }}
               tickLine={false}
               axisLine={{ stroke: '#cbd5e1' }}
-              tickFormatter={(dateStr: string) => {
-                const parts = dateStr.split('/');
-                if (parts.length === 3) {
-                  return `${parts[1]}/${parts[2]}`;
-                }
-                return dateStr;
-              }}
+              tickFormatter={xAxisTickFormatter}
+              interval={isMobile ? 2 : 0}
+              minTickGap={isMobile ? 15 : 5}
             />
             <YAxis
-              tick={{ fontSize: 11, fill: '#94a3b8', textAnchor: 'start', direction: 'rtl' }}
+              tick={{
+                fontSize: isMobile ? 9 : 11,
+                fill: '#94a3b8',
+                textAnchor: 'start',
+                direction: 'rtl'
+              }}
               tickFormatter={formatCompressedToman}
               tickLine={false}
               axisLine={{ stroke: '#cbd5e1' }}
               tickMargin={3}
+              tickCount={isMobile ? 4 : 6}
             />
             <Tooltip content={<CustomTooltip />} />
             <Area

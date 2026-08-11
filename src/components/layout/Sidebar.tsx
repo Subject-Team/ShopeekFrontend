@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, TrendingUp, Users, UploadCloud, Sparkles, ChevronLeft } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, Users, UploadCloud, Sparkles, ChevronRight } from 'lucide-react';
 import { usePageContext } from '../../context/PageContext';
 
 interface SidebarProps {
@@ -35,6 +35,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         <div>
           {/* Logo Brand Header */}
           <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100 dark:border-slate-800">
+            <button
+              onClick={() => setIsOpen(false)}
+              className="lg:hidden p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-accent-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 font-bold text-xl">
                 ش
@@ -46,12 +52,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">تحلیل هوشمند فروش</p>
               </div>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="lg:hidden p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
           </div>
 
           {/* Navigation Links */}
