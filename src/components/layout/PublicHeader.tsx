@@ -66,9 +66,11 @@ export const PublicHeader: React.FC = () => {
 
           {/* Center: Navigation Links */}
           <nav
-            className={`hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 transition-all duration-300 ${
-              scrolled ? 'ml-auto mr-4' : 'mx-auto'
-            }`}
+            className={`hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 transition-all duration-300 ease-in-out ${
+              scrolled
+                ? 'right-40 translate-x-0'
+                : 'left-1/2 -translate-x-1/2'
+            } absolute`}
           >
             {isLanding ? (
               <a href="#features" className="hover:text-brand-600 transition-colors">قابلیت‌ها</a>
@@ -140,7 +142,7 @@ export const PublicHeader: React.FC = () => {
 
       {/* Mobile Drawer Menu Overlay */}
       {mobileMenuOpen && (
-        <div className={`md:hidden fixed inset-x-0 top-0 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-2xl z-40 p-5 ${scrolled? 'pt-4' : 'pt-24'} space-y-4 animate-in fade-in slide-in-from-top-2 duration-200`}>
+        <div className={`md:hidden fixed inset-x-0 top-0 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-2xl z-40 p-5 ${scrolled? 'pt-4' : 'pt-28'} space-y-4 animate-in fade-in slide-in-from-top-2 duration-200`}>
           <nav className="flex flex-col space-y-2 text-sm font-medium text-slate-700 border-b border-slate-100 pb-4">
             {isLanding ? (
               <a
@@ -200,7 +202,7 @@ export const PublicHeader: React.FC = () => {
               className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 text-white font-bold text-xs shadow-md shadow-brand-500/20 text-center flex items-center justify-center gap-2"
             >
               <LayoutDashboard className="w-4 h-4" />
-              <span>ورود به داشبورد تحلیلی</span>
+              <span>ورود به داشبورد</span>
             </Link>
           </div>
         </div>
