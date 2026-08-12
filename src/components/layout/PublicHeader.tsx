@@ -19,19 +19,19 @@ export const PublicHeader: React.FC = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Initial check
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
     <>
-      {/* Main Header Component */}
+      {/* Main Header - fixed at top */}
       <header
-        className={`w-full border-b border-slate-200/80 bg-white/85 backdrop-blur-md sticky top-0 z-40 font-vazir dir-rtl transition-all duration-300 ease-in-out ${
+        className={`w-full border-b border-slate-200/80 bg-white/85 backdrop-blur-md fixed top-0 left-0 right-0 z-50 font-vazir dir-rtl transition-all duration-300 ease-in-out ${
           scrolled ? 'py-1.5 shadow-md bg-white/95' : 'py-3 shadow-2xs bg-white/85'
         } ${
-          /* On mobile when scrolled, hide top header bar background while floating button remains */
-          scrolled ? '-translate-y-full md:translate-y-0 opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto' : 'translate-y-0 opacity-100 pointer-events-auto'
+          // Hide header on mobile when scrolled, keep visible on desktop
+          scrolled ? 'md:translate-y-0 -translate-y-full' : 'translate-y-0'
         }`}
       >
         <div
@@ -39,7 +39,7 @@ export const PublicHeader: React.FC = () => {
             scrolled ? 'max-w-full px-4 sm:px-8 h-14' : 'max-w-7xl px-4 sm:px-6 h-16 sm:h-20'
           }`}
         >
-          {/* Right Group: Brand Logo & Immediately Adjacent Navigation Links */}
+          {/* Left side: Brand Logo */}
           <div className="flex items-center gap-6 lg:gap-8 transition-all duration-300">
             <Link to="/" className="flex items-center gap-2.5 sm:gap-3 shrink-0" onClick={() => setMobileMenuOpen(false)}>
               <div
@@ -62,30 +62,34 @@ export const PublicHeader: React.FC = () => {
                 )}
               </div>
             </Link>
-
-            {/* Desktop Navigation Links (Stuck Beside Logo on the Right Side) */}
-            <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 transition-all duration-300">
-              {isLanding ? (
-                <a href="#features" className="hover:text-brand-600 transition-colors">قابلیت‌ها</a>
-              ) : (
-                <Link to="/#features" className="hover:text-brand-600 transition-colors">قابلیت‌ها</Link>
-              )}
-              <Link
-                to="/contact"
-                className={`transition-colors ${location.pathname === '/contact' ? 'text-brand-600 font-bold' : 'hover:text-brand-600'}`}
-              >
-                تماس با ما
-              </Link>
-              <Link
-                to="/privacy-policy"
-                className={`transition-colors ${location.pathname === '/privacy-policy' ? 'text-brand-600 font-bold' : 'hover:text-brand-600'}`}
-              >
-                حریم خصوصی
-              </Link>
-            </nav>
           </div>
 
-          {/* Left Group: Action Buttons (Move Left towards edge on desktop) */}
+          {/* Center: Navigation Links */}
+          <nav
+            className={`hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 transition-all duration-300 ${
+              scrolled ? 'ml-auto mr-4' : 'mx-auto'
+            }`}
+          >
+            {isLanding ? (
+              <a href="#features" className="hover:text-brand-600 transition-colors">قابلیت‌ها</a>
+            ) : (
+              <Link to="/#features" className="hover:text-brand-600 transition-colors">قابلیت‌ها</Link>
+            )}
+            <Link
+              to="/contact"
+              className={`transition-colors ${location.pathname === '/contact' ? 'text-brand-600 font-bold' : 'hover:text-brand-600'}`}
+            >
+              تماس با ما
+            </Link>
+            <Link
+              to="/privacy-policy"
+              className={`transition-colors ${location.pathname === '/privacy-policy' ? 'text-brand-600 font-bold' : 'hover:text-brand-600'}`}
+            >
+              حریم خصوصی
+            </Link>
+          </nav>
+
+          {/* Right side: Action Buttons */}
           <div className="hidden md:flex items-center gap-3 shrink-0 transition-all duration-300">
             <Link
               to="/login"
@@ -106,33 +110,37 @@ export const PublicHeader: React.FC = () => {
             </Link>
           </div>
 
-          {/* Unscrolled Mobile Hamburger Button Inside Header */}
-          {!scrolled && (
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors border border-slate-200"
-              aria-label="منوی سایت"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6 text-slate-900" /> : <Menu className="w-6 h-6 text-slate-900" />}
-            </button>
-          )}
+          {/* Mobile Hamburger Button - hidden when scrolled */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className={`md:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors border border-slate-200 ${
+              scrolled ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
+            }`}
+            aria-label="منوی سایت"
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6 text-slate-900" /> : <Menu className="w-6 h-6 text-slate-900" />}
+          </button>
         </div>
       </header>
 
-      {/* Scrolled Mobile Floating Hamburger Hover Button */}
-      {scrolled && (
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden fixed top-3 right-4 z-50 p-2.5 rounded-2xl bg-white/95 border border-slate-300 shadow-xl text-slate-900 backdrop-blur-md transition-all duration-300 animate-in fade-in zoom-in-90"
-          aria-label="منوی شناور سایت"
-        >
-          {mobileMenuOpen ? <X className="w-6 h-6 text-slate-900" /> : <Menu className="w-6 h-6 text-slate-900" />}
-        </button>
-      )}
+      {/* Floating Mobile Hamburger Button - visible only on mobile when scrolled */}
+      <button
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        className={`md:hidden fixed top-3 left-4 transform z-50 p-2.5 rounded-2xl bg-white/95 border border-slate-300 shadow-xl text-slate-900 backdrop-blur-md transition-all duration-300 ${
+          scrolled ? 'opacity-100 translate-y-2' : 'opacity-0 -translate-y-4 pointer-events-none'
+        }`}
+        aria-label="منوی شناور سایت"
+      >
+        {mobileMenuOpen ? <X className="w-6 h-6 text-slate-900" /> : <Menu className="w-6 h-6 text-slate-900" />}
+      </button>
+
+
+      {/* Spacer to prevent content from hiding behind fixed header */}
+      <div className={`md:block transition-all duration-300 ${scrolled ? 'h-14' : 'h-16 sm:h-20'}`} />
 
       {/* Mobile Drawer Menu Overlay */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-x-0 top-16 sm:top-20 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-2xl z-50 p-5 space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className={`md:hidden fixed inset-x-0 top-0 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-2xl z-40 p-5 pt-${scrolled? 4 : 24} space-y-4 animate-in fade-in slide-in-from-top-2 duration-200`}>
           <nav className="flex flex-col space-y-2 text-sm font-medium text-slate-700 border-b border-slate-100 pb-4">
             {isLanding ? (
               <a
@@ -177,7 +185,6 @@ export const PublicHeader: React.FC = () => {
             </Link>
           </nav>
 
-          {/* Action Buttons inside Mobile Menu */}
           <div className="flex flex-col gap-2.5 pt-1">
             <Link
               to="/login"
