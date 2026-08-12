@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DollarSign, ShoppingBag, CreditCard, Users, UploadCloud } from 'lucide-react';
 import { KpiCard } from '../components/dashboard/KpiCard';
 import { RevenueChart } from '../components/dashboard/RevenueChart';
@@ -10,10 +11,12 @@ import { useAuth } from '../context/AuthContext';
 import { fetchKPISummary, fetchRevenueTrend, fetchLatestAdvisory, fetchCustomers } from '../services/api';
 import { KPISummary, RevenuePoint, AIAdvisory, Customer } from '../types';
 import { formatPersianNumber } from '../utils';
+import { SEO } from '../components/common/SEO';
 
 export const DashboardPage: React.FC = () => {
-  const { dateRangeDays, setPageMetricsSnapshot, setActivePage } = usePageContext();
+  const { dateRangeDays, setPageMetricsSnapshot } = usePageContext();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [kpi, setKpi] = useState<KPISummary | null>(null);
   const [trend, setTrend] = useState<RevenuePoint[]>([]);
   const [advisory, setAdvisory] = useState<AIAdvisory | null>(null);
@@ -53,6 +56,15 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <SEO
+        title="داشبورد تحلیلی فروش | شاپیک"
+        description="خلاصه آمار، شاخص‌های کلیدی عملکرد فروش، نمودارهای روند درآمد و توصیه‌های هوش مصنوعی شاپیک."
+        canonicalPath="/dashboard"
+      />
+
+      {/* Single H1 requirement for accessibility/SEO */}
+      <h1 className="sr-only">داشبورد اصلی تحلیلی شاپیک</h1>
+
       {/* 7-Day Expiration Warning Banner (if applicable) */}
       <SubscriptionWarningBanner user={user} />
 
@@ -107,7 +119,7 @@ export const DashboardPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">مشتریان برتر (LTV)</h4>
               <button
-                onClick={() => setActivePage('customers')}
+                onClick={() => navigate('/dashboard/customers')}
                 className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline"
               >
                 مشاهده همه
@@ -147,7 +159,7 @@ export const DashboardPage: React.FC = () => {
               افزایش دقت تحلیل‌ها با افزودن فایل فاکتورهای اخیر فروش کسب‌وکار.
             </p>
             <button
-              onClick={() => setActivePage('ingestion')}
+              onClick={() => navigate('/dashboard/ingestion')}
               className="w-full py-2.5 px-4 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition-all"
             >
               وارد کردن داده‌ها

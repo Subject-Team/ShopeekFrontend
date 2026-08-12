@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Menu,
   Sun,
@@ -12,7 +13,6 @@ import {
 import { useTheme } from '../../context/ThemeContext';
 import { usePageContext } from '../../context/PageContext';
 import { useAuth } from '../../context/AuthContext';
-import { formatPersianNumber } from '../../utils';
 
 interface TopbarProps {
   onMenuClick: () => void;
@@ -20,9 +20,9 @@ interface TopbarProps {
 
 export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   const { theme, toggleTheme } = useTheme();
-  const { activePage, dateRangeDays, setDateRangeDays, setIsChatOpen } =
-    usePageContext();
+  const { dateRangeDays, setDateRangeDays, setIsChatOpen } = usePageContext();
   const { user, logout } = useAuth();
+  const location = useLocation();
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 1024);
 
   useEffect(() => {
@@ -34,14 +34,15 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   }, []);
 
   const getPageTitle = () => {
-    switch (activePage) {
-      case 'dashboard':
-        return 'داشبورد';
-      case 'analytics':
-        return 'تحلیل فروش';
-      case 'customers':
+    switch (location.pathname) {
+      case '/dashboard':
+      case '/dashboard/':
+        return 'داشبورد اصلی';
+      case '/dashboard/analytics':
+        return 'تحلیل و آمار فروش';
+      case '/dashboard/customers':
         return 'مدیریت مشتریان (CRM)';
-      case 'ingestion':
+      case '/dashboard/ingestion':
         return 'ورود داده‌ها';
       default:
         return 'داشبورد';
@@ -55,7 +56,9 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   ];
 
   const showDateFilter =
-    activePage === 'dashboard' || activePage === 'analytics';
+    location.pathname === '/dashboard' ||
+    location.pathname === '/dashboard/' ||
+    location.pathname === '/dashboard/analytics';
 
   return (
     <header className="h-16 sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 lg:px-8 flex items-center justify-between transition-colors duration-200 dir-rtl">
@@ -68,9 +71,9 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
           <Menu className="w-6 h-6" />
         </button>
         <div>
-          <h2 className="hidden sm:block font-bold text-slate-900 dark:text-white text-sm md:text-base lg:text-lg truncate max-w-[120px] md:max-w-[200px]">
+          <span className="hidden sm:block font-bold text-slate-900 dark:text-white text-sm md:text-base lg:text-lg truncate max-w-[150px] md:max-w-[250px]">
             {getPageTitle()}
-          </h2>
+          </span>
         </div>
       </div>
 
@@ -116,7 +119,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
         {/* Floating Chat Drawer Trigger */}
         <button
           onClick={() => setIsChatOpen(true)}
-          className="flex items-center gap-2 p-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-500/25 transition-all duration-200"
+          className="flex items-center gap-2 p-2.5 md:px-3 md:py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-500/25 transition-all duration-200"
           title="دستیار هوشمند"
         >
           <Sparkles className="w-4 h-4" />

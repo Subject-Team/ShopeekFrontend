@@ -1,5 +1,6 @@
 import React from 'react';
-import { LayoutDashboard, TrendingUp, Users, UploadCloud, Sparkles, ChevronRight } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { LayoutDashboard, TrendingUp, Users, UploadCloud, Sparkles, ChevronRight, Home } from 'lucide-react';
 import { usePageContext } from '../../context/PageContext';
 
 interface SidebarProps {
@@ -8,13 +9,14 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
-  const { activePage, setActivePage, setIsChatOpen } = usePageContext();
+  const { setIsChatOpen } = usePageContext();
+  const location = useLocation();
 
   const navItems = [
-    { id: 'dashboard', label: 'داشبورد اصلی', icon: LayoutDashboard },
-    { id: 'analytics', label: 'تحلیل و آمار فروش', icon: TrendingUp },
-    { id: 'customers', label: 'مدیریت مشتریان (CRM)', icon: Users },
-    { id: 'ingestion', label: 'ورود داده‌ها (CSV/Excel)', icon: UploadCloud },
+    { path: '/dashboard', label: 'داشبورد اصلی', icon: LayoutDashboard },
+    { path: '/dashboard/analytics', label: 'تحلیل و آمار فروش', icon: TrendingUp },
+    { path: '/dashboard/customers', label: 'مدیریت مشتریان (CRM)', icon: Users },
+    { path: '/dashboard/ingestion', label: 'ورود داده‌ها (CSV/Excel)', icon: UploadCloud },
   ];
 
   return (
@@ -41,31 +43,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             >
               <ChevronRight className="w-6 h-6" />
             </button>
-            <div className="flex items-center gap-3">
+            <Link to="/" className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-accent-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 font-bold text-xl">
                 ش
               </div>
               <div>
-                <h1 className="font-bold text-lg leading-tight bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+                <span className="font-bold text-lg leading-tight text-slate-900 dark:text-white block">
                   شاپیک
-                </h1>
+                </span>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">تحلیل هوشمند فروش</p>
               </div>
-            </div>
+            </Link>
           </div>
 
           {/* Navigation Links */}
           <nav className="p-4 space-y-1.5">
             {navItems.map(item => {
               const Icon = item.icon;
-              const isActive = activePage === item.id;
+              const isActive = location.pathname === item.path || (item.path === '/dashboard' && location.pathname === '/dashboard/');
               return (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setActivePage(item.id);
-                    setIsOpen(false);
-                  }}
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setIsOpen(false)}
                   className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
                     isActive
                       ? 'bg-brand-500 text-white shadow-md shadow-brand-500/25 font-semibold'
@@ -74,9 +74,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 >
                   <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 dark:text-slate-500'}`} />
                   <span>{item.label}</span>
-                </button>
+                </Link>
               );
             })}
+
+            {/* Link back to public landing page */}
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 mt-4">
+              <Link
+                to="/"
+                onClick={() => setIsOpen(false)}
+                className="w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl font-medium text-xs text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100 transition-all"
+              >
+                <Home className="w-4 h-4 shrink-0 text-slate-400" />
+                <span>صفحه اصلی سایت</span>
+              </Link>
+            </div>
           </nav>
         </div>
 

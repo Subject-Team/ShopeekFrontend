@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
+import { MinimalFooter } from './MinimalFooter';
 import { ChatDrawer } from '../chat/ChatDrawer';
 
 interface ShellProps {
@@ -16,11 +17,13 @@ export const Shell: React.FC<ShellProps> = ({ children }) => {
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 
       {/* Main Content Viewport */}
-      <div className="flex-1 flex flex-col min-w-0 lg:mr-64 transition-all duration-300">
+      <div className="flex-1 flex flex-col min-w-0 lg:mr-64 transition-all duration-300 min-h-screen">
         <Topbar onMenuClick={() => setSidebarOpen(true)} />
         <main className="flex-1 p-4 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
           {children}
         </main>
+        {/* Short Dashboard Footer */}
+        <MinimalFooter />
       </div>
 
       {/* Context-Aware AI Chat Assistant Drawer */}

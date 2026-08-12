@@ -5,6 +5,7 @@ import { CreateCustomerModal } from '../components/crm/CreateCustomerModal';
 import { fetchCustomers, fetchCustomerDetail } from '../services/api';
 import { Customer } from '../types';
 import { usePageContext } from '../context/PageContext';
+import { SEO } from '../components/common/SEO';
 
 export const CustomersPage: React.FC = () => {
   const { setPageMetricsSnapshot } = usePageContext();
@@ -37,6 +38,15 @@ export const CustomersPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <SEO
+        title="مدیریت مشتریان (CRM) | شاپیک"
+        description="لیست مشتریان، ارزش حیاتی خریداران (LTV)، سابقه تعاملات و ایجاد مشتری جدید."
+        canonicalPath="/dashboard/customers"
+      />
+
+      {/* Single H1 requirement */}
+      <h1 className="sr-only">مدیریت مشتریان (CRM) شاپیک</h1>
+
       <CustomerList
         customers={customers}
         onSelectCustomer={handleSelectCustomer}

@@ -1,0 +1,15 @@
+# Shopeek (شاپیک) — Persian Sales Analytics & Intelligent Business Assistant
+
+> Shopeek is a Persian RTL Progressive Web Application (PWA) designed for Iranian SMBs to analyze sales performance, compute key business metrics, track customer CRM, and offer AI-driven strategic guidance.
+
+## Core Capabilities
+- **Sales Analytics Dashboard**: Daily/weekly revenue breakdowns, Jalali solar calendar metrics, average order value (AOV), top performing products.
+- **AI Strategic Advisor**: Instant context-aware business advisories powered by deep learning models.
+- **Telegram Bot Ingestion**: Persian natural language transaction entry adapter via Telegram bot integration.
+- **Multi-Tenant Data Isolation**: Strict user-level tenant data isolation and subscription lifecycle management.
+
+## Important Links
+- Landing Page: https://shopeek.ir/
+- Account Authentication: https://shopeek.ir/login
+- Privacy Policy & Data Processing: https://shopeek.ir/privacy-policy
+- Dashboard & Analytics (Requires Auth): https://shopeek.ir/dashboard

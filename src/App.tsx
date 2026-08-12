@@ -1,18 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
-import { ToastProvider } from './context/ToastContext';
-import { PageContextProvider, usePageContext } from './context/PageContext';
+import { ToastProvider, useToast } from './context/ToastContext';
+import { PageContextProvider } from './context/PageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Shell } from './components/layout/Shell';
+import { LandingPage } from './pages/LandingPage';
+import { PrivacyPage } from './pages/PrivacyPage';
+import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { CustomersPage } from './pages/CustomersPage';
 import { IngestionPage } from './pages/IngestionPage';
-import { LoginPage } from './pages/LoginPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 
-const AppContent: React.FC = () => {
-  const { activePage } = usePageContext();
+const ProtectedDashboardLayout: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      showToast('جهت دسترسی به داشبورد، لطفاً ابتدا وارد حساب کاربری خود شوید.', 'warning');
+    }
+  }, [isLoading, isAuthenticated, showToast]);
 
   if (isLoading) {
     return (
@@ -26,16 +36,41 @@ const AppContent: React.FC = () => {
   }
 
   if (!isAuthenticated) {
-    return <LoginPage />;
+    return <Navigate to="/login" replace />;
   }
 
   return (
     <Shell>
-      {activePage === 'dashboard' && <DashboardPage />}
-      {activePage === 'analytics' && <AnalyticsPage />}
-      {activePage === 'customers' && <CustomersPage />}
-      {activePage === 'ingestion' && <IngestionPage />}
+      <Routes>
+        <Route index element={<DashboardPage />} />
+        <Route path="analytics" element={<AnalyticsPage />} />
+        <Route path="customers" element={<CustomersPage />} />
+        <Route path="ingestion" element={<IngestionPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
     </Shell>
+  );
+};
+
+const AppRoutes: React.FC = () => {
+  return (
+    <Routes>
+      {/* Root Landing Page */}
+      <Route path="/" element={<LandingPage />} />
+
+      {/* Auth Login / Register Page */}
+      <Route path="/login" element={<LoginPage />} />
+
+      {/* Privacy Policy Main Page & Legacy Path Redirect */}
+      <Route path="/privacy-policy" element={<PrivacyPage />} />
+      <Route path="/privacy" element={<Navigate to="/privacy-policy" replace />} />
+
+      {/* Protected Dashboard Section with Sub-routes */}
+      <Route path="/dashboard/*" element={<ProtectedDashboardLayout />} />
+
+      {/* Catch-all 404 Page (Rendered in-place without redirect) */}
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
 };
 
@@ -45,7 +80,9 @@ export function App() {
       <ToastProvider>
         <AuthProvider>
           <PageContextProvider>
-            <AppContent />
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
           </PageContextProvider>
         </AuthProvider>
       </ToastProvider>
