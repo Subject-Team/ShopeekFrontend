@@ -140,7 +140,7 @@ export const PublicHeader: React.FC = () => {
 
       {/* Mobile Drawer Menu Overlay */}
       {mobileMenuOpen && (
-        <div className={`md:hidden fixed inset-x-0 top-0 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-2xl z-40 p-5 pt-${scrolled? 4 : 24} space-y-4 animate-in fade-in slide-in-from-top-2 duration-200`}>
+        <div className={`md:hidden fixed inset-x-0 top-0 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-2xl z-40 p-5 ${scrolled? 'pt-4' : 'pt-24'} space-y-4 animate-in fade-in slide-in-from-top-2 duration-200`}>
           <nav className="flex flex-col space-y-2 text-sm font-medium text-slate-700 border-b border-slate-100 pb-4">
             {isLanding ? (
               <a
