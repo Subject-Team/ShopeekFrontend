@@ -4,6 +4,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider, useToast } from './context/ToastContext';
 import { PageContextProvider } from './context/PageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ScrollToTop } from './components/common/ScrollToTop';
 import { Shell } from './components/layout/Shell';
 import { LandingPage } from './pages/LandingPage';
 import { PrivacyPage } from './pages/PrivacyPage';
@@ -85,6 +86,7 @@ export function App() {
         <AuthProvider>
           <PageContextProvider>
             <BrowserRouter>
+              <ScrollToTop />
               <AppRoutes />
             </BrowserRouter>
           </PageContextProvider>
