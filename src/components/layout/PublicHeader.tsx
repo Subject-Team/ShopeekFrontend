@@ -69,7 +69,7 @@ export const PublicHeader: React.FC = () => {
             className={`hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 transition-all duration-300 ease-in-out ${
               scrolled
                 ? 'right-36'
-                : 'left-1/2 -translate-x-1/3'
+                : 'right-1/3 -translate-x-1/3'
             } absolute`}
           >
             {isLanding ? (
