@@ -71,7 +71,7 @@ export const LandingPage: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
-              <div className="text-xs text-slate-500 mb-1">فروش کل (شمسی)</div>
+              <div className="text-xs text-slate-500 mb-1">فروش کل</div>
               <div className="text-xl font-black text-slate-900 mb-1">۱۲۸,۵۰۰,۰۰۰ تومان</div>
               <div className="text-xs text-emerald-600 font-semibold flex items-center gap-1">
                 <TrendingUp className="w-3.5 h-3.5" />
