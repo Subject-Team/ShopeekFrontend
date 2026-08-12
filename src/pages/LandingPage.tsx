@@ -185,10 +185,10 @@ export const LandingPage: React.FC = () => {
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to="/contact"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-brand-900 font-extrabold text-sm hover:bg-slate-50 shadow-xl transition-all"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-extrabold text-sm shadow-xl transition-all border border-slate-200"
             >
-              <span>تماس با پشتیبانی و شروع</span>
-              <ArrowLeft className="w-4 h-4" />
+              <span className="text-slate-900 font-extrabold">تماس با پشتیبانی و شروع</span>
+              <ArrowLeft className="w-4 h-4 text-slate-900 shrink-0" />
             </Link>
             <Link
               to="/login"
