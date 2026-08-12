@@ -69,7 +69,7 @@ export const PublicHeader: React.FC = () => {
             className={`hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 transition-all duration-300 ease-in-out ${
               scrolled
                 ? 'right-36'
-                : 'right-1/3 -translate-x-1/3'
+                : 'right-1/2 translate-x-1/2'
             } absolute`}
           >
             {isLanding ? (
@@ -142,7 +142,7 @@ export const PublicHeader: React.FC = () => {
 
       {/* Mobile Drawer Menu Overlay */}
       {(
-        <div className={`${mobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}md:hidden fixed inset-x-0 top-0 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-2xl z-40 p-5 ${scrolled? 'pt-4' : 'pt-24 sm:pt-28'} space-y-4 duration-200`}>
+        <div className={`${mobileMenuOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"} md:hidden md:pointer-events-none fixed inset-x-0 top-0 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-2xl z-40 p-5 ${scrolled? 'pt-4' : 'pt-24 sm:pt-28'} space-y-4 duration-200`}>
           <nav className="flex flex-col space-y-2 text-sm font-medium text-slate-700 border-b border-slate-100 pb-4">
             {isLanding ? (
               <a
