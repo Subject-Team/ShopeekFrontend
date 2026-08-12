@@ -12,6 +12,8 @@ export const MinimalFooter: React.FC = () => {
       <div className="flex items-center gap-4 text-slate-500 dark:text-slate-400">
         <Link to="/" className="hover:text-brand-500 transition-colors">صفحه اصلی</Link>
         <span>•</span>
+        <Link to="/contact" className="hover:text-brand-500 transition-colors">تماس با ما</Link>
+        <span>•</span>
         <Link to="/privacy-policy" className="hover:text-brand-500 transition-colors">سیاست حریم خصوصی</Link>
         <span>•</span>
         <span>نسخه ۱.۰.۰</span>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, TrendingUp, Users, UploadCloud, ShieldCheck, ArrowLeft, BarChart3, Bot, Zap, CheckCircle2 } from 'lucide-react';
+import { Sparkles, TrendingUp, Users, UploadCloud, ShieldCheck, ArrowLeft, BarChart3, Bot, Zap, MessageSquare } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { MainFooter } from '../components/layout/MainFooter';
 
@@ -28,8 +28,7 @@ export const LandingPage: React.FC = () => {
 
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
             <a href="#features" className="hover:text-brand-400 transition-colors">قابلیت‌ها</a>
-            <a href="#telegram-bot" className="hover:text-brand-400 transition-colors">ربات تلگرام</a>
-            <a href="#ai-advisor" className="hover:text-brand-400 transition-colors">مشاور هوش مصنوعی</a>
+            <Link to="/contact" className="hover:text-brand-400 transition-colors">تماس با ما</Link>
             <Link to="/privacy-policy" className="hover:text-brand-400 transition-colors">حریم خصوصی</Link>
           </nav>
 
@@ -71,19 +70,19 @@ export const LandingPage: React.FC = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md mb-16">
-          <Link
-            to="/login"
+          <a
+            href="#features"
             className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-sm shadow-xl shadow-brand-500/25 transition-all flex items-center justify-center gap-2"
           >
-            <span>شروع استفاده رایگان</span>
-            <ArrowLeft className="w-4 h-4" />
-          </Link>
+            <BarChart3 className="w-4 h-4" />
+            <span>مشاهده قابلیت‌ها</span>
+          </a>
           <Link
-            to="/dashboard"
+            to="/contact"
             className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-bold text-sm transition-all flex items-center justify-center gap-2"
           >
-            <BarChart3 className="w-4 h-4 text-brand-400" />
-            <span>مشاهده محیط داشبورد</span>
+            <MessageSquare className="w-4 h-4 text-brand-400" />
+            <span>تماس برای شروع</span>
           </Link>
         </div>
 
@@ -116,7 +115,7 @@ export const LandingPage: React.FC = () => {
               <div className="text-xs text-brand-400">۳۸ مشتری جدید این ماه</div>
             </div>
             <div className="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/50">
-              <div className="text-xs text-slate-400 mb-1">میانگین سبد خرید (AOV)</div>
+              <div className="text-xs text-slate-400 mb-1">میانگین ارزش فاکتور (AOV)</div>
               <div className="text-xl font-bold text-white mb-1">۲۸۴,۰۰۰ تومان</div>
               <div className="text-xs text-indigo-400">بر اساس ۱۴ روز گذشته</div>
             </div>
@@ -214,13 +213,19 @@ export const LandingPage: React.FC = () => {
           <p className="text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
             به جمع فروشندگان و مدیرانی بپیوندید که با تحلیل‌های شاپیک، استراتژی فروش خود را بهبود داده‌اند.
           </p>
-          <div className="pt-2">
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              to="/login"
+              to="/contact"
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-slate-950 font-bold text-sm hover:bg-slate-100 shadow-xl transition-all"
             >
-              <span>ورود / ایجاد حساب کاربری</span>
+              <span>تماس با پشتیبانی و شروع</span>
               <ArrowLeft className="w-4 h-4" />
+            </Link>
+            <Link
+              to="/login"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-bold text-sm transition-all"
+            >
+              <span>ورود به حساب کاربری</span>
             </Link>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider, useToast } from './context/ToastContext';
 import { PageContextProvider } from './context/PageContext';
@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { Shell } from './components/layout/Shell';
 import { LandingPage } from './pages/LandingPage';
 import { PrivacyPage } from './pages/PrivacyPage';
+import { ContactPage } from './pages/ContactPage';
 import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
@@ -60,6 +61,9 @@ const AppRoutes: React.FC = () => {
 
       {/* Auth Login / Register Page */}
       <Route path="/login" element={<LoginPage />} />
+
+      {/* Contact Support Page */}
+      <Route path="/contact" element={<ContactPage />} />
 
       {/* Privacy Policy Main Page & Legacy Path Redirect */}
       <Route path="/privacy-policy" element={<PrivacyPage />} />
