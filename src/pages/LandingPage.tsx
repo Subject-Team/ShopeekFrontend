@@ -1,11 +1,22 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useRef } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Sparkles, TrendingUp, Users, UploadCloud, ShieldCheck, ArrowLeft, BarChart3, Bot, Zap, MessageSquare } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { PublicHeader } from '../components/layout/PublicHeader';
 import { MainFooter } from '../components/layout/MainFooter';
 
 export const LandingPage: React.FC = () => {
+  const location = useLocation();
+  const featuresRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (location.hash === '#features' && featuresRef.current) {
+      setTimeout(() => {
+        featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 0);
+    }
+  }, [location]);
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-vazir dir-rtl selection:bg-brand-500 selection:text-white overflow-x-hidden">
       <SEO
@@ -103,7 +114,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* Features Grid */}
-      <section id="features" className="py-16 md:py-24 px-6 max-w-7xl mx-auto w-full border-t border-slate-200/80">
+      <section ref={featuresRef} id="features" className="py-16 md:py-24 px-6 max-w-7xl mx-auto w-full border-t border-slate-200/80">
         <div className="text-center space-y-3 mb-16">
           <h2 className="text-2xl md:text-4xl font-black text-slate-900">قابلیت‌های برجسته شاپیک</h2>
           <p className="text-sm text-slate-600 max-w-xl mx-auto">
