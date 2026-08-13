@@ -12,5 +12,23 @@ export default defineConfig({
         changeOrigin: true,
       }
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor': [
+            '@reduxjs/toolkit',
+            'decimal.js-light',
+            'd3-scale',
+            'd3-shape',
+            'eventemitter3',
+            'react',
+            'react-redux'
+          ],
+          'vendor-charts': ['recharts']
+        }
+      }
+    }
   }
 })
