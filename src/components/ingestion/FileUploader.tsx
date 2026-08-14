@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { UploadCloud, FileText, CheckCircle2, ArrowLeft, Download, AlertCircle } from 'lucide-react';
-import { uploadCSVFile, previewCSVFile, getSampleCSV } from '../../services/api';
+import { uploadSalesFile, previewSalesFile, getSampleCSV } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { formatPersianNumber, formatPersianDate } from '../../utils';
 
@@ -19,11 +19,11 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
     setFile(selectedFile);
     setLoading(true);
     try {
-      const prevData = await previewCSVFile(selectedFile);
+      const prevData = await previewSalesFile(selectedFile);
       setPreview(prevData);
       showToast('ستون‌ها و سربرگ‌های فایل با موفقیت شناسایی شدند.', 'info');
     } catch (err: any) {
-      showToast(err.message || 'خطا در پیش‌نمایش فایل CSV', 'error');
+      showToast(err.message || 'خطا در پیش‌نمایش فایل', 'error');
       setFile(null);
       setPreview(null);
     } finally {
@@ -35,7 +35,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
     if (!file) return;
     setProcessing(true);
     try {
-      const res = await uploadCSVFile(file, preview?.detected_mapping);
+      const res = await uploadSalesFile(file, preview?.detected_mapping);
       showToast(res.message, 'success');
       setFile(null);
       setPreview(null);
@@ -62,7 +62,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
     <div className="glass-card p-6 lg:p-8 rounded-3xl shadow-xs space-y-6">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-6">
         <div>
-          <h3 className="font-extrabold text-slate-900 dark:text-white text-xl">بارگذاری و ورودی فایل فاکتورها (CSV/Excel)</h3>
+          <h3 className="font-extrabold text-slate-900 dark:text-white text-xl">بارگذاری و ورودی فایل فاکتورها (Excel / CSV)</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             شناسایی خودکار ستون‌های تاریخ، مبلغ، شماره فاکتور و نام مشتری
           </p>
@@ -86,15 +86,15 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
           </div>
           <div className="space-y-1">
             <p className="font-bold text-slate-800 dark:text-slate-200 text-sm">
-              فایل CSV خود را اینجا بکشید یا برای انتخاب کلیک کنید
+              فایل Excel یا CSV خود را اینجا بکشید یا برای انتخاب کلیک کنید
             </p>
-            <p className="text-xs text-slate-400">پشتیبانی از فایل‌های UTF-8 با سربرگ‌های فارسی یا انگلیسی</p>
+            <p className="text-xs text-slate-400">پشتیبانی از فایل‌های اکسل (.xlsx) و CSV با سربرگ‌های فارسی یا انگلیسی</p>
           </div>
           <label className="cursor-pointer px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition-all">
-            انتخاب فایل CSV
+            انتخاب فایل (Excel / CSV)
             <input
               type="file"
-              accept=".csv"
+              accept=".csv, .xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, text/csv"
               className="hidden"
               onChange={e => e.target.files?.[0] && handleFileChange(e.target.files[0])}
             />

@@ -132,7 +132,7 @@ export const triggerBatchForecast = async () => {
   return res.json();
 };
 
-export const uploadCSVFile = async (file: File, userMapping?: Record<string, string>) => {
+export const uploadSalesFile = async (file: File, userMapping?: Record<string, string>) => {
   const formData = new FormData();
   formData.append('file', file);
   if (userMapping) {
@@ -145,13 +145,15 @@ export const uploadCSVFile = async (file: File, userMapping?: Record<string, str
   });
 
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: 'خطا در پردازش فایل CSV' }));
-    throw new Error(err.detail || 'خطا در پردازش فایل CSV');
+    const err = await res.json().catch(() => ({ detail: 'خطا در پردازش فایل' }));
+    throw new Error(err.detail || 'خطا در پردازش فایل فاکتورها');
   }
   return res.json();
 };
 
-export const previewCSVFile = async (file: File) => {
+export const uploadCSVFile = uploadSalesFile;
+
+export const previewSalesFile = async (file: File) => {
   const formData = new FormData();
   formData.append('file', file);
 
@@ -162,10 +164,12 @@ export const previewCSVFile = async (file: File) => {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: 'خطا در پیش‌نمایش فایل' }));
-    throw new Error(err.detail || 'خطا در پیش‌نمایش فایل');
+    throw new Error(err.detail || 'خطا در پیش‌نمایش فایل فاکتورها');
   }
   return res.json();
 };
+
+export const previewCSVFile = previewSalesFile;
 
 export const getSampleCSV = async () => {
   const res = await authFetch(`${API_BASE}/ingestion/sample`);
