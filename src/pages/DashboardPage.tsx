@@ -65,14 +65,28 @@ export const DashboardPage: React.FC = () => {
       {/* Single H1 requirement for accessibility/SEO */}
       <h1 className="sr-only">داشبورد اصلی تحلیلی شاپیک</h1>
 
+      {/* Welcome & Overview Header Anchor */}
+      <div data-guide="dashboard-welcome" className="glass-card p-5 rounded-2xl flex items-center justify-between">
+        <div>
+          <h2 className="font-extrabold text-slate-900 dark:text-white text-lg">
+            داشبورد مدیریت و تحلیل فروش
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            دید ۳۶۰ درجه نسبت به فروش، رفتار مشتریان و هوش تجاری کسب‌وکار
+          </p>
+        </div>
+      </div>
+
       {/* 7-Day Expiration Warning Banner (if applicable) */}
       <SubscriptionWarningBanner user={user} />
 
       {/* 3-Hour AI Advisory Widget */}
-      <AdvisoryCard advisory={advisory} onRefresh={loadDashboardData} />
+      <div data-guide="dashboard-advisory">
+        <AdvisoryCard advisory={advisory} onRefresh={loadDashboardData} />
+      </div>
 
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div data-guide="dashboard-kpis" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard
           title="فروش کل (تومان)"
           value={kpi ? formatPersianNumber(kpi.total_revenue) : '۰'}
@@ -109,7 +123,7 @@ export const DashboardPage: React.FC = () => {
 
       {/* Revenue Trend & Forecast Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+        <div data-guide="dashboard-chart" className="lg:col-span-2">
           <RevenueChart data={trend} />
         </div>
 
@@ -150,7 +164,10 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           {/* Quick Import CTA */}
-          <div className="glass-card p-5 rounded-2xl bg-gradient-to-br from-brand-50 to-emerald-50/40 dark:from-brand-950/40 dark:to-slate-900 border border-brand-200 dark:border-brand-900/50 space-y-3">
+          <div
+            data-guide="dashboard-ingestion-cta"
+            className="glass-card p-5 rounded-2xl bg-gradient-to-br from-brand-50 to-emerald-50/40 dark:from-brand-950/40 dark:to-slate-900 border border-brand-200 dark:border-brand-900/50 space-y-3"
+          >
             <div className="flex items-center gap-3 text-brand-700 dark:text-brand-300">
               <UploadCloud className="w-6 h-6" />
               <h4 className="font-extrabold text-sm">ورود فاکتورهای جدید</h4>
@@ -167,7 +184,9 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           {/* Remaining Subscription Status Card (Under Data Entry Section) */}
-          <SubscriptionStatusCard user={user} />
+          <div data-guide="dashboard-subscription">
+            <SubscriptionStatusCard user={user} />
+          </div>
         </div>
       </div>
     </div>

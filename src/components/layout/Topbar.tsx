@@ -80,7 +80,10 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
       <div className="flex items-center gap-3">
         {/* Date Filter Selection - Desktop (buttons) */}
         {showDateFilter && !isMobile && (
-          <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300">
+          <div
+            data-guide="date-filter"
+            className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300"
+          >
             <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" />
             {dateRangeOptions.map((opt) => (
               <button
@@ -100,7 +103,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
 
         {/* Date Filter Selection - Mobile (dropdown) */}
         {showDateFilter && isMobile && (
-          <div className="relative">
+          <div data-guide="date-filter" className="relative">
             <select
               value={dateRangeDays}
               onChange={(e) => setDateRangeDays(Number(e.target.value))}
@@ -118,6 +121,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
 
         {/* Floating Chat Drawer Trigger */}
         <button
+          data-guide="chat-trigger"
           onClick={() => setIsChatOpen(true)}
           className="flex items-center gap-2 p-2.5 md:px-3 md:py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-500/25 transition-all duration-200"
           title="دستیار هوشمند"
@@ -128,6 +132,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
 
         {/* Theme Toggle Button */}
         <button
+          data-guide="theme-toggle"
           onClick={toggleTheme}
           className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/60 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200"
           title={theme === 'light' ? 'تغییر به حالت تاریک' : 'تغییر به حالت روشن'}

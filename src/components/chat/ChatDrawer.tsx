@@ -139,6 +139,32 @@ export const ChatDrawer: React.FC = () => {
               </div>
             ))}
 
+            {/* Recommended starter question chips if fresh chat */}
+            {messages.length <= 1 && (
+              <div className="space-y-2 pt-2">
+                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                  سوالات پیشنهادی برای شروع گفتگو:
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    'پرفروش‌ترین روزهای دوره کدام بودند؟',
+                    'میانگین ارزش هر فاکتور چه تغییری داشته؟',
+                    'پیش‌بینی فروش برای روزهای آینده چیست؟',
+                    'کدام مشتریان بیشترین سهم درآمد را دارند؟',
+                  ].map((suggested, sIdx) => (
+                    <button
+                      key={sIdx}
+                      type="button"
+                      onClick={() => setInput(suggested)}
+                      className="text-right text-[11px] px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800/80 font-medium transition-all"
+                    >
+                      💡 {suggested}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {loading && (
               <div className="flex gap-3">
                 <div className="w-7 h-7 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-xs shrink-0">

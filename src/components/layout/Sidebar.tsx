@@ -1,7 +1,18 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, TrendingUp, Users, UploadCloud, Sparkles, ChevronRight, Home } from 'lucide-react';
+import {
+  LayoutDashboard,
+  TrendingUp,
+  Users,
+  UploadCloud,
+  Sparkles,
+  ChevronRight,
+  Home,
+  HelpCircle,
+  Headphones,
+} from 'lucide-react';
 import { usePageContext } from '../../context/PageContext';
+import { useGuide } from '../../context/GuideContext';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -10,6 +21,7 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const { setIsChatOpen } = usePageContext();
+  const { startGuide, isGuideOpen } = useGuide();
   const location = useLocation();
 
   const navItems = [
@@ -60,7 +72,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           <nav className="p-4 space-y-1.5">
             {navItems.map(item => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path || (item.path === '/dashboard' && location.pathname === '/dashboard/');
+              const isActive =
+                location.pathname === item.path ||
+                (item.path === '/dashboard' && location.pathname === '/dashboard/');
               return (
                 <Link
                   key={item.path}
@@ -72,14 +86,52 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                       : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
                   }`}
                 >
-                  <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 dark:text-slate-500'}`} />
+                  <Icon
+                    className={`w-5 h-5 shrink-0 ${
+                      isActive ? 'text-white' : 'text-slate-400 dark:text-slate-500'
+                    }`}
+                  />
                   <span>{item.label}</span>
                 </Link>
               );
             })}
 
-            {/* Link back to public landing page */}
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 mt-4">
+            {/* Quick In-App Guide Launcher */}
+            <div className="pt-2">
+              <button
+                data-guide="sidebar-guide-btn"
+                onClick={() => {
+                  startGuide();
+                  setIsOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl font-semibold text-xs transition-all border ${
+                  isGuideOpen
+                    ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 border-transparent hover:text-slate-900 dark:hover:text-slate-100'
+                }`}
+                title="شروع یا بازبینی تور راهنمای سامانه"
+              >
+                <div className="flex items-center gap-3">
+                  <HelpCircle className="w-4 h-4 text-amber-500" />
+                  <span>راهنمای سامانه</span>
+                </div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 font-bold">
+                  آموزش
+                </span>
+              </button>
+            </div>
+
+            {/* Support and Home Links */}
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 mt-3 space-y-1">
+              <Link
+                to="/contact"
+                data-guide="sidebar-help"
+                onClick={() => setIsOpen(false)}
+                className="w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl font-medium text-xs text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100 transition-all"
+              >
+                <Headphones className="w-4 h-4 shrink-0 text-slate-400" />
+                <span>پشتیبانی و تمدید اشتراک</span>
+              </Link>
               <Link
                 to="/"
                 onClick={() => setIsOpen(false)}
@@ -93,7 +145,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         </div>
 
         {/* AI Assistant Callout Box */}
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800">
+        <div data-guide="sidebar-chat" className="p-4 border-t border-slate-100 dark:border-slate-800">
           <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50 to-emerald-50 dark:from-indigo-950/40 dark:to-emerald-950/40 border border-indigo-100 dark:border-indigo-900/50 relative overflow-hidden">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />

@@ -22,7 +22,10 @@ export const CustomerList: React.FC<CustomerListProps> = ({
   );
 
   return (
-    <div className="glass-card rounded-2xl shadow-xs overflow-hidden space-y-4 p-6">
+    <div
+      data-guide="customers-list"
+      className="glass-card rounded-2xl shadow-xs overflow-hidden space-y-4 p-6"
+    >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h3 className="font-extrabold text-slate-900 dark:text-white text-lg">لیست مشتریان و ارزش طول عمر (LTV)</h3>
@@ -43,6 +46,7 @@ export const CustomerList: React.FC<CustomerListProps> = ({
           </div>
 
           <button
+            data-guide="customers-create-btn"
             onClick={onAddCustomerClick}
             className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold shadow-xs transition-colors shrink-0"
           >
@@ -121,7 +125,7 @@ export const CustomerList: React.FC<CustomerListProps> = ({
                 </td>
               </tr>
             ) : (
-              filtered.map(c => (
+              filtered.map((c, idx) => (
                 <tr
                   key={c.id}
                   onClick={() => onSelectCustomer(c)}
@@ -158,7 +162,7 @@ export const CustomerList: React.FC<CustomerListProps> = ({
                   <td className="p-3.5 font-extrabold text-emerald-600 dark:text-emerald-400">
                     {formatPersianNumber(c.total_lifetime_value || 0)} تومان
                   </td>
-                  <td className="p-3.5">
+                  <td data-guide={idx === 0 ? 'customers-row-action' : undefined} className="p-3.5">
                     <button className="flex items-center gap-1 text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline">
                       <span>مشاهده پرونده</span>
                       <ChevronLeft className="w-3.5 h-3.5" />

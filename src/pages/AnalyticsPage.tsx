@@ -50,10 +50,12 @@ export const AnalyticsPage: React.FC = () => {
         </div>
       </div>
 
-      <RevenueChart data={trend} title="نمودار تفکیکی فروش روزانه و خط پیش‌بینی" />
+      <div data-guide="analytics-chart">
+        <RevenueChart data={trend} title="نمودار تفکیکی فروش روزانه و خط پیش‌بینی" />
+      </div>
 
       {/* Analytics Breakdown Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div data-guide="analytics-metrics" className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="glass-card p-5 rounded-2xl space-y-2">
           <span className="text-xs font-semibold text-slate-400">رشد درآمد در این دوره</span>
           <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white">

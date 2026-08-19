@@ -3,6 +3,7 @@ import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { MinimalFooter } from './MinimalFooter';
 import { ChatDrawer } from '../chat/ChatDrawer';
+import { GuideSpotlight } from '../guide/GuideSpotlight';
 
 interface ShellProps {
   children: React.ReactNode;
@@ -13,6 +14,9 @@ export const Shell: React.FC<ShellProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex transition-colors duration-200">
+      {/* Interactive In-App Spotlight Guide */}
+      <GuideSpotlight />
+
       {/* Sidebar Navigation */}
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 

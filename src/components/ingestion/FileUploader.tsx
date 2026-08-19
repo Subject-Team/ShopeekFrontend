@@ -70,6 +70,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
 
         {/* 1-Click Sample Import Button */}
         <button
+          data-guide="ingestion-sample-data"
           onClick={handleDownloadSample}
           className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 border border-indigo-200 dark:border-indigo-800 text-xs font-bold transition-all shadow-xs"
         >
@@ -80,7 +81,10 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
 
       {!preview ? (
         /* Drag and Drop Zone */
-        <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-brand-500 dark:hover:border-brand-500 rounded-3xl p-10 text-center transition-all bg-slate-50/50 dark:bg-slate-800/30 flex flex-col items-center justify-center space-y-4">
+        <div
+          data-guide="ingestion-upload-zone"
+          className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-brand-500 dark:hover:border-brand-500 rounded-3xl p-10 text-center transition-all bg-slate-50/50 dark:bg-slate-800/30 flex flex-col items-center justify-center space-y-4"
+        >
           <div className="w-16 h-16 rounded-3xl bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/10">
             <UploadCloud className="w-8 h-8" />
           </div>
