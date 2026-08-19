@@ -8,7 +8,7 @@ import { SubscriptionWarningBanner } from '../components/dashboard/SubscriptionW
 import { SubscriptionStatusCard } from '../components/dashboard/SubscriptionStatusCard';
 import { usePageContext } from '../context/PageContext';
 import { useAuth } from '../context/AuthContext';
-import { fetchKPISummary, fetchRevenueTrend, fetchLatestAdvisory, fetchCustomers } from '../services/api';
+import { fetchKPISummary, fetchRevenueTrend, fetchLatestAdvisory, fetchAdvisoryHistory, fetchCustomers } from '../services/api';
 import { KPISummary, RevenuePoint, AIAdvisory, Customer } from '../types';
 import { formatPersianNumber } from '../utils';
 import { SEO } from '../components/common/SEO';
@@ -20,21 +20,24 @@ export const DashboardPage: React.FC = () => {
   const [kpi, setKpi] = useState<KPISummary | null>(null);
   const [trend, setTrend] = useState<RevenuePoint[]>([]);
   const [advisory, setAdvisory] = useState<AIAdvisory | null>(null);
+  const [advisoryHistory, setAdvisoryHistory] = useState<AIAdvisory[]>([]);
   const [topCustomers, setTopCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      const [kpiRes, trendRes, advRes, custRes] = await Promise.all([
+      const [kpiRes, trendRes, advRes, custRes, historyRes] = await Promise.all([
         fetchKPISummary(dateRangeDays),
         fetchRevenueTrend(dateRangeDays),
         fetchLatestAdvisory(),
-        fetchCustomers()
+        fetchCustomers(),
+        fetchAdvisoryHistory()
       ]);
       setKpi(kpiRes);
       setTrend(trendRes);
       setAdvisory(advRes);
+      setAdvisoryHistory(historyRes);
       setTopCustomers(custRes.slice(0, 5));
 
       // Save context snapshot for AI Chat
@@ -82,7 +85,7 @@ export const DashboardPage: React.FC = () => {
 
       {/* 3-Hour AI Advisory Widget */}
       <div data-guide="dashboard-advisory">
-        <AdvisoryCard advisory={advisory} onRefresh={loadDashboardData} />
+        <AdvisoryCard advisory={advisory} history={advisoryHistory} onRefresh={loadDashboardData} />
       </div>
 
       {/* KPI Cards Grid */}
