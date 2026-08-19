@@ -84,7 +84,7 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = 
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1 text-slate-600 dark:text-slate-400 font-medium">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-              <span>بر اساس خلاصه ۳ روز گذشته</span>
+              <span>بر اساس خلاصه ۳۰ روز گذشته</span>
             </span>
           </div>
 
