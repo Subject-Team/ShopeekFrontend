@@ -182,16 +182,51 @@ export const GuideProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Start/reopen guide manually from Sidebar button
   const startGuide = useCallback((targetKey?: string) => {
     const key = targetKey || activePageKey || 'dashboard';
+    const allPageKeys = Object.keys(GUIDE_CONFIGS);
+
     setGuideState(prev => {
-      // Un-dismiss for this session
+      // Check if all pages across the application are completed
+      const isAllCompleted =
+        allPageKeys.length > 0 && allPageKeys.every(k => !!prev.completedPages[k]);
+
+      if (isAllCompleted) {
+        // Reset whole progress across all pages
+        return {
+          ...DEFAULT_STATE,
+          pageSteps: { [key]: 0 },
+        };
+      }
+
+      // Check if the current/target page is completed
+      const isCurrentPageCompleted = !!prev.completedPages[key];
+
+      const newCompleted = { ...prev.completedPages };
       const newDismissed = { ...prev.dismissedPages };
       delete newDismissed[key];
+
+      if (isCurrentPageCompleted) {
+        // Reset this page's progress to first step
+        delete newCompleted[key];
+        return {
+          ...prev,
+          pageSteps: {
+            ...prev.pageSteps,
+            [key]: 0,
+          },
+          completedPages: newCompleted,
+          dismissedPages: newDismissed,
+          isGlobalDismissed: false,
+        };
+      }
+
+      // Resume from current step if in-progress or unstarted
       return {
         ...prev,
         isGlobalDismissed: false,
         dismissedPages: newDismissed,
       };
     });
+
     setIsGuideOpen(true);
   }, [activePageKey]);
 

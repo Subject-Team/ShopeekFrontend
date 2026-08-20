@@ -78,9 +78,9 @@ export const GuideSpotlight: React.FC = () => {
     return () => clearTimeout(timer);
   }, [isGuideOpen, currentStep, updateRect]);
 
-  // Track window scroll and resize
+  // Track window scroll, resize, element resize, and DOM mutations
   useEffect(() => {
-    if (!isGuideOpen) return;
+    if (!isGuideOpen || !currentStep) return;
 
     const handleScrollOrResize = () => {
       updateRect();
@@ -89,11 +89,47 @@ export const GuideSpotlight: React.FC = () => {
     window.addEventListener('resize', handleScrollOrResize);
     window.addEventListener('scroll', handleScrollOrResize, true);
 
+    // ResizeObserver for target element and body
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => {
+        updateRect();
+      });
+      const el = document.querySelector(currentStep.targetSelector);
+      if (el) {
+        resizeObserver.observe(el);
+      }
+      if (document.body) {
+        resizeObserver.observe(document.body);
+      }
+    }
+
+    // MutationObserver to detect DOM additions or target element insertions
+    let mutationObserver: MutationObserver | null = null;
+    if (typeof MutationObserver !== 'undefined') {
+      mutationObserver = new MutationObserver(() => {
+        updateRect();
+      });
+      mutationObserver.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+      });
+    }
+
+    // Periodic check for first 2 seconds to handle async API delays smoothly
+    const interval = setInterval(updateRect, 200);
+    const stopTimer = setTimeout(() => clearInterval(interval), 2000);
+
     return () => {
       window.removeEventListener('resize', handleScrollOrResize);
       window.removeEventListener('scroll', handleScrollOrResize, true);
+      if (resizeObserver) resizeObserver.disconnect();
+      if (mutationObserver) mutationObserver.disconnect();
+      clearInterval(interval);
+      clearTimeout(stopTimer);
     };
-  }, [isGuideOpen, updateRect]);
+  }, [isGuideOpen, currentStep, updateRect]);
 
   // Compute Tooltip position relative to target
   useEffect(() => {
