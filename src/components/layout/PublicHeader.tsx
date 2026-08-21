@@ -28,7 +28,7 @@ export const PublicHeader: React.FC = () => {
       {/* Main Header - fixed at top */}
       <header
         className={`w-full border-b border-slate-200/80 bg-white/85 backdrop-blur-md fixed top-0 left-0 right-0 z-50 font-vazir dir-rtl transition-all duration-300 ease-in-out ${
-          scrolled ? 'py-1.5 shadow-md bg-white/95' : 'py-3 shadow-2xs bg-white/85'
+          scrolled ? 'py-1.5 shadow-md bg-white/95' : 'py-3 shadow-2xs bg-transparent border-transparent'
         } ${
           // Hide header on mobile when scrolled, keep visible on desktop
           scrolled ? 'md:translate-y-0 -translate-y-full' : 'translate-y-0'
