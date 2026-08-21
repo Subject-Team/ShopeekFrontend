@@ -42,7 +42,7 @@ export const PublicHeader: React.FC = () => {
           {/* Left side: Brand Logo */}
           <div className="flex items-center gap-6 lg:gap-8 transition-all duration-300">
             <Link to="/" className="flex items-center gap-2.5 sm:gap-3 shrink-0" onClick={() => setMobileMenuOpen(false)}>
-              <img src="/images/logo.svg" alt="logo" className={"transition-all duration-300 ease-in-out"} width={scrolled? 40 : 50} height={scrolled? 40 : 50} />
+              <img src="/images/logo.svg" alt="logo" className={"transition-all duration-300 ease-in-out"} width={scrolled? 50 : 80} />
               <div>
                 <span className={`font-black tracking-tight text-slate-900 block leading-tight transition-all duration-300 ${
                   scrolled ? 'text-base sm:text-lg' : 'text-lg sm:text-xl'
@@ -62,7 +62,7 @@ export const PublicHeader: React.FC = () => {
           <nav
             className={`hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 transition-all duration-300 ease-in-out ${
               scrolled
-                ? 'right-36'
+                ? 'right-40'
                 : 'right-1/2 translate-x-1/2'
             } absolute`}
           >
