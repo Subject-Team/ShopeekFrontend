@@ -42,13 +42,7 @@ export const PublicHeader: React.FC = () => {
           {/* Left side: Brand Logo */}
           <div className="flex items-center gap-6 lg:gap-8 transition-all duration-300">
             <Link to="/" className="flex items-center gap-2.5 sm:gap-3 shrink-0" onClick={() => setMobileMenuOpen(false)}>
-              <div
-                className={`rounded-xl sm:rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white font-bold transition-all duration-300 ${
-                  scrolled ? 'w-8 h-8 sm:w-9 sm:h-9 text-lg shadow-sm' : 'w-9 h-9 sm:w-11 sm:h-11 text-xl sm:text-2xl shadow-md shadow-brand-500/20'
-                }`}
-              >
-                ش
-              </div>
+              <img src="/images/logo.svg" alt="logo" className={"transition-all duration-300 ease-in-out"} width={scrolled? 40 : 50} height={scrolled? 40 : 50} />
               <div>
                 <span className={`font-black tracking-tight text-slate-900 block leading-tight transition-all duration-300 ${
                   scrolled ? 'text-base sm:text-lg' : 'text-lg sm:text-xl'
