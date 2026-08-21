@@ -10,9 +10,7 @@ export const MainFooter: React.FC = () => {
           {/* Brand & Socials Column */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-brand-500/20">
-                ش
-              </div>
+              <img src="/images/logo.svg" alt="logo" width={80} />
               <div>
                 <span className="font-bold text-lg text-slate-900 block leading-tight">شاپیک</span>
                 <p className="text-xs text-slate-500 font-medium">پلتفرم هوشمند تحلیل و مشاوره فروش</p>
