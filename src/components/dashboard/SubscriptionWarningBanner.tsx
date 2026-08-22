@@ -10,7 +10,7 @@ interface SubscriptionWarningBannerProps {
 export const SubscriptionWarningBanner: React.FC<SubscriptionWarningBannerProps> = ({ user }) => {
   if (!user) return null;
 
-  const isInfinite = user.is_infinite_subscription || user.role === 'Admin';
+  const isInfinite = Boolean(user.is_infinite_subscription);
   const isActive = user.is_subscription_active ?? true;
   const remainingDays = user.remaining_days ?? 0;
 

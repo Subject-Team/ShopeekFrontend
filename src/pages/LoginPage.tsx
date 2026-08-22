@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogIn, UserPlus, Lock, Mail, User, ShieldCheck, Sparkles, ArrowRight, Eye, EyeOff, AlertCircle, Home, CheckSquare, Square, MessageSquare } from 'lucide-react';
+import { LogIn, UserPlus, Lock, Mail, User, Sparkles, ArrowRight, Eye, EyeOff, AlertCircle, Home, CheckSquare, Square, MessageSquare } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SEO } from '../components/common/SEO';
@@ -50,24 +50,6 @@ export const LoginPage: React.FC = () => {
       navigate('/dashboard');
     } catch (err: any) {
       const msg = err.message || 'خطا در برقراری ارتباط با سرور';
-      setErrorMessage(msg);
-      showToast(msg, 'error');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleQuickDemoLogin = async () => {
-    setErrorMessage(null);
-    setEmail('admin@shopeek.ir');
-    setPassword('admin123');
-    setSubmitting(true);
-    try {
-      await login('admin@shopeek.ir', 'admin123');
-      showToast('ورود آزمایشی مدیریت با موفقیت انجام شد.', 'success');
-      navigate('/dashboard');
-    } catch (err: any) {
-      const msg = 'خطا در ورود آزمایشی: ' + (err.message || 'سرور در دسترس نیست');
       setErrorMessage(msg);
       showToast(msg, 'error');
     } finally {
@@ -270,20 +252,6 @@ export const LoginPage: React.FC = () => {
               )}
             </button>
           </form>
-
-          {/* Demo Fast Login Option */}
-          <div className="pt-4 border-t border-slate-200 text-center space-y-3">
-            <p className="text-xs text-slate-500 font-medium">ورود سریع برای تست آمار نمونه:</p>
-            <button
-              type="button"
-              onClick={handleQuickDemoLogin}
-              disabled={submitting}
-              className="w-full py-2.5 px-3 bg-slate-100 hover:bg-slate-200/80 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 transition-all flex items-center justify-center gap-2"
-            >
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>ورود سریع آزمایشی (admin@shopeek.ir)</span>
-            </button>
-          </div>
         </div>
       </main>
 
