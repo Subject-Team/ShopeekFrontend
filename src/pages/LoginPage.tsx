@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogIn, UserPlus, Lock, Mail, User, Sparkles, ArrowRight, Eye, EyeOff, AlertCircle, Home, CheckSquare, Square, MessageSquare } from 'lucide-react';
+import { LogIn, UserPlus, Lock, Mail, User, Sparkles, ArrowRight, Eye, EyeOff, AlertCircle, Home, CheckSquare, Square, MessageSquare, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SEO } from '../components/common/SEO';
@@ -14,22 +14,121 @@ export const LoginPage: React.FC = () => {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [fullName, setFullName] = useState<string>('');
   const [acceptedPrivacy, setAcceptedPrivacy] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Password evaluation & strength calculation
+  const passwordAnalysis = useMemo(() => {
+    const hasMinLength = password.length >= 8;
+    const hasLower = /[a-z]/.test(password);
+    const hasUpper = /[A-Z]/.test(password);
+    const hasSymbol = /[^A-Za-z0-9]/.test(password);
+    const hasDigit = /[0-9]/.test(password);
+    const isMatching = Boolean(password && confirmPassword && password === confirmPassword);
+
+    if (!password) {
+      return {
+        hasMinLength: false,
+        hasLower: false,
+        hasUpper: false,
+        hasSymbol: false,
+        hasDigit: false,
+        isMatching: false,
+        score: 0,
+        levelLabel: '—',
+        levelColor: 'text-slate-400',
+        barColor: 'bg-slate-200',
+      };
+    }
+
+    // Calculate entropy & complexity points
+    let points = 0;
+    if (password.length >= 14) points += 3;
+    else if (password.length >= 10) points += 2;
+    else if (password.length >= 8) points += 1;
+
+    if (hasLower) points += 1;
+    if (hasUpper) points += 1;
+    if (hasDigit) points += 1;
+    if (hasSymbol) {
+      const symbolCount = (password.match(/[^A-Za-z0-9]/g) || []).length;
+      points += symbolCount >= 2 ? 2 : 1;
+    }
+    if (new Set(password).size >= 7) points += 1;
+
+    let score = 1;
+    let levelLabel = 'بسیار ضعیف';
+    let levelColor = 'text-rose-600';
+    let barColor = 'bg-rose-500';
+
+    if (password.length >= 6 && points >= 3 && points <= 4) {
+      score = 2;
+      levelLabel = 'متوسط';
+      levelColor = 'text-amber-600';
+      barColor = 'bg-amber-500';
+    } else if (points >= 5 && points <= 6) {
+      score = 3;
+      levelLabel = 'خوب';
+      levelColor = 'text-sky-600';
+      barColor = 'bg-sky-500';
+    } else if (points >= 7) {
+      score = 4;
+      levelLabel = 'بسیار قوی';
+      levelColor = 'text-emerald-600';
+      barColor = 'bg-emerald-600';
+    }
+
+    return {
+      hasMinLength,
+      hasLower,
+      hasUpper,
+      hasSymbol,
+      hasDigit,
+      isMatching,
+      score,
+      levelLabel,
+      levelColor,
+      barColor,
+    };
+  }, [password, confirmPassword]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+
     if (!email || !password) {
       showToast('لطفاً تمامی فیلدهای الزامی را وارد نمایید.', 'warning');
       return;
     }
+
     if (mode === 'register') {
-      if (!fullName) {
+      if (!fullName.trim()) {
         showToast('لطفاً نام و نام خانوادگی خود را وارد کنید.', 'warning');
+        return;
+      }
+      if (!passwordAnalysis.hasMinLength) {
+        showToast('کلمه عبور باید حداقل ۸ کاراکتر باشد.', 'warning');
+        return;
+      }
+      if (!passwordAnalysis.hasLower || !passwordAnalysis.hasUpper) {
+        showToast('کلمه عبور باید شامل حروف بزرگ و کوچک انگلیسی باشد.', 'warning');
+        return;
+      }
+      if (!passwordAnalysis.hasSymbol) {
+        showToast('کلمه عبور باید حداقل شامل یک علامت یا نماد خاص (!@#...) باشد.', 'warning');
+        return;
+      }
+      if (!confirmPassword) {
+        showToast('لطفاً تکرار کلمه عبور را وارد کنید.', 'warning');
+        return;
+      }
+      if (password !== confirmPassword) {
+        showToast('کلمه عبور و تکرار آن یکسان نیستند.', 'warning');
         return;
       }
       if (!acceptedPrivacy) {
@@ -44,7 +143,7 @@ export const LoginPage: React.FC = () => {
         await login(email, password);
         showToast('ورود با موفقیت انجام شد. خوش آمدید!', 'success');
       } else {
-        await register(email, password, fullName);
+        await register(email, password, fullName.trim());
         showToast('حساب کاربری جدید با موفقیت ایجاد شد!', 'success');
       }
       navigate('/dashboard');
@@ -203,11 +302,136 @@ export const LoginPage: React.FC = () => {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute left-3.5 top-3 text-slate-400 hover:text-slate-600"
+                  aria-label={showPassword ? 'مخفی‌سازی کلمه عبور' : 'نمایش کلمه عبور'}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+
+              {/* Password Strength Meter (4-Part Color-Coded Stripe & Live Rule Badges) in Register Mode */}
+              {mode === 'register' && (
+                <div className="mt-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-600 font-medium flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
+                      <span>میزان امنیت کلمه عبور:</span>
+                    </span>
+                    <span className={`font-bold transition-colors ${passwordAnalysis.levelColor}`}>
+                      {passwordAnalysis.levelLabel}
+                    </span>
+                  </div>
+
+                  {/* 4-part Stripe Bar */}
+                  <div className="grid grid-cols-4 gap-1.5 h-1.5 w-full">
+                    {[1, 2, 3, 4].map((seg) => (
+                      <div
+                        key={seg}
+                        className={`h-full rounded-full transition-all duration-300 ${
+                          passwordAnalysis.score >= seg ? passwordAnalysis.barColor : 'bg-slate-200'
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Live Rule Indicators / Badges */}
+                  <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
+                    <div
+                      className={`flex items-center gap-1.5 transition-colors ${
+                        passwordAnalysis.hasMinLength ? 'text-emerald-700 font-medium' : 'text-slate-400'
+                      }`}
+                    >
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                          passwordAnalysis.hasMinLength ? 'bg-emerald-500 ring-2 ring-emerald-100' : 'bg-slate-300'
+                        }`}
+                      />
+                      <span>حداقل ۸ کاراکتر</span>
+                    </div>
+
+                    <div
+                      className={`flex items-center gap-1.5 transition-colors ${
+                        passwordAnalysis.hasLower && passwordAnalysis.hasUpper
+                          ? 'text-emerald-700 font-medium'
+                          : 'text-slate-400'
+                      }`}
+                    >
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                          passwordAnalysis.hasLower && passwordAnalysis.hasUpper
+                            ? 'bg-emerald-500 ring-2 ring-emerald-100'
+                            : 'bg-slate-300'
+                        }`}
+                      />
+                      <span>حروف بزرگ و کوچک</span>
+                    </div>
+
+                    <div
+                      className={`flex items-center gap-1.5 transition-colors ${
+                        passwordAnalysis.hasSymbol ? 'text-emerald-700 font-medium' : 'text-slate-400'
+                      }`}
+                    >
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                          passwordAnalysis.hasSymbol ? 'bg-emerald-500 ring-2 ring-emerald-100' : 'bg-slate-300'
+                        }`}
+                      />
+                      <span>علامت یا نماد خاص</span>
+                    </div>
+
+                    <div
+                      className={`flex items-center gap-1.5 transition-colors ${
+                        passwordAnalysis.isMatching ? 'text-emerald-700 font-medium' : 'text-slate-400'
+                      }`}
+                    >
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                          passwordAnalysis.isMatching ? 'bg-emerald-500 ring-2 ring-emerald-100' : 'bg-slate-300'
+                        }`}
+                      />
+                      <span>تطابق تکرار رمز</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
+
+            {/* Repeat Password Field in Register Mode */}
+            {mode === 'register' && (
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 block">تکرار کلمه عبور</label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute right-3.5 top-3.5" />
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    required
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className={`w-full pr-10 pl-10 py-2.5 bg-slate-50 border rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition-colors dir-ltr text-right ${
+                      confirmPassword && password !== confirmPassword
+                        ? 'border-rose-300 focus:border-rose-500 bg-rose-50/20'
+                        : confirmPassword && password === confirmPassword
+                        ? 'border-emerald-300 focus:border-emerald-500 bg-emerald-50/20'
+                        : 'border-slate-200 focus:border-brand-500'
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute left-3.5 top-3 text-slate-400 hover:text-slate-600"
+                    aria-label={showConfirmPassword ? 'مخفی‌سازی تکرار کلمه عبور' : 'نمایش تکرار کلمه عبور'}
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                {confirmPassword && password !== confirmPassword && (
+                  <p className="text-[11px] text-rose-600 font-semibold flex items-center gap-1 mt-1">
+                    <AlertCircle className="w-3 h-3 shrink-0" />
+                    <span>کلمه عبور و تکرار آن یکسان نیستند.</span>
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Mandatory Privacy Policy Acceptance Checkbox in Register Mode */}
             {mode === 'register' && (
@@ -262,3 +486,4 @@ export const LoginPage: React.FC = () => {
     </div>
   );
 };
+
