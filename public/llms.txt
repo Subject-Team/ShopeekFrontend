@@ -9,7 +9,7 @@
 - **Multi-Tenant Data Isolation**: Strict user-level tenant data isolation and subscription lifecycle management.
 
 ## Important Links
-- Landing Page: https://shopeek.ir/
-- Account Authentication: https://shopeek.ir/login
-- Privacy Policy & Data Processing: https://shopeek.ir/privacy-policy
-- Dashboard & Analytics (Requires Auth): https://shopeek.ir/dashboard
+- Landing Page: https://shopeekapp.ir/
+- Account Authentication: https://shopeekapp.ir/login
+- Privacy Policy & Data Processing: https://shopeekapp.ir/privacy-policy
+- Dashboard & Analytics (Requires Auth): https://shopeekapp.ir/dashboard

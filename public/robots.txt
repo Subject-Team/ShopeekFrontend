@@ -6,4 +6,4 @@ Allow: /privacy-policy
 Disallow: /dashboard/
 Disallow: /api/
 
-Sitemap: https://shopeek.ir/sitemap.txt
+Sitemap: https://shopeekapp.ir/sitemap.txt
