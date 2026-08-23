@@ -21,7 +21,7 @@ export const SEO: React.FC<SEOProps> = ({ title, description, canonicalPath = ''
     metaDesc.setAttribute('content', description);
 
     // 3. Canonical Link Tag
-    const baseUrl = 'https://shopeek.ir';
+    const baseUrl = 'https://shopeekapp.ir';
     const fullCanonicalUrl = `${baseUrl}${canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`}`;
 
     let canonicalLink = document.querySelector('link[rel="canonical"]');
