@@ -7,8 +7,8 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, full_name: string) => Promise<void>;
+  login: (email: string, password: string, turnstileToken?: string) => Promise<void>;
+  register: (email: string, password: string, full_name: string, turnstileToken?: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -54,10 +54,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [token]);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, turnstileToken?: string) => {
     setIsLoading(true);
     try {
-      const response = await loginApi({ email, password });
+      const response = await loginApi({ email, password, turnstile_token: turnstileToken });
       setToken(response.access_token);
       setUser(response.user);
       localStorage.setItem('shopeek_token', response.access_token);
@@ -67,10 +67,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (email: string, password: string, full_name: string) => {
+  const register = async (email: string, password: string, full_name: string, turnstileToken?: string) => {
     setIsLoading(true);
     try {
-      const response = await registerApi({ email, password, full_name });
+      const response = await registerApi({ email, password, full_name, turnstile_token: turnstileToken });
       setToken(response.access_token);
       setUser(response.user);
       localStorage.setItem('shopeek_token', response.access_token);

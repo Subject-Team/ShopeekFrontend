@@ -1,10 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LogIn, UserPlus, Lock, Mail, User, Sparkles, ArrowRight, Eye, EyeOff, AlertCircle, Home, CheckSquare, Square, MessageSquare, ShieldCheck } from 'lucide-react';
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SEO } from '../components/common/SEO';
 import { MinimalFooter } from '../components/layout/MinimalFooter';
+
+const TURNSTILE_SITE_KEY = (import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY as string) || '0x4AAAAAAEZPje7Wc0YAQw6O';
 
 export const LoginPage: React.FC = () => {
   const { login, register, isLoading } = useAuth();
@@ -19,6 +22,8 @@ export const LoginPage: React.FC = () => {
   const [acceptedPrivacy, setAcceptedPrivacy] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -137,13 +142,18 @@ export const LoginPage: React.FC = () => {
       }
     }
 
+    if (!turnstileToken) {
+      showToast('لطفاً اعتبارسنجی امنیتی را تکمیل نمایید.', 'warning');
+      return;
+    }
+
     setSubmitting(true);
     try {
       if (mode === 'login') {
-        await login(email, password);
+        await login(email, password, turnstileToken);
         showToast('ورود با موفقیت انجام شد. خوش آمدید!', 'success');
       } else {
-        await register(email, password, fullName.trim());
+        await register(email, password, fullName.trim(), turnstileToken);
         showToast('حساب کاربری جدید با موفقیت ایجاد شد!', 'success');
       }
       navigate('/dashboard');
@@ -151,6 +161,9 @@ export const LoginPage: React.FC = () => {
       const msg = err.message || 'خطا در برقراری ارتباط با سرور';
       setErrorMessage(msg);
       showToast(msg, 'error');
+      // Reset Turnstile token on failure for a fresh challenge
+      setTurnstileToken(null);
+      turnstileRef.current?.reset();
     } finally {
       setSubmitting(false);
     }
@@ -203,8 +216,12 @@ export const LoginPage: React.FC = () => {
             <button
               type="button"
               onClick={() => {
-                setMode('login');
-                setErrorMessage(null);
+                if (mode !== 'login') {
+                  setMode('login');
+                  setErrorMessage(null);
+                  setTurnstileToken(null);
+                  turnstileRef.current?.reset();
+                }
               }}
               className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 ${
                 mode === 'login'
@@ -218,8 +235,12 @@ export const LoginPage: React.FC = () => {
             <button
               type="button"
               onClick={() => {
-                setMode('register');
-                setErrorMessage(null);
+                if (mode !== 'register') {
+                  setMode('register');
+                  setErrorMessage(null);
+                  setTurnstileToken(null);
+                  turnstileRef.current?.reset();
+                }
               }}
               className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 ${
                 mode === 'register'
@@ -460,6 +481,22 @@ export const LoginPage: React.FC = () => {
                 </label>
               </div>
             )}
+
+            {/* Cloudflare Turnstile Managed Security Widget */}
+            <div className="flex justify-center items-center py-2 min-h-[65px] w-full overflow-hidden">
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={TURNSTILE_SITE_KEY}
+                onSuccess={(token) => setTurnstileToken(token)}
+                onExpire={() => setTurnstileToken(null)}
+                onError={() => setTurnstileToken(null)}
+                options={{
+                  theme: 'light',
+                  language: 'fa',
+                  size: 'normal',
+                }}
+              />
+            </div>
 
             <button
               type="submit"

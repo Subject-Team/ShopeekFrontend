@@ -19,6 +19,7 @@ export interface AuthTokenResponse {
 export interface LoginPayload {
   email: string;
   password: string;
+  turnstile_token?: string;
 }
 
 export interface RegisterPayload {
@@ -26,6 +27,7 @@ export interface RegisterPayload {
   password: string;
   full_name: string;
   role?: string;
+  turnstile_token?: string;
 }
 
 export interface KPISummary {
