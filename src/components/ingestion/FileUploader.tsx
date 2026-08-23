@@ -8,14 +8,85 @@ interface FileUploaderProps {
   onSuccess?: () => void;
 }
 
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+
+const validateFileSecurity = async (file: File): Promise<{ valid: boolean; error?: string }> => {
+  // 1. File size check
+  if (file.size > MAX_FILE_SIZE_BYTES) {
+    return {
+      valid: false,
+      error: 'حجم فایل انتخابی بیش از سقف مجاز (۱۰ مگابایت) است. لطفاً فایل کم‌حجم‌تری انتخاب کنید.',
+    };
+  }
+  if (file.size === 0) {
+    return {
+      valid: false,
+      error: 'فایل انتخاب‌شده خالی است.',
+    };
+  }
+
+  // 2. Read first 64 bytes to inspect magic bytes
+  try {
+    const headerSlice = file.slice(0, 64);
+    const buffer = await headerSlice.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+
+    const filename = file.name.toLowerCase();
+    const isExcel = filename.endsWith('.xlsx') || filename.endsWith('.xlsm') || filename.endsWith('.xltx');
+    const isCsv = filename.endsWith('.csv');
+
+    if (isExcel) {
+      // OpenXML files start with PK (0x50 0x4B 0x03 0x04 or 0x50 0x4B 0x05 0x06 or 0x50 0x4B 0x07 0x08)
+      const isZip = bytes.length >= 4 && bytes[0] === 0x50 && bytes[1] === 0x4B;
+      if (!isZip) {
+        return {
+          valid: false,
+          error: 'ساختار فایل اکسل نامعتبر است. لطفاً فایل با فرمت استاندارد .xlsx انتخاب کنید.',
+        };
+      }
+    } else if (isCsv) {
+      // Reject known binary executable signatures
+      if (bytes.length >= 2 && bytes[0] === 0x4D && bytes[1] === 0x5A) {
+        return { valid: false, error: 'فایل نامعتبر است (تشخیص فایل اجرایی ویندوز).' };
+      }
+      if (bytes.length >= 4 && bytes[0] === 0x7F && bytes[1] === 0x45 && bytes[2] === 0x4C && bytes[3] === 0x46) {
+        return { valid: false, error: 'فایل نامعتبر است (تشخیص فایل اجرایی لینوکس).' };
+      }
+      if (bytes.length >= 4 && bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46) {
+        return { valid: false, error: 'فایل PDF به جای فایل متنی CSV ارسال شده است.' };
+      }
+      if (bytes.length >= 2 && bytes[0] === 0x50 && bytes[1] === 0x4B) {
+        return { valid: false, error: 'فایل فشرده Zip به جای فایل متنی CSV ارسال شده است.' };
+      }
+      // Reject files containing null bytes in initial chunk
+      for (let i = 0; i < bytes.length; i++) {
+        if (bytes[i] === 0x00) {
+          return { valid: false, error: 'فایل انتخابی یک فایل باینری است و به عنوان CSV متنی معتبر نمی‌باشد.' };
+        }
+      }
+    }
+  } catch (e) {
+    return { valid: false, error: 'خطا در خواندن و بررسی امنیت فایل.' };
+  }
+
+  return { valid: true };
+};
+
 export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [processing, setProcessing] = useState<boolean>(false);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
   const { showToast } = useToast();
 
   const handleFileChange = async (selectedFile: File) => {
+    const validation = await validateFileSecurity(selectedFile);
+    if (!validation.valid) {
+      showToast(validation.error || 'فایل نامعتبر است.', 'error');
+      return;
+    }
+
     setFile(selectedFile);
     setLoading(true);
     try {
@@ -28,6 +99,23 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
       setPreview(null);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFileChange(e.dataTransfer.files[0]);
     }
   };
 
@@ -83,7 +171,14 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
         /* Drag and Drop Zone */
         <div
           data-guide="ingestion-upload-zone"
-          className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-brand-500 dark:hover:border-brand-500 rounded-3xl p-10 text-center transition-all bg-slate-50/50 dark:bg-slate-800/30 flex flex-col items-center justify-center space-y-4"
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={`border-2 border-dashed rounded-3xl p-10 text-center transition-all flex flex-col items-center justify-center space-y-4 ${
+            isDragging
+              ? 'border-brand-500 bg-brand-50/50 dark:bg-brand-950/20 ring-4 ring-brand-500/10'
+              : 'border-slate-300 dark:border-slate-700 hover:border-brand-500 dark:hover:border-brand-500 bg-slate-50/50 dark:bg-slate-800/30'
+          }`}
         >
           <div className="w-16 h-16 rounded-3xl bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/10">
             <UploadCloud className="w-8 h-8" />
@@ -92,14 +187,17 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
             <p className="font-bold text-slate-800 dark:text-slate-200 text-sm">
               فایل Excel یا CSV خود را اینجا بکشید یا برای انتخاب کلیک کنید
             </p>
-            <p className="text-xs text-slate-400">پشتیبانی از فایل‌های اکسل (.xlsx) و CSV با سربرگ‌های فارسی یا انگلیسی</p>
+            <p className="text-xs text-slate-400">
+              پشتیبانی از فایل‌های اکسل (.xlsx) و CSV با سربرگ‌های فارسی یا انگلیسی (حداکثر ۱۰ مگابایت)
+            </p>
           </div>
           <label className="cursor-pointer px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition-all">
-            انتخاب فایل (Excel / CSV)
+            {loading ? 'در حال بررسی و پردازش فایل...' : 'انتخاب فایل (Excel / CSV)'}
             <input
               type="file"
-              accept=".csv, .xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, text/csv"
+              accept=".csv, .xlsx, .xlsm, .xltx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, text/csv"
               className="hidden"
+              disabled={loading}
               onChange={e => e.target.files?.[0] && handleFileChange(e.target.files[0])}
             />
           </label>
