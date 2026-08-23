@@ -85,7 +85,7 @@ export const IngestionPage: React.FC = () => {
               <span>پشتیبانی از تاریخ شمسی</span>
             </div>
             <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-[11px]">
-              امکان ثبت فاکتور با تاریخ «امروز»، «فردا» یا تاریخ‌های شمسی دلخواه مانند ۱۴۰۵-۰۵-۱۱.
+              امکان ثبت فاکتور با تاریخ «امروز»، «دیروز» یا تاریخ‌های شمسی دلخواه مانند ۱۴۰۵-۰۵-۱۱.
             </p>
           </div>
         </div>
