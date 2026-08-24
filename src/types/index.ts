@@ -1,5 +1,6 @@
 export interface User {
   id: string;
+  phone?: string;
   email: string;
   full_name: string;
   role: string;
@@ -16,6 +17,46 @@ export interface AuthTokenResponse {
   user: User;
 }
 
+export interface RequestOtpPayload {
+  phone: string;
+  turnstile_token?: string;
+}
+
+export interface RequestOtpResponse {
+  is_registered: boolean;
+  phone: string;
+  expires_in?: number;
+  has_active_code?: boolean;
+  message: string;
+}
+
+export interface VerifyOtpPayload {
+  phone: string;
+  code: string;
+}
+
+export interface PasswordLoginPayload {
+  phone_or_email: string;
+  password: string;
+  turnstile_token?: string;
+}
+
+export interface SignupRequestOtpPayload {
+  phone: string;
+  email: string;
+  full_name: string;
+  password: string;
+  turnstile_token?: string;
+}
+
+export interface SignupVerifyOtpPayload {
+  phone: string;
+  code: string;
+  email: string;
+  full_name: string;
+  password: string;
+}
+
 export interface LoginPayload {
   email: string;
   password: string;
@@ -27,6 +68,7 @@ export interface RegisterPayload {
   password: string;
   full_name: string;
   role?: string;
+  phone?: string;
   turnstile_token?: string;
 }
 

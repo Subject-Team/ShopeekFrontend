@@ -5,6 +5,11 @@ import { AuthProvider, useAuth } from '../AuthContext';
 import * as api from '../../services/api';
 
 vi.mock('../../services/api', () => ({
+  requestOtpApi: vi.fn(),
+  verifyOtpLoginApi: vi.fn(),
+  loginPasswordApi: vi.fn(),
+  signupRequestOtpApi: vi.fn(),
+  signupVerifyOtpApi: vi.fn(),
   loginApi: vi.fn(),
   registerApi: vi.fn(),
   fetchMeApi: vi.fn(),
@@ -16,6 +21,7 @@ describe('AuthContext', () => {
     vi.clearAllMocks();
     (api.fetchMeApi as any).mockResolvedValue({
       id: 'u-1',
+      phone: '09121111111',
       email: 'test@shopeek.ir',
       full_name: 'کاربر تست',
       role: 'User',
@@ -40,61 +46,108 @@ describe('AuthContext', () => {
     expect(result.current.token).toBeNull();
   });
 
-  it('successful login sets token, user, and localStorage', async () => {
+  it('requestOtp calls requestOtpApi', async () => {
+    (api.requestOtpApi as any).mockResolvedValue({
+      is_registered: true,
+      phone: '09121111111',
+      expires_in: 300,
+      has_active_code: false,
+      message: 'کد ارسال شد',
+    });
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+    let res: any;
+    await act(async () => {
+      res = await result.current.requestOtp('09121111111', 'turnstile-token');
+    });
+
+    expect(api.requestOtpApi).toHaveBeenCalledWith({ phone: '09121111111', turnstile_token: 'turnstile-token' });
+    expect(res.is_registered).toBe(true);
+  });
+
+  it('verifyOtpLogin sets token and user', async () => {
     const mockUser = {
       id: 'u-1',
+      phone: '09121111111',
       email: 'test@shopeek.ir',
       full_name: 'کاربر تست',
       role: 'User',
       is_subscription_active: true,
-      remaining_days: 30,
-      is_infinite_subscription: false,
     };
-    (api.loginApi as any).mockResolvedValue({
-      access_token: 'mock-token-123',
+    (api.verifyOtpLoginApi as any).mockResolvedValue({
+      access_token: 'mock-token-otp',
       token_type: 'bearer',
       user: mockUser,
     });
-    (api.fetchMeApi as any).mockResolvedValue(mockUser);
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
     await act(async () => {
-      await result.current.login('test@shopeek.ir', 'Password123!');
+      await result.current.verifyOtpLogin('09121111111', '12345');
     });
 
     expect(result.current.isAuthenticated).toBe(true);
-    expect(result.current.token).toBe('mock-token-123');
-    expect(result.current.user?.email).toBe('test@shopeek.ir');
-    expect(localStorage.getItem('shopeek_token')).toBe('mock-token-123');
+    expect(result.current.token).toBe('mock-token-otp');
+    expect(result.current.user?.phone).toBe('09121111111');
+    expect(localStorage.getItem('shopeek_token')).toBe('mock-token-otp');
   });
 
-  it('successful registration sets token and user', async () => {
+  it('loginWithPassword sets token and user', async () => {
     const mockUser = {
-      id: 'u-2',
-      email: 'new@shopeek.ir',
-      full_name: 'کاربر ثبت نامی',
+      id: 'u-1',
+      phone: '09121111111',
+      email: 'test@shopeek.ir',
+      full_name: 'کاربر تست',
       role: 'User',
-      is_subscription_active: false,
-      remaining_days: 0,
-      is_infinite_subscription: false,
+      is_subscription_active: true,
     };
-    (api.registerApi as any).mockResolvedValue({
-      access_token: 'mock-token-456',
+    (api.loginPasswordApi as any).mockResolvedValue({
+      access_token: 'mock-token-pass',
       token_type: 'bearer',
       user: mockUser,
     });
-    (api.fetchMeApi as any).mockResolvedValue(mockUser);
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
     await act(async () => {
-      await result.current.register('new@shopeek.ir', 'Password123!', 'کاربر ثبت نامی');
+      await result.current.loginWithPassword('09121111111', 'SecretPass123!');
     });
 
     expect(result.current.isAuthenticated).toBe(true);
-    expect(result.current.token).toBe('mock-token-456');
-    expect(result.current.user?.email).toBe('new@shopeek.ir');
+    expect(result.current.token).toBe('mock-token-pass');
+    expect(localStorage.getItem('shopeek_token')).toBe('mock-token-pass');
+  });
+
+  it('signupVerifyOtp sets token and user', async () => {
+    const mockUser = {
+      id: 'u-3',
+      phone: '09123333333',
+      email: 'new_otp@shopeek.ir',
+      full_name: 'ثبت نام با پیامک',
+      role: 'User',
+      is_subscription_active: false,
+    };
+    (api.signupVerifyOtpApi as any).mockResolvedValue({
+      access_token: 'mock-token-signup',
+      token_type: 'bearer',
+      user: mockUser,
+    });
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await act(async () => {
+      await result.current.signupVerifyOtp({
+        phone: '09123333333',
+        code: '54321',
+        email: 'new_otp@shopeek.ir',
+        full_name: 'ثبت نام با پیامک',
+        password: 'Password123!',
+      });
+    });
+
+    expect(result.current.isAuthenticated).toBe(true);
+    expect(result.current.token).toBe('mock-token-signup');
+    expect(result.current.user?.phone).toBe('09123333333');
   });
 
   it('logout clears state and localStorage', async () => {
