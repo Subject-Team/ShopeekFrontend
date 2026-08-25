@@ -3,6 +3,21 @@
  */
 
 /**
+ * Converts Persian and Arabic digits in a string to standard English ASCII digits.
+ */
+export const normalizeDigits = (text: string): string => {
+  if (!text) return '';
+  const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+  const arabicDigits = '٠١٢٣٤٥٦٧٨٩';
+  let res = text;
+  for (let i = 0; i < 10; i++) {
+    res = res.replace(new RegExp(persianDigits[i], 'g'), String(i));
+    res = res.replace(new RegExp(arabicDigits[i], 'g'), String(i));
+  }
+  return res;
+};
+
+/**
  * Converts English digits in a string or number to Persian digits with separators.
  */
 export const formatPersianNumber = (input: string | number | null | undefined): string => {
@@ -14,6 +29,31 @@ export const formatPersianNumber = (input: string | number | null | undefined): 
 
   return num.toLocaleString("fa-IR");
 };
+
+export const toPersianDigits = (text: string): string => {
+  if (!text) return '';
+  const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+  const arabicDigits = '٠١٢٣٤٥٦٧٨٩';
+  const englishDigits = '0123456789';
+  let res = text;
+  for (let i = 0; i < 10; i++) {
+    res = res.replace(new RegExp(englishDigits[i], 'g'), persianDigits[i]);
+    res = res.replace(new RegExp(arabicDigits[i], 'g'), persianDigits[i]);
+  }
+  return res;
+}
+
+export const toPersianPhone = (phone: string): string => {
+  const digits = phone.replace(/\D/g, '');
+
+  if (digits.length !== 11) return phone;
+
+  const part1 = digits.slice(0, 3);
+  const part2 = digits.slice(3, 6);
+  const part3 = digits.slice(6, 11);
+
+  return `${part1} ${part2} ${part3}`;
+}
 
 /**
  * Formats a Date object or ISO date string into Persian Solar Jalali format.

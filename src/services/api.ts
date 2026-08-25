@@ -8,6 +8,12 @@ import {
   AuthTokenResponse,
   LoginPayload,
   RegisterPayload,
+  RequestOtpPayload,
+  RequestOtpResponse,
+  VerifyOtpPayload,
+  PasswordLoginPayload,
+  SignupRequestOtpPayload,
+  SignupVerifyOtpPayload,
   User
 } from '../types';
 
@@ -43,6 +49,76 @@ const authFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<
 };
 
 // --- AUTH API METHODS ---
+
+export const requestOtpApi = async (payload: RequestOtpPayload): Promise<RequestOtpResponse> => {
+  const res = await fetch(`${API_BASE}/auth/request-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در ارسال کد تأیید' }));
+    throw new Error(err.detail || 'خطا در برقراری ارتباط با سرور.');
+  }
+  return res.json();
+};
+
+export const verifyOtpLoginApi = async (payload: VerifyOtpPayload): Promise<AuthTokenResponse> => {
+  const res = await fetch(`${API_BASE}/auth/verify-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'کد تأیید وارد شده نامعتبر است.' }));
+    throw new Error(err.detail || 'کد تأیید نادرست یا منقضی است.');
+  }
+  return res.json();
+};
+
+export const loginPasswordApi = async (payload: PasswordLoginPayload): Promise<AuthTokenResponse> => {
+  const res = await fetch(`${API_BASE}/auth/login-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'کلمه عبور نادرست است.' }));
+    throw new Error(err.detail || 'شماره همراه یا کلمه عبور نادرست است.');
+  }
+  return res.json();
+};
+
+export const signupRequestOtpApi = async (payload: SignupRequestOtpPayload): Promise<RequestOtpResponse> => {
+  const res = await fetch(`${API_BASE}/auth/signup/request-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در ارسال کد تأیید ثبت‌نام' }));
+    throw new Error(err.detail || 'خطا در ارسال کد تأیید ثبت‌نام.');
+  }
+  return res.json();
+};
+
+export const signupVerifyOtpApi = async (payload: SignupVerifyOtpPayload): Promise<AuthTokenResponse> => {
+  const res = await fetch(`${API_BASE}/auth/signup/verify`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در ایجاد حساب کاربری' }));
+    throw new Error(err.detail || 'خطا در تایید کد یا ایجاد حساب.');
+  }
+  return res.json();
+};
 
 export const loginApi = async (payload: LoginPayload): Promise<AuthTokenResponse> => {
   const res = await fetch(`${API_BASE}/auth/login`, {
