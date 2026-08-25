@@ -1,31 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import {
-  User,
-  RequestOtpResponse,
-  SignupRequestOtpPayload,
-  SignupVerifyOtpPayload,
-} from '../types';
-import {
-  loginApi,
-  registerApi,
-  fetchMeApi,
-  requestOtpApi,
-  verifyOtpLoginApi,
-  loginPasswordApi,
-  signupRequestOtpApi,
-  signupVerifyOtpApi,
-} from '../services/api';
+import { User, LoginPayload, RegisterPayload } from '../types';
+import { loginApi, registerApi, fetchMeApi } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  requestOtp: (phone: string, turnstileToken?: string) => Promise<RequestOtpResponse>;
-  verifyOtpLogin: (phone: string, code: string) => Promise<void>;
-  loginWithPassword: (phoneOrEmail: string, password: string, turnstileToken?: string) => Promise<void>;
-  signupRequestOtp: (payload: SignupRequestOtpPayload) => Promise<RequestOtpResponse>;
-  signupVerifyOtp: (payload: SignupVerifyOtpPayload) => Promise<void>;
   login: (email: string, password: string, turnstileToken?: string) => Promise<void>;
   register: (email: string, password: string, full_name: string, turnstileToken?: string) => Promise<void>;
   logout: () => void;
@@ -71,68 +52,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => {
       window.removeEventListener('shopeek_unauthorized', handleUnauthorized);
     };
-  }, []);
-
-  const saveAuthSession = (accessToken: string, authUser: User) => {
-    setToken(accessToken);
-    setUser(authUser);
-    localStorage.setItem('shopeek_token', accessToken);
-    localStorage.setItem('shopeek_user', JSON.stringify(authUser));
-  };
-
-  const requestOtp = async (phone: string, turnstileToken?: string): Promise<RequestOtpResponse> => {
-    setIsLoading(true);
-    try {
-      return await requestOtpApi({ phone, turnstile_token: turnstileToken });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const verifyOtpLogin = async (phone: string, code: string) => {
-    setIsLoading(true);
-    try {
-      const response = await verifyOtpLoginApi({ phone, code });
-      saveAuthSession(response.access_token, response.user);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const loginWithPassword = async (phoneOrEmail: string, password: string, turnstileToken?: string) => {
-    setIsLoading(true);
-    try {
-      const response = await loginPasswordApi({ phone_or_email: phoneOrEmail, password, turnstile_token: turnstileToken });
-      saveAuthSession(response.access_token, response.user);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const signupRequestOtp = async (payload: SignupRequestOtpPayload): Promise<RequestOtpResponse> => {
-    setIsLoading(true);
-    try {
-      return await signupRequestOtpApi(payload);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const signupVerifyOtp = async (payload: SignupVerifyOtpPayload) => {
-    setIsLoading(true);
-    try {
-      const response = await signupVerifyOtpApi(payload);
-      saveAuthSession(response.access_token, response.user);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [token]);
 
   const login = async (email: string, password: string, turnstileToken?: string) => {
     setIsLoading(true);
     try {
       const response = await loginApi({ email, password, turnstile_token: turnstileToken });
-      saveAuthSession(response.access_token, response.user);
+      setToken(response.access_token);
+      setUser(response.user);
+      localStorage.setItem('shopeek_token', response.access_token);
+      localStorage.setItem('shopeek_user', JSON.stringify(response.user));
     } finally {
       setIsLoading(false);
     }
@@ -142,7 +71,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const response = await registerApi({ email, password, full_name, turnstile_token: turnstileToken });
-      saveAuthSession(response.access_token, response.user);
+      setToken(response.access_token);
+      setUser(response.user);
+      localStorage.setItem('shopeek_token', response.access_token);
+      localStorage.setItem('shopeek_user', JSON.stringify(response.user));
     } finally {
       setIsLoading(false);
     }
@@ -162,11 +94,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         token,
         isAuthenticated: !!token && !!user,
         isLoading,
-        requestOtp,
-        verifyOtpLogin,
-        loginWithPassword,
-        signupRequestOtp,
-        signupVerifyOtp,
         login,
         register,
         logout,

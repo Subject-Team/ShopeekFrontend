@@ -3,21 +3,6 @@
  */
 
 /**
- * Converts Persian and Arabic digits in a string to standard English ASCII digits.
- */
-export const normalizePersianDigits = (text: string): string => {
-  if (!text) return '';
-  const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
-  const arabicDigits = '٠١٢٣٤٥٦٧٨٩';
-  let res = text;
-  for (let i = 0; i < 10; i++) {
-    res = res.replace(new RegExp(persianDigits[i], 'g'), String(i));
-    res = res.replace(new RegExp(arabicDigits[i], 'g'), String(i));
-  }
-  return res;
-};
-
-/**
  * Converts English digits in a string or number to Persian digits with separators.
  */
 export const formatPersianNumber = (input: string | number | null | undefined): string => {
