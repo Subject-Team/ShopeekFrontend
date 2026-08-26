@@ -40,6 +40,10 @@ export interface KPISummary {
   aov_change_percentage: number;
   total_customers: number;
   customer_count_change_percentage: number;
+  revenue_forecast?: number | null;
+  order_count_forecast?: number | null;
+  aov_forecast?: number | null;
+  customer_count_forecast?: number | null;
 }
 
 export interface RevenuePoint {

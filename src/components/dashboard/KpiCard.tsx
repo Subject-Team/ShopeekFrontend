@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, LucideIcon } from 'lucide-react';
+import { TrendingUp, TrendingDown, Sparkles, LucideIcon } from 'lucide-react';
 import { formatPersianNumber } from '../../utils';
 
 interface KpiCardProps {
@@ -9,6 +9,8 @@ interface KpiCardProps {
   subtitle?: string;
   icon: LucideIcon;
   color?: 'emerald' | 'indigo' | 'amber' | 'cyan';
+  forecastValue?: number | null;
+  forecastLabel?: string;
 }
 
 export const KpiCard: React.FC<KpiCardProps> = ({
@@ -17,7 +19,9 @@ export const KpiCard: React.FC<KpiCardProps> = ({
   changePercentage,
   subtitle,
   icon: Icon,
-  color = 'emerald'
+  color = 'emerald',
+  forecastValue,
+  forecastLabel
 }) => {
   const isPositive = (changePercentage ?? 0) >= 0;
 
@@ -26,6 +30,13 @@ export const KpiCard: React.FC<KpiCardProps> = ({
     indigo: 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border-indigo-100 dark:border-indigo-900/50',
     amber: 'bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-900/50',
     cyan: 'bg-cyan-50 dark:bg-cyan-950/50 text-cyan-600 dark:text-cyan-400 border-cyan-100 dark:border-cyan-900/50',
+  };
+
+  const forecastColorStyles = {
+    emerald: 'text-emerald-600/70 dark:text-emerald-400/60',
+    indigo: 'text-indigo-600/70 dark:text-indigo-400/60',
+    amber: 'text-amber-600/70 dark:text-amber-400/60',
+    cyan: 'text-cyan-600/70 dark:text-cyan-400/60',
   };
 
   return (
@@ -41,6 +52,14 @@ export const KpiCard: React.FC<KpiCardProps> = ({
           <Icon className="w-6 h-6" />
         </div>
       </div>
+
+      {forecastValue != null && forecastValue > 0 && (
+        <div className={`flex items-center gap-1.5 text-xs font-semibold mb-2 ${forecastColorStyles[color]}`}>
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>پیش‌بینی فردا: {formatPersianNumber(Math.round(forecastValue))}</span>
+          {forecastLabel && <span className="text-slate-400 dark:text-slate-500 font-normal">{forecastLabel}</span>}
+        </div>
+      )}
 
       {changePercentage !== undefined && (
         <div className="flex items-center justify-between text-xs pt-3 border-t border-slate-100 dark:border-slate-800/80">

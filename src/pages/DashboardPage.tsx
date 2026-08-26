@@ -90,6 +90,8 @@ export const DashboardPage: React.FC = () => {
           subtitle={`در ${dateRangeDays} روز گذشته`}
           icon={DollarSign}
           color="emerald"
+          forecastValue={kpi?.revenue_forecast}
+          forecastLabel="تومان"
         />
         <KpiCard
           title="تعداد کل سفارشات"
@@ -98,6 +100,7 @@ export const DashboardPage: React.FC = () => {
           subtitle={`در ${dateRangeDays} روز گذشته`}
           icon={ShoppingBag}
           color="indigo"
+          forecastValue={kpi?.order_count_forecast}
         />
         <KpiCard
           title="میانگین ارزش فاکتور (AOV)"
@@ -106,6 +109,8 @@ export const DashboardPage: React.FC = () => {
           subtitle="تومان"
           icon={CreditCard}
           color="amber"
+          forecastValue={kpi?.aov_forecast}
+          forecastLabel="تومان"
         />
         <KpiCard
           title="تعداد مشتریان فعال"
@@ -114,6 +119,7 @@ export const DashboardPage: React.FC = () => {
           subtitle="مشتری ثبت‌شده"
           icon={Users}
           color="cyan"
+          forecastValue={kpi?.customer_count_forecast}
         />
       </div>
 
