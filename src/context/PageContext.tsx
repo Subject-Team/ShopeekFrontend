@@ -7,8 +7,6 @@ interface PageContextType {
   setDateRangeDays: (days: number) => void;
   isChatOpen: boolean;
   setIsChatOpen: (open: boolean) => void;
-  pageMetricsSnapshot: Record<string, any>;
-  setPageMetricsSnapshot: (snapshot: Record<string, any>) => void;
 }
 
 const PageContext = createContext<PageContextType | undefined>(undefined);
@@ -17,7 +15,6 @@ export const PageContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [activePage, setActivePage] = useState<string>('dashboard');
   const [dateRangeDays, setDateRangeDays] = useState<number>(14);
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
-  const [pageMetricsSnapshot, setPageMetricsSnapshot] = useState<Record<string, any>>({});
 
   return (
     <PageContext.Provider value={{
@@ -27,8 +24,6 @@ export const PageContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setDateRangeDays,
       isChatOpen,
       setIsChatOpen,
-      pageMetricsSnapshot,
-      setPageMetricsSnapshot
     }}>
       {children}
     </PageContext.Provider>

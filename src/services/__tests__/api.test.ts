@@ -169,7 +169,7 @@ describe('API Services', () => {
       json: async () => ({ message_content: 'سلام' }),
     });
 
-    const reply = await sendChatMessage('sess-1', 'سلام', { snapshot: true });
+    const reply = await sendChatMessage('sess-1', 'سلام', { active_page: 'dashboard', date_range_days: 14 });
     expect(reply.message_content).toBe('سلام');
 
     window.fetch = vi.fn().mockResolvedValue({

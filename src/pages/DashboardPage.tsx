@@ -14,7 +14,7 @@ import { formatPersianNumber } from '../utils';
 import { SEO } from '../components/common/SEO';
 
 export const DashboardPage: React.FC = () => {
-  const { dateRangeDays, setPageMetricsSnapshot } = usePageContext();
+  const { dateRangeDays } = usePageContext();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [kpi, setKpi] = useState<KPISummary | null>(null);
@@ -39,13 +39,6 @@ export const DashboardPage: React.FC = () => {
       setAdvisory(advRes);
       setAdvisoryHistory(historyRes);
       setTopCustomers(custRes.slice(0, 5));
-
-      // Save context snapshot for AI Chat
-      setPageMetricsSnapshot({
-        kpi: kpiRes,
-        latest_advisory: advRes?.summary || '',
-        total_top_customers: custRes.length
-      });
     } catch (err) {
       console.error(err);
     } finally {

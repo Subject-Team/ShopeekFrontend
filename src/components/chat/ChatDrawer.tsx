@@ -67,7 +67,7 @@ const assistantMarkdownComponents: Components = {
 };
 
 export const ChatDrawer: React.FC = () => {
-  const { isChatOpen, setIsChatOpen, activePage, dateRangeDays, pageMetricsSnapshot } = usePageContext();
+  const { isChatOpen, setIsChatOpen, activePage, dateRangeDays } = usePageContext();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -116,14 +116,13 @@ export const ChatDrawer: React.FC = () => {
     setMessages(prev => [...prev, tempUserMsg]);
     setLoading(true);
 
-    const snapshot = {
+    const contextHints = {
       active_page: activePage,
-      date_range_days: dateRangeDays,
-      metrics: pageMetricsSnapshot
+      date_range_days: dateRangeDays
     };
 
     try {
-      const response = await sendChatMessage(sessionId, userText, snapshot);
+      const response = await sendChatMessage(sessionId, userText, contextHints);
       setMessages(prev => [...prev, response]);
     } catch (err: any) {
       const errorMsg: ChatMessage = {

@@ -4,11 +4,9 @@ import { CustomerModal } from '../components/crm/CustomerModal';
 import { CreateCustomerModal } from '../components/crm/CreateCustomerModal';
 import { fetchCustomers, fetchCustomerDetail } from '../services/api';
 import { Customer } from '../types';
-import { usePageContext } from '../context/PageContext';
 import { SEO } from '../components/common/SEO';
 
 export const CustomersPage: React.FC = () => {
-  const { setPageMetricsSnapshot } = usePageContext();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -17,7 +15,6 @@ export const CustomersPage: React.FC = () => {
     try {
       const data = await fetchCustomers();
       setCustomers(data);
-      setPageMetricsSnapshot({ total_customers_count: data.length });
     } catch (err) {
       console.error(err);
     }

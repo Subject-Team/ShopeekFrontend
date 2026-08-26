@@ -64,7 +64,7 @@ describe('PageContext', () => {
     <PageContextProvider>{children}</PageContextProvider>
   );
 
-  it('manages dateRangeDays, isChatOpen, and page metrics snapshot', () => {
+  it('manages dateRangeDays and isChatOpen', () => {
     const { result } = renderHook(() => usePageContext(), { wrapper });
     expect(result.current.dateRangeDays).toBe(14);
     expect(result.current.isChatOpen).toBe(false);
@@ -72,11 +72,9 @@ describe('PageContext', () => {
     act(() => {
       result.current.setDateRangeDays(30);
       result.current.setIsChatOpen(true);
-      result.current.setPageMetricsSnapshot({ revenue: 1000 });
     });
 
     expect(result.current.dateRangeDays).toBe(30);
     expect(result.current.isChatOpen).toBe(true);
-    expect(result.current.pageMetricsSnapshot).toEqual({ revenue: 1000 });
   });
 });

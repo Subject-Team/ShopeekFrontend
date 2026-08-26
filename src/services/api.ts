@@ -183,14 +183,14 @@ export const getSampleCSV = async () => {
   return res.json();
 };
 
-export const sendChatMessage = async (sessionId: string, message: string, snapshotContext?: any): Promise<ChatMessage> => {
+export const sendChatMessage = async (sessionId: string, message: string, contextHints?: { active_page?: string; date_range_days?: number }): Promise<ChatMessage> => {
   const res = await authFetch(`${API_BASE}/chat/message`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       session_id: sessionId,
       message,
-      snapshot_context: snapshotContext
+      context_hints: contextHints
     })
   });
   if (!res.ok) throw new Error('دستیار هوشمند شاپیک در حال حاضر در دسترس نیست.');

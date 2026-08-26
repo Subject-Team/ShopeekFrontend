@@ -43,6 +43,19 @@ class MockIntersectionObserver {
 }
 window.IntersectionObserver = MockIntersectionObserver as any;
 
+// Polyfill Blob.slice().arrayBuffer() for jsdom environments that lack it.
+// This lets FileUploader's magic-byte validation run properly in tests.
+if (typeof Blob !== 'undefined' && typeof Blob.prototype.arrayBuffer !== 'function') {
+  Blob.prototype.arrayBuffer = function () {
+    return new Promise<ArrayBuffer>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as ArrayBuffer);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsArrayBuffer(this);
+    });
+  };
+}
+
 // Mock Turnstile
 (window as any).turnstile = {
   render: vi.fn().mockReturnValue('mock-widget-id'),

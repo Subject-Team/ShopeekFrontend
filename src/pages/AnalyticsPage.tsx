@@ -8,7 +8,7 @@ import { formatPersianNumber } from '../utils';
 import { SEO } from '../components/common/SEO';
 
 export const AnalyticsPage: React.FC = () => {
-  const { dateRangeDays, setPageMetricsSnapshot } = usePageContext();
+  const { dateRangeDays } = usePageContext();
   const [trend, setTrend] = useState<RevenuePoint[]>([]);
   const [kpi, setKpi] = useState<KPISummary | null>(null);
 
@@ -19,7 +19,6 @@ export const AnalyticsPage: React.FC = () => {
     ]).then(([trendData, kpiData]) => {
       setTrend(trendData);
       setKpi(kpiData);
-      setPageMetricsSnapshot({ analytics_kpi: kpiData });
     });
   }, [dateRangeDays]);
 
