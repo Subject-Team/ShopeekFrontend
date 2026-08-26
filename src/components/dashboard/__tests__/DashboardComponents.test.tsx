@@ -34,14 +34,8 @@ describe('Dashboard Components', () => {
 
   it('renders AdvisoryCard with recommendation, handles refresh and opens history modal', async () => {
     (api.triggerManualAdvisory as any).mockResolvedValue({
-      status: 'success',
-      advisory: {
-        id: 'adv-new',
-        summary: 'توصیه جدید تولید شد',
-        recommendation_text: 'متن توصیه جدید',
-        priority: 'HIGH',
-        generated_at: new Date().toISOString(),
-      },
+      advisory: { success: true, message: 'توصیه جدید تولید شد' },
+      forecast: { success: true, count: 4 },
     });
 
     const mockAdvisory = {

@@ -86,9 +86,8 @@ export interface AIAdvisory {
 }
 
 export interface AdvisoryTriggerResult {
-  success: boolean;
-  message: string;
-  advisory?: AIAdvisory;
+  advisory: { success: boolean; message: string };
+  forecast: { success: boolean; count: number };
 }
 
 export interface ChatMessage {

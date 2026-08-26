@@ -21,11 +21,11 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = 
     setLoading(true);
     try {
       const res = await triggerManualAdvisory();
-      if (res.success) {
-        showToast(res.message, res.advisory ? 'success' : 'info');
+      if (res.advisory.success) {
+        showToast(res.advisory.message, 'success');
         if (onRefresh) onRefresh();
       } else {
-        showToast(res.message, 'warning');
+        showToast(res.advisory.message, 'warning');
       }
     } catch (err: any) {
       showToast(err.message || 'سرویس مشاوره هوشمند در دسترس نیست.', 'error');

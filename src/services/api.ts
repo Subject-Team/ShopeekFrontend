@@ -127,7 +127,7 @@ export const fetchAdvisoryHistory = async (): Promise<AIAdvisory[]> => {
 };
 
 export const triggerManualAdvisory = async (): Promise<AdvisoryTriggerResult> => {
-  const res = await authFetch(`${API_BASE}/advisory/trigger`, { method: 'POST' });
+  const res = await authFetch(`${API_BASE}/advisory/generate`, { method: 'POST' });
   if (!res.ok) throw new Error('سرویس مشاوره هوشمند در دسترس نیست.');
   return res.json();
 };
