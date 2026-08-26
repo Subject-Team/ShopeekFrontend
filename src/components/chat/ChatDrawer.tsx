@@ -1,17 +1,87 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Sparkles, Send, Bot, User, Layers, RefreshCw } from 'lucide-react';
+import ReactMarkdown, { Components } from 'react-markdown';
+import { X, Sparkles, Send, Bot, User, Layers, RefreshCw, Trash2 } from 'lucide-react';
 import { usePageContext } from '../../context/PageContext';
-import { sendChatMessage, fetchChatHistory } from '../../services/api';
+import { sendChatMessage, fetchChatHistory, clearChatHistory } from '../../services/api';
 import { ChatMessage } from '../../types';
 import { formatPersianNumber } from '../../utils';
+
+const assistantMarkdownComponents: Components = {
+  p: ({ node: _node, ...props }) => <p {...props} className="my-1 first:mt-0 last:mb-0" />,
+  strong: ({ node: _node, ...props }) => <strong {...props} className="font-extrabold" />,
+  em: ({ node: _node, ...props }) => <em {...props} className="italic" />,
+  ul: ({ node: _node, ...props }) => <ul {...props} className="list-disc ps-5 my-1 space-y-0.5" />,
+  ol: ({ node: _node, ...props }) => <ol {...props} className="list-decimal ps-5 my-1 space-y-0.5" />,
+  li: ({ node: _node, ...props }) => <li {...props} className="leading-relaxed" />,
+  a: ({ node: _node, children, ...props }) => (
+    <a
+      {...props}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-indigo-600 dark:text-indigo-300 underline underline-offset-2 break-all"
+    >
+      {children}
+    </a>
+  ),
+  h1: ({ node: _node, ...props }) => <h1 {...props} className="text-sm font-extrabold my-1.5 first:mt-0 last:mb-0" />,
+  h2: ({ node: _node, ...props }) => <h2 {...props} className="text-[13px] font-extrabold my-1.5 first:mt-0 last:mb-0" />,
+  h3: ({ node: _node, ...props }) => <h3 {...props} className="text-xs font-extrabold my-1 first:mt-0 last:mb-0" />,
+  h4: ({ node: _node, ...props }) => <h4 {...props} className="text-xs font-extrabold my-1 first:mt-0 last:mb-0" />,
+  blockquote: ({ node: _node, ...props }) => (
+    <blockquote {...props} className="border-s-2 border-slate-300 dark:border-slate-600 ps-2 my-1 italic text-slate-500 dark:text-slate-400" />
+  ),
+  pre: ({ node: _node, children }) => (
+    <pre
+      dir="ltr"
+      className="bg-slate-900 dark:bg-slate-950 text-slate-100 rounded-lg p-2 my-1.5 overflow-x-auto text-left font-mono text-[10px] leading-relaxed"
+    >
+      {children}
+    </pre>
+  ),
+  code: ({ node: _node, children, ...props }) => (
+    <code
+      {...props}
+      dir="ltr"
+      className="bg-slate-200/70 dark:bg-slate-700/70 rounded px-1 py-0.5 font-mono text-[10px] [pre&]:bg-transparent [pre&]:p-0 [pre&]:text-inherit"
+    >
+      {children}
+    </code>
+  ),
+  table: ({ node: _node, children }) => (
+    <div className="overflow-x-auto my-1.5">
+      <table className="w-full border-collapse text-[10px]">{children}</table>
+    </div>
+  ),
+  th: ({ node: _node, children, ...props }) => (
+    <th {...props} className="border border-slate-300 dark:border-slate-600 bg-slate-200/60 dark:bg-slate-700/60 px-1.5 py-1 font-bold">
+      {children}
+    </th>
+  ),
+  td: ({ node: _node, children, ...props }) => (
+    <td {...props} className="border border-slate-300 dark:border-slate-600 px-1.5 py-1">
+      {children}
+    </td>
+  ),
+  hr: () => <hr className="my-2 border-slate-200 dark:border-slate-700" />,
+  img: ({ node: _node, ...props }) => <img {...props} className="max-w-full rounded-lg my-1" alt="" />,
+};
 
 export const ChatDrawer: React.FC = () => {
   const { isChatOpen, setIsChatOpen, activePage, dateRangeDays, pageMetricsSnapshot } = usePageContext();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [clearing, setClearing] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const sessionId = 'session_default_user';
+
+  const buildWelcomeMessage = (): ChatMessage => ({
+    id: 'welcome',
+    session_id: sessionId,
+    sender: 'ASSISTANT',
+    message_content: 'سلام! من دستیار هوشمند شاپیک هستم. چطور می‌توانم در تحلیل روند فروش یا وضعیت مشتریان به شما کمک کنم؟',
+    created_at: new Date().toISOString()
+  });
 
   useEffect(() => {
     if (isChatOpen) {
@@ -19,14 +89,7 @@ export const ChatDrawer: React.FC = () => {
         if (data && data.length > 0) {
           setMessages(data);
         } else {
-          // Default Welcome Persian Message
-          setMessages([{
-            id: 'welcome',
-            session_id: sessionId,
-            sender: 'ASSISTANT',
-            message_content: 'سلام! من دستیار هوشمند شاپیک هستم. چطور می‌توانم در تحلیل روند فروش یا وضعیت مشتریان به شما کمک کنم؟',
-            created_at: new Date().toISOString()
-          }]);
+          setMessages([buildWelcomeMessage()]);
         }
       });
     }
@@ -76,6 +139,20 @@ export const ChatDrawer: React.FC = () => {
     }
   };
 
+  const handleClearChat = async () => {
+    if (clearing || loading) return;
+    if (!window.confirm('آیا از پاک کردن کامل گفتگو مطمئن هستید؟ این عمل قابل بازگشت نیست.')) return;
+    setClearing(true);
+    try {
+      await clearChatHistory(sessionId);
+      setMessages([buildWelcomeMessage()]);
+    } catch (err) {
+      console.error('Failed to clear chat history', err);
+    } finally {
+      setClearing(false);
+    }
+  };
+
   if (!isChatOpen) return null;
 
   return (
@@ -103,12 +180,23 @@ export const ChatDrawer: React.FC = () => {
               </div>
             </div>
 
-            <button
-              onClick={() => setIsChatOpen(false)}
-              className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={handleClearChat}
+                disabled={clearing || loading}
+                title="پاک کردن گفتگو"
+                aria-label="پاک کردن گفتگو"
+                className="p-1.5 text-slate-400 hover:text-red-500 dark:hover:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors disabled:opacity-50"
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setIsChatOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           {/* Messages Body */}
@@ -134,7 +222,13 @@ export const ChatDrawer: React.FC = () => {
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-tr-none border border-slate-200/60 dark:border-slate-700/60'
                   }`}
                 >
-                  {msg.message_content}
+                  {msg.sender === 'ASSISTANT' ? (
+                    <ReactMarkdown components={assistantMarkdownComponents}>
+                      {msg.message_content}
+                    </ReactMarkdown>
+                  ) : (
+                    msg.message_content
+                  )}
                 </div>
               </div>
             ))}

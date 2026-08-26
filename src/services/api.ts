@@ -203,6 +203,13 @@ export const fetchChatHistory = async (sessionId: string): Promise<ChatMessage[]
   return res.json();
 };
 
+export const clearChatHistory = async (sessionId: string): Promise<void> => {
+  const res = await authFetch(`${API_BASE}/chat/history?session_id=${sessionId}`, {
+    method: 'DELETE'
+  });
+  if (!res.ok) throw new Error('خطا در پاک کردن تاریخچه گفتگو');
+};
+
 export const createCustomer = async (data: { name: string; email?: string; phone?: string; address?: string }) => {
   const res = await authFetch(`${API_BASE}/customers`, {
     method: 'POST',
