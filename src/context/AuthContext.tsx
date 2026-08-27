@@ -33,8 +33,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser(currentUser);
           localStorage.setItem('shopeek_user', JSON.stringify(currentUser));
         } catch (error) {
-          console.error('Session validation failed:', error);
-          logout();
+          // Only treat the session as dead when the tokens were conclusively
+          // rejected (authFetch cleared storage + dispatched shopeek_unauthorized).
+          // Transient/network/rate-limit errors must NOT log read-only users out.
+          if (!localStorage.getItem('shopeek_token')) {
+            console.error('Session validation failed:', error);
+            logout();
+          }
         }
       } else {
         setUser(null);

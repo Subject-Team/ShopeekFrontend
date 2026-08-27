@@ -137,4 +137,37 @@ describe('AuthContext', () => {
     expect(result.current.isAuthenticated).toBe(false);
     expect(result.current.user).toBeNull();
   });
+
+  it('keeps the stored session when fetchMeApi fails transiently (network/rate-limit)', async () => {
+    localStorage.setItem('shopeek_token', 'token-1');
+    localStorage.setItem('shopeek_user', JSON.stringify({ id: 'u-1', email: 'test@shopeek.ir' }));
+    (api.fetchMeApi as any).mockRejectedValue(new Error('network failed'));
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await act(async () => {});
+
+    // Read-only / transient failures must NOT boot the user out.
+    expect(result.current.isAuthenticated).toBe(true);
+    expect(result.current.token).toBe('token-1');
+    expect(result.current.user?.email).toBe('test@shopeek.ir');
+  });
+
+  it('logs out during validation only when the session was conclusively rejected', async () => {
+    localStorage.setItem('shopeek_token', 'token-1');
+    localStorage.setItem('shopeek_user', JSON.stringify({ id: 'u-1', email: 'test@shopeek.ir' }));
+    (api.fetchMeApi as any).mockImplementation(async () => {
+      // authFetch clears storage before rejecting on a conclusive 401.
+      localStorage.removeItem('shopeek_token');
+      throw new Error('invalid token');
+    });
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await act(async () => {});
+
+    expect(result.current.isAuthenticated).toBe(false);
+    expect(result.current.token).toBeNull();
+    expect(result.current.user).toBeNull();
+  });
 });

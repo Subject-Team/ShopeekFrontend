@@ -32,20 +32,25 @@ const clearAuthStorage = (): void => {
 };
 
 // Single-flight silent token refresh via the backend's GoTrue refresh grant.
-let refreshPromise: Promise<boolean> | null = null;
+// `ok`: new tokens stored; `invalid`: refresh token conclusively rejected (or
+// absent) so the session is dead; `unavailable`: transient network failure —
+// keep the stored session and let the caller surface the error.
+type RefreshOutcome = 'ok' | 'invalid' | 'unavailable';
 
-const refreshAccessToken = async (): Promise<boolean> => {
+let refreshPromise: Promise<RefreshOutcome> | null = null;
+
+const refreshAccessToken = async (): Promise<RefreshOutcome> => {
   if (refreshPromise) return refreshPromise;
   refreshPromise = (async () => {
     const refreshToken = getRefreshToken();
-    if (!refreshToken) return false;
+    if (!refreshToken) return 'invalid';
     try {
       const res = await fetch(`${API_BASE}/auth/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh_token: refreshToken }),
       });
-      if (!res.ok) return false;
+      if (!res.ok) return 'invalid';
       const data = (await res.json()) as AuthTokenResponse;
       localStorage.setItem('shopeek_token', data.access_token);
       if (data.refresh_token) {
@@ -53,9 +58,9 @@ const refreshAccessToken = async (): Promise<boolean> => {
       }
       localStorage.setItem('shopeek_user', JSON.stringify(data.user));
       window.dispatchEvent(new Event('shopeek_token_refreshed'));
-      return true;
+      return 'ok';
     } catch {
-      return false;
+      return 'unavailable';
     }
   })();
   try {
@@ -80,19 +85,24 @@ const doFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Re
 };
 
 // Custom fetch wrapper adding the Authorization header, with on-401 refresh+retry.
+// Only a conclusively-rejected session clears local auth storage; transient
+// network/refresh failures must NOT log read-only users out.
 const authFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
   let response = await doFetch(input, init);
 
   if (response.status === 401) {
-    const refreshed = await refreshAccessToken();
-    if (refreshed) {
+    const outcome = await refreshAccessToken();
+    if (outcome === 'ok') {
       response = await doFetch(input, init);
+      if (response.status === 401) {
+        // A freshly issued token was still rejected — the session is unusable.
+        clearAuthStorage();
+      }
+    } else if (outcome === 'invalid') {
+      // Refresh token is conclusively dead. Clear invalid or expired token.
+      clearAuthStorage();
     }
-  }
-
-  if (response.status === 401) {
-    // Clear invalid or expired token
-    clearAuthStorage();
+    // outcome === 'unavailable': transient failure; keep the stored session.
   }
 
   return response;

@@ -245,7 +245,7 @@ describe('API Services', () => {
     expect(localStorage.getItem('shopeek_refresh_token')).toBe('refresh-token-2');
   });
 
-  it('authFetch dispatches shopeek_unauthorized on 401 when refresh is unavailable', async () => {
+  it('authFetch dispatches shopeek_unauthorized when the refresh token is rejected', async () => {
     localStorage.setItem('shopeek_token', 'expired-token');
     const unauthorizedListener = vi.fn();
     window.addEventListener('shopeek_unauthorized', unauthorizedListener);
@@ -259,6 +259,25 @@ describe('API Services', () => {
 
     expect(unauthorizedListener).toHaveBeenCalled();
     expect(localStorage.getItem('shopeek_token')).toBeNull();
+    window.removeEventListener('shopeek_unauthorized', unauthorizedListener);
+  });
+
+  it('authFetch keeps the stored session when refresh fails with a network error', async () => {
+    localStorage.setItem('shopeek_token', 'expired-token');
+    localStorage.setItem('shopeek_refresh_token', 'refresh-token-1');
+    const unauthorizedListener = vi.fn();
+    window.addEventListener('shopeek_unauthorized', unauthorizedListener);
+
+    // Original request 401s, then the /auth/refresh attempt dies on the network.
+    window.fetch = vi.fn()
+      .mockResolvedValueOnce({ status: 401, ok: false })
+      .mockRejectedValueOnce(new Error('network down'));
+
+    await expect(fetchKPISummary(30)).rejects.toThrow();
+
+    expect(unauthorizedListener).not.toHaveBeenCalled();
+    expect(localStorage.getItem('shopeek_token')).toBe('expired-token');
+    expect(localStorage.getItem('shopeek_refresh_token')).toBe('refresh-token-1');
     window.removeEventListener('shopeek_unauthorized', unauthorizedListener);
   });
 });
