@@ -6,7 +6,6 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SEO } from '../components/common/SEO';
 import { MinimalFooter } from '../components/layout/MinimalFooter';
-import { EmailVerificationModal } from '../components/auth/EmailVerificationModal';
 
 const TURNSTILE_SITE_KEY = (import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY as string) || '0x4AAAAAAEZPje7Wc0YAQw6O';
 
@@ -27,9 +26,8 @@ export const LoginPage: React.FC = () => {
   const turnstileRef = useRef<TurnstileInstance>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [verificationError, setVerificationError] = useState<boolean>(false);
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
-  const [showVerifyModal, setShowVerifyModal] = useState<boolean>(false);
-  const [pendingVerifyEmail, setPendingVerifyEmail] = useState<string>('');
 
   // Password evaluation & strength calculation
   const passwordAnalysis = useMemo(() => {
@@ -186,23 +184,14 @@ export const LoginPage: React.FC = () => {
         showToast('ورود با موفقیت انجام شد. خوش آمدید!', 'success');
         navigate('/dashboard');
       } else {
-        const regRes = await register(email.trim(), password, fullName.trim(), turnstileToken);
-        if (regRes && regRes.requires_verification) {
-          setPendingVerifyEmail(email.trim());
-          setShowVerifyModal(true);
-          showToast(regRes.message || 'کد تایید ۶ رقمی به نشانی ایمیل شما ارسال شد.', 'success');
-        } else {
-          showToast('حساب کاربری با موفقیت ایجاد شد!', 'success');
-          navigate('/dashboard');
-        }
+        const result = await register(email.trim(), password, fullName.trim(), turnstileToken);
+        showToast(result.message || 'حساب کاربری ایجاد شد؛ لطفاً ایمیل خود را تأیید کنید.', 'success');
+        navigate('/verify-email', { state: { email: email.trim() } });
       }
     } catch (err: any) {
       const msg = err.message || 'خطا در برقراری ارتباط با سرور';
-      if (msg.includes('ایمیل خود را تایید') || msg.includes('تایید نشانی ایمیل') || msg.includes('تایید نشده است')) {
-        setPendingVerifyEmail(email.trim());
-        setShowVerifyModal(true);
-      }
       setErrorMessage(msg);
+      setVerificationError(msg.includes('ایمیل') && msg.includes('تأیید'));
       showToast(msg, 'error');
       // Reset Turnstile token on failure for a fresh challenge
       setTurnstileToken(null);
@@ -306,14 +295,31 @@ export const LoginPage: React.FC = () => {
                 <div className="flex-1 font-semibold">{errorMessage}</div>
               </div>
               <div className="pt-2 border-t border-rose-200/80 flex items-center justify-between">
-                <span className="text-[11px] text-slate-600">نیاز به خرید یا تمدید اشتراک دارید؟</span>
-                <Link
-                  to="/contact"
-                  className="inline-flex items-center gap-1 font-bold text-brand-600 hover:text-brand-700 underline underline-offset-4"
-                >
-                  <MessageSquare className="w-3.5 h-3.5" />
-                  <span>تماس با پشتیبانی</span>
-                </Link>
+                <span className="text-[11px] text-slate-600">
+                  {verificationError ? 'ایمیل خود را تأیید نکرده‌اید؟' : 'نیاز به خرید یا تمدید اشتراک دارید؟'}
+                </span>
+                {verificationError ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTurnstileToken(null);
+                      turnstileRef.current?.reset();
+                      navigate('/verify-email', { state: { email: email.trim() } });
+                    }}
+                    className="inline-flex items-center gap-1 font-bold text-brand-600 hover:text-brand-700 underline underline-offset-4"
+                  >
+                    <Mail className="w-3.5 h-3.5" />
+                    <span>ارسال مجدد لینک تأیید</span>
+                  </button>
+                ) : (
+                  <Link
+                    to="/contact"
+                    className="inline-flex items-center gap-1 font-bold text-brand-600 hover:text-brand-700 underline underline-offset-4"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>تماس با پشتیبانی</span>
+                  </Link>
+                )}
               </div>
             </div>
           )}
@@ -613,21 +619,6 @@ export const LoginPage: React.FC = () => {
           </form>
         </div>
       </main>
-
-      {/* Email Verification OTP Modal */}
-      <EmailVerificationModal
-        isOpen={showVerifyModal}
-        email={pendingVerifyEmail}
-        onClose={() => setShowVerifyModal(false)}
-        onSuccess={() => {
-          setShowVerifyModal(false);
-          navigate('/dashboard');
-        }}
-        onEditEmail={() => {
-          setShowVerifyModal(false);
-          setMode('register');
-        }}
-      />
 
       {/* Minimal Footer with distinct spacing */}
       <div className="mt-8 shrink-0">

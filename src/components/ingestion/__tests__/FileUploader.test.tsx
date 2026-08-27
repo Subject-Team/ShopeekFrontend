@@ -40,6 +40,24 @@ describe('FileUploader Component', () => {
       </ToastProvider>
     );
 
+  it('read-only mode disables upload and shows a lock notice', () => {
+    const { container } = render(
+      <ToastProvider>
+        <FileUploader readOnly />
+      </ToastProvider>
+    );
+
+    expect(screen.getByText(/ثبت فاکتور غیرفعال است/i)).toBeInTheDocument();
+    // The whole drop zone is inert in read-only mode.
+    expect(getDropZone(container).className).toContain('pointer-events-none');
+
+    // Attempting to pick a file must not trigger any network call.
+    fireEvent.change(getFileInput(container), {
+      target: { files: [makeFile(['a,b\n1,2'], 'row.csv')] },
+    });
+    expect(api.previewSalesFile).not.toHaveBeenCalled();
+  });
+
   const getFileInput = (container: HTMLElement) =>
     container.querySelector('input[type="file"]') as HTMLInputElement;
 

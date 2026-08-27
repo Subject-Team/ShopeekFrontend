@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Phone, Mail, ChevronLeft, Plus } from 'lucide-react';
+import { Search, Phone, Mail, ChevronLeft, Plus, Lock } from 'lucide-react';
 import { Customer } from '../../types';
 import { formatPersianNumber } from '../../utils';
 
@@ -7,12 +7,14 @@ interface CustomerListProps {
   customers: Customer[];
   onSelectCustomer: (customer: Customer) => void;
   onAddCustomerClick: () => void;
+  readOnly?: boolean;
 }
 
 export const CustomerList: React.FC<CustomerListProps> = ({
   customers,
   onSelectCustomer,
-  onAddCustomerClick
+  onAddCustomerClick,
+  readOnly = false
 }) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -48,10 +50,12 @@ export const CustomerList: React.FC<CustomerListProps> = ({
           <button
             data-guide="customers-create-btn"
             onClick={onAddCustomerClick}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold shadow-xs transition-colors shrink-0"
+            disabled={readOnly}
+            title={readOnly ? 'در حالت فقط-خواندنی امکان ایجاد مشتری جدید وجود ندارد.' : undefined}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold shadow-xs transition-colors shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Plus className="w-4 h-4" />
-            <span>مشتری جدید</span>
+            {readOnly ? <Lock className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+            <span>{readOnly ? 'ایجاد مشتری غیرفعال' : 'مشتری جدید'}</span>
           </button>
         </div>
       </div>

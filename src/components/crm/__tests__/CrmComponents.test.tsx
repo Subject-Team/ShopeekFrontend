@@ -50,6 +50,26 @@ describe('CRM Components', () => {
     expect(onAdd).toHaveBeenCalled();
   });
 
+  it('CustomerList in read-only mode disables the create button', () => {
+    const onSelect = vi.fn();
+    const onAdd = vi.fn();
+
+    render(
+      <CustomerList
+        customers={mockCustomers as any}
+        onSelectCustomer={onSelect}
+        onAddCustomerClick={onAdd}
+        readOnly
+      />
+    );
+
+    expect(screen.getByText('ایجاد مشتری غیرفعال')).toBeInTheDocument();
+    const addBtn = screen.getByText('ایجاد مشتری غیرفعال').closest('button');
+    expect(addBtn).toBeDisabled();
+    fireEvent.click(addBtn!);
+    expect(onAdd).not.toHaveBeenCalled();
+  });
+
   it('renders CreateCustomerModal and handles submission', async () => {
     (api.createCustomer as any).mockResolvedValue({ id: 'c-2', name: 'رضا' });
     const onClose = vi.fn();

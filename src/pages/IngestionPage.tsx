@@ -2,10 +2,12 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Send, CheckCircle2, MessageSquareText, Shield, ExternalLink } from 'lucide-react';
 import { FileUploader } from '../components/ingestion/FileUploader';
+import { useAuth } from '../context/AuthContext';
 import { SEO } from '../components/common/SEO';
 
 export const IngestionPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   return (
     <div className="space-y-6">
@@ -19,7 +21,7 @@ export const IngestionPage: React.FC = () => {
       <h1 className="sr-only">ورود داده‌ها و بارگذاری فایل فاکتور شاپیک</h1>
 
       {/* File Upload Section */}
-      <FileUploader onSuccess={() => navigate('/dashboard')} />
+      <FileUploader onSuccess={() => navigate('/dashboard')} readOnly={Boolean(user?.is_read_only)} />
 
       {/* Telegram Bot Integration Info Card */}
       <div

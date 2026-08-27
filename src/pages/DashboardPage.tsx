@@ -78,7 +78,7 @@ export const DashboardPage: React.FC = () => {
 
       {/* 3-Hour AI Advisory Widget */}
       <div data-guide="dashboard-advisory">
-        <AdvisoryCard advisory={advisory} history={advisoryHistory} onRefresh={loadDashboardData} />
+        <AdvisoryCard advisory={advisory} history={advisoryHistory} onRefresh={loadDashboardData} readOnly={Boolean(user?.is_read_only)} />
       </div>
 
       {/* KPI Cards Grid */}

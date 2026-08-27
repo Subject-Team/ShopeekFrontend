@@ -3,10 +3,13 @@ import { CustomerList } from '../components/crm/CustomerList';
 import { CustomerModal } from '../components/crm/CustomerModal';
 import { CreateCustomerModal } from '../components/crm/CreateCustomerModal';
 import { fetchCustomers, fetchCustomerDetail } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { Customer } from '../types';
 import { SEO } from '../components/common/SEO';
 
 export const CustomersPage: React.FC = () => {
+  const { user } = useAuth();
+  const readOnly = Boolean(user?.is_read_only);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -48,6 +51,7 @@ export const CustomersPage: React.FC = () => {
         customers={customers}
         onSelectCustomer={handleSelectCustomer}
         onAddCustomerClick={() => setIsCreateModalOpen(true)}
+        readOnly={readOnly}
       />
 
       {/* Customer Profile Modal */}
@@ -55,6 +59,7 @@ export const CustomersPage: React.FC = () => {
         customer={selectedCustomer}
         onClose={() => setSelectedCustomer(null)}
         onRefresh={() => selectedCustomer && handleSelectCustomer(selectedCustomer)}
+        readOnly={readOnly}
       />
 
       {/* Create Customer Modal */}

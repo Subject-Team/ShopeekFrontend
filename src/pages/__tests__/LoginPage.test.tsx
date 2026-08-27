@@ -1,7 +1,7 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { LoginPage } from '../LoginPage';
 import { AuthProvider } from '../../context/AuthContext';
 import { ToastProvider } from '../../context/ToastContext';
@@ -76,9 +76,8 @@ describe('LoginPage Comprehensive Tests', () => {
 
   it('submits registration when form is valid and privacy policy is accepted', async () => {
     (api.registerApi as any).mockResolvedValue({
-      access_token: 'new-token',
-      token_type: 'bearer',
-      user: { id: 'u-1', email: 'test@shopeek.ir', full_name: 'کاربر جدید', role: 'User' },
+      message: 'ایمیل تأیید برای حساب شما ارسال شد.',
+      email: 'test@shopeek.ir',
     });
     (api.fetchMeApi as any).mockResolvedValue({
       id: 'u-1',
@@ -113,6 +112,64 @@ describe('LoginPage Comprehensive Tests', () => {
 
     await waitFor(() => {
       expect(api.registerApi).toHaveBeenCalled();
+    });
+  });
+
+  it('navigates to verify-email page after successful registration', async () => {
+    (api.registerApi as any).mockResolvedValue({
+      message: 'ایمیل تأیید برای حساب شما ارسال شد.',
+      email: 'test@shopeek.ir',
+    });
+    (api.fetchMeApi as any).mockResolvedValue({
+      id: 'u-1',
+      email: 'test@shopeek.ir',
+      full_name: 'کاربر جدید',
+      role: 'User',
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/login']}>
+        <AuthProvider>
+          <ToastProvider>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/verify-email" element={<div>صفحه تأیید ایمیل</div>} />
+            </Routes>
+          </ToastProvider>
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByText('ثبت‌نام کاربر جدید'));
+    fireEvent.change(screen.getByPlaceholderText('مثلاً: سارا احمدی'), { target: { value: 'کاربر جدید' } });
+    fireEvent.change(screen.getByPlaceholderText('name@example.com'), { target: { value: 'test@shopeek.ir' } });
+
+    const passwordInputs = screen.getAllByPlaceholderText('••••••••');
+    fireEvent.change(passwordInputs[0], { target: { value: 'StrongPass123!' } });
+    fireEvent.change(passwordInputs[1], { target: { value: 'StrongPass123!' } });
+
+    fireEvent.click(screen.getByRole('checkbox'));
+    fireEvent.click(screen.getByText('ایجاد حساب کاربری'));
+
+    await waitFor(() => {
+      expect(screen.getByText('صفحه تأیید ایمیل')).toBeInTheDocument();
+    });
+  });
+
+  it('shows a resend-verification link when login fails due to unverified email', async () => {
+    (api.loginApi as any).mockRejectedValue(new Error('ایمیل شما هنوز تأیید نشده است.'));
+    (api.fetchMeApi as any).mockResolvedValue({ id: 'u-1', email: 'test@shopeek.ir', full_name: '', role: 'User' });
+
+    renderLogin();
+
+    fireEvent.change(screen.getByPlaceholderText('name@example.com'), { target: { value: 'test@shopeek.ir' } });
+    const passwordInput = screen.getByPlaceholderText('••••••••');
+    fireEvent.change(passwordInput, { target: { value: 'SomePass123!' } });
+    fireEvent.click(screen.getByText('ورود به داشبورد'));
+
+    await waitFor(() => {
+      expect(screen.getByText('ارسال مجدد لینک تأیید')).toBeInTheDocument();
+      expect(screen.getByText('ایمیل خود را تأیید نکرده‌اید؟')).toBeInTheDocument();
     });
   });
 });

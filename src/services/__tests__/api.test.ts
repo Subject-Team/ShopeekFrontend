@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   loginApi,
   registerApi,
-  verifyEmailApi,
   resendVerificationApi,
   fetchMeApi,
   fetchKPISummary,
@@ -59,13 +58,12 @@ describe('API Services', () => {
     ).rejects.toThrow('Invalid credentials');
   });
 
-  it('registerApi sends POST request and returns register response', async () => {
+  it('registerApi sends POST request and returns message + email (no token)', async () => {
     window.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
-        message: 'کد تایید ارسال شد',
+        message: 'ایمیل تأیید برای حساب شما ارسال شد.',
         email: 'new@shopeek.ir',
-        requires_verification: true,
       }),
     });
 
@@ -74,41 +72,34 @@ describe('API Services', () => {
       password: 'Password123!',
       full_name: 'کاربر جدید',
     });
-    expect(res.requires_verification).toBe(true);
     expect(res.email).toBe('new@shopeek.ir');
+    expect(res.message).toContain('تأیید');
+    expect((res as unknown as Record<string, unknown>).access_token).toBeUndefined();
+
+    expect(window.fetch).toHaveBeenCalledWith(
+      '/api/v1/auth/register',
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.any(String),
+      })
+    );
   });
 
-  it('verifyEmailApi sends POST request and returns auth token response', async () => {
+  it('resendVerificationApi POSTs the email to resend-verification', async () => {
     window.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({
-        access_token: 'verified-token-123',
-        token_type: 'bearer',
-        user: { id: 'u-2', email: 'new@shopeek.ir', is_email_verified: true },
-      }),
+      json: async () => ({ message: 'ایمیل تأیید مجدداً ارسال شد.' }),
     });
 
-    const res = await verifyEmailApi({
-      email: 'new@shopeek.ir',
-      code: '123456',
-    });
-    expect(res.access_token).toBe('verified-token-123');
-    expect(res.user.is_email_verified).toBe(true);
-  });
-
-  it('resendVerificationApi sends POST request', async () => {
-    window.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        message: 'کد تایید مجدداً ارسال شد',
-        success: true,
-      }),
-    });
-
-    const res = await resendVerificationApi({
-      email: 'new@shopeek.ir',
-    });
-    expect(res.success).toBe(true);
+    const res = await resendVerificationApi('new@shopeek.ir');
+    expect(res.message).toContain('ارسال');
+    expect(window.fetch).toHaveBeenCalledWith(
+      '/api/v1/auth/resend-verification',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ email: 'new@shopeek.ir' }),
+      })
+    );
   });
 
   it('fetchMeApi includes Bearer token header', async () => {
@@ -217,7 +208,44 @@ describe('API Services', () => {
     expect(history.length).toBe(1);
   });
 
-  it('authFetch dispatches shopeek_unauthorized on 401 response', async () => {
+  it('authFetch refreshes the access token once and retries on 401', async () => {
+    localStorage.setItem('shopeek_token', 'expired-token');
+    localStorage.setItem('shopeek_refresh_token', 'refresh-token-1');
+
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({ status: 401, ok: false }) // first call hits /auth/me
+      .mockResolvedValueOnce({                                   // refresh grant
+        status: 200,
+        ok: true,
+        json: async () => ({
+          access_token: 'fresh-token',
+          refresh_token: 'refresh-token-2',
+          token_type: 'bearer',
+          user: { id: 'u-1', email: 'test@shopeek.ir' },
+        }),
+      })
+      .mockResolvedValueOnce({
+        status: 200,
+        ok: true,
+        json: async () => ({ id: 'u-1', email: 'test@shopeek.ir' }),
+      });
+    window.fetch = fetchMock;
+
+    const user = await fetchMeApi();
+    expect(user.email).toBe('test@shopeek.ir');
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock.mock.calls[1][0]).toBe('/api/v1/auth/refresh');
+    expect(fetchMock.mock.calls[1][1]).toEqual(
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ refresh_token: 'refresh-token-1' }),
+      })
+    );
+    expect(localStorage.getItem('shopeek_token')).toBe('fresh-token');
+    expect(localStorage.getItem('shopeek_refresh_token')).toBe('refresh-token-2');
+  });
+
+  it('authFetch dispatches shopeek_unauthorized on 401 when refresh is unavailable', async () => {
     localStorage.setItem('shopeek_token', 'expired-token');
     const unauthorizedListener = vi.fn();
     window.addEventListener('shopeek_unauthorized', unauthorizedListener);

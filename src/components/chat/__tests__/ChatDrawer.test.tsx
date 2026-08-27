@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ChatDrawer } from '../ChatDrawer';
 import { PageContextProvider, usePageContext } from '../../../context/PageContext';
+import { AuthProvider } from '../../../context/AuthContext';
 import * as api from '../../../services/api';
 import { ChatMessage } from '../../../types';
 
@@ -33,9 +34,11 @@ const TestWrapper: React.FC = () => {
 
 const openChat = async () => {
   render(
-    <PageContextProvider>
-      <TestWrapper />
-    </PageContextProvider>
+    <AuthProvider>
+      <PageContextProvider>
+        <TestWrapper />
+      </PageContextProvider>
+    </AuthProvider>
   );
   fireEvent.click(screen.getByText('Open Chat'));
 };
@@ -80,9 +83,11 @@ describe('ChatDrawer Component', () => {
     ]);
 
     const { container } = render(
-      <PageContextProvider>
-        <TestWrapper />
-      </PageContextProvider>
+      <AuthProvider>
+        <PageContextProvider>
+          <TestWrapper />
+        </PageContextProvider>
+      </AuthProvider>
     );
     fireEvent.click(screen.getByText('Open Chat'));
 

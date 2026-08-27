@@ -11,6 +11,7 @@ import { LandingPage } from './pages/LandingPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { ContactPage } from './pages/ContactPage';
 import { LoginPage } from './pages/LoginPage';
+import { VerifyEmailPage } from './pages/VerifyEmailPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { CustomersPage } from './pages/CustomersPage';
@@ -63,6 +64,9 @@ const AppRoutes: React.FC = () => {
 
       {/* Auth Login / Register Page */}
       <Route path="/login" element={<LoginPage />} />
+
+      {/* Post-Registration Email Verification Screen */}
+      <Route path="/verify-email" element={<VerifyEmailPage />} />
 
       {/* Contact Support Page */}
       <Route path="/contact" element={<ContactPage />} />

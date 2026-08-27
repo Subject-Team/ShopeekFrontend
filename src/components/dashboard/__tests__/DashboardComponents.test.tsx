@@ -79,6 +79,26 @@ describe('Dashboard Components', () => {
     expect(screen.getByText(/توصیه روز گذشته/i)).toBeInTheDocument();
   });
 
+  it('AdvisoryCard in read-only mode leaves the refresh button disabled', async () => {
+    render(
+      <ToastProvider>
+        <AdvisoryCard
+          advisory={null}
+          history={[]}
+          onRefresh={vi.fn()}
+          readOnly
+        />
+      </ToastProvider>
+    );
+
+    const refreshBtn = screen.getByText(/به‌روزرسانی دستی/i);
+    expect(refreshBtn.closest('button')).toBeDisabled();
+
+    const callsBefore = (api.triggerManualAdvisory as any).mock.calls.length;
+    fireEvent.click(refreshBtn);
+    expect(api.triggerManualAdvisory).toHaveBeenCalledTimes(callsBefore);
+  });
+
   it('renders RevenueChart with trend data', () => {
     const mockData = [
       { date: '2026-03-20', revenue: 5000000, orders: 10, forecast_revenue: null },

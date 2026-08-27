@@ -10,14 +10,16 @@ interface AdvisoryCardProps {
   advisory: AIAdvisory | null;
   history?: AIAdvisory[];
   onRefresh?: () => void;
+  readOnly?: boolean;
 }
 
-export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = [], onRefresh }) => {
+export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = [], onRefresh, readOnly = false }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false);
   const { showToast } = useToast();
 
   const handleManualTrigger = async () => {
+    if (readOnly) return;
     setLoading(true);
     try {
       const res = await triggerManualAdvisory();
@@ -59,7 +61,8 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = 
           {/* Manual Refresh Button */}
           <button
             onClick={handleManualTrigger}
-            disabled={loading}
+            disabled={loading || readOnly}
+            title={readOnly ? 'در حالت فقط-خواندنی، پیشنهاد هوشمند جدید تولید نمی‌شود.' : undefined}
             className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-[10px] sm:text-xs font-semibold shadow-xs transition-all disabled:opacity-60 shrink-0"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 ${loading ? 'animate-spin' : ''}`} />

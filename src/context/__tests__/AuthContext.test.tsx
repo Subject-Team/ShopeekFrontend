@@ -7,8 +7,6 @@ import * as api from '../../services/api';
 vi.mock('../../services/api', () => ({
   loginApi: vi.fn(),
   registerApi: vi.fn(),
-  verifyEmailApi: vi.fn(),
-  resendVerificationApi: vi.fn(),
   fetchMeApi: vi.fn(),
 }));
 
@@ -24,6 +22,9 @@ describe('AuthContext', () => {
       is_subscription_active: true,
       remaining_days: 30,
       is_infinite_subscription: false,
+      email_verified: true,
+      is_read_only: false,
+      restriction_reasons: [],
     });
   });
 
@@ -54,6 +55,7 @@ describe('AuthContext', () => {
     };
     (api.loginApi as any).mockResolvedValue({
       access_token: 'mock-token-123',
+      refresh_token: 'mock-refresh-token',
       token_type: 'bearer',
       user: mockUser,
     });
@@ -69,70 +71,42 @@ describe('AuthContext', () => {
     expect(result.current.token).toBe('mock-token-123');
     expect(result.current.user?.email).toBe('test@shopeek.ir');
     expect(localStorage.getItem('shopeek_token')).toBe('mock-token-123');
+    expect(localStorage.getItem('shopeek_refresh_token')).toBe('mock-refresh-token');
   });
 
-  it('successful registration calls registerApi and returns response', async () => {
-    (api.registerApi as any).mockResolvedValue({
-      message: 'کد تایید ارسال شد',
-      email: 'new@shopeek.ir',
-      requires_verification: true,
-    });
-
-    const { result } = renderHook(() => useAuth(), { wrapper });
-
-    let response: any;
-    await act(async () => {
-      response = await result.current.register('new@shopeek.ir', 'Password123!', 'کاربر ثبت نامی');
-    });
-
-    expect(response.requires_verification).toBe(true);
-    expect(response.email).toBe('new@shopeek.ir');
-  });
-
-  it('successful verifyEmail sets token, user, and localStorage', async () => {
+  it('successful registration returns verification message without storing a token', async () => {
     const mockUser = {
       id: 'u-2',
       email: 'new@shopeek.ir',
       full_name: 'کاربر ثبت نامی',
       role: 'User',
-      is_email_verified: true,
-      is_subscription_active: true,
-      remaining_days: 30,
+      is_subscription_active: false,
+      remaining_days: 0,
       is_infinite_subscription: false,
+      email_verified: false,
+      is_read_only: true,
+      restriction_reasons: ['email_unverified'],
     };
-    (api.verifyEmailApi as any).mockResolvedValue({
-      access_token: 'verified-token-789',
-      token_type: 'bearer',
-      user: mockUser,
+    (api.registerApi as any).mockResolvedValue({
+      message: 'ایمیل تأیید برای حساب شما ارسال شد.',
+      email: 'new@shopeek.ir',
     });
     (api.fetchMeApi as any).mockResolvedValue(mockUser);
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
+    let regResult;
     await act(async () => {
-      await result.current.verifyEmail('new@shopeek.ir', '123456');
+      regResult = await result.current.register('new@shopeek.ir', 'Password123!', 'کاربر ثبت نامی');
     });
 
-    expect(result.current.isAuthenticated).toBe(true);
-    expect(result.current.token).toBe('verified-token-789');
-    expect(result.current.user?.is_email_verified).toBe(true);
-    expect(localStorage.getItem('shopeek_token')).toBe('verified-token-789');
-  });
-
-  it('resendVerification calls resendVerificationApi', async () => {
-    (api.resendVerificationApi as any).mockResolvedValue({
-      message: 'کد ارسال شد',
-      success: true,
-    });
-
-    const { result } = renderHook(() => useAuth(), { wrapper });
-
-    let res: any;
-    await act(async () => {
-      res = await result.current.resendVerification('test@shopeek.ir');
-    });
-
-    expect(res.success).toBe(true);
+    expect(regResult!.email).toBe('new@shopeek.ir');
+    expect(regResult!.message).toContain('تأیید');
+    // Registration does NOT auto-login: the user must verify their email first.
+    expect(result.current.isAuthenticated).toBe(false);
+    expect(result.current.token).toBeNull();
+    expect(result.current.user).toBeNull();
+    expect(localStorage.getItem('shopeek_token')).toBeNull();
   });
 
   it('logout clears state and localStorage', async () => {

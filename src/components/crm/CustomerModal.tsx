@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Phone, Mail, MessageSquare, Send, Clock } from 'lucide-react';
+import { X, Phone, Mail, MessageSquare, Send, Clock, Lock } from 'lucide-react';
 import { Customer } from '../../types';
 import { addCustomerInteraction } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
@@ -9,9 +9,10 @@ interface CustomerModalProps {
   customer: Customer | null;
   onClose: () => void;
   onRefresh: () => void;
+  readOnly?: boolean;
 }
 
-export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose, onRefresh }) => {
+export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose, onRefresh, readOnly = false }) => {
   const [interactionType, setInteractionType] = useState<'NOTE' | 'CALL' | 'EMAIL'>('NOTE');
   const [noteContent, setNoteContent] = useState<string>('');
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -78,9 +79,10 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
                   <button
                     type="button"
                     onClick={() => setInteractionType('NOTE')}
+                    disabled={readOnly}
                     className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
                       interactionType === 'NOTE' ? 'bg-brand-500 text-white font-bold' : 'text-slate-500'
-                    }`}
+                    } disabled:opacity-50`}
                   >
                     <MessageSquare className="w-3 h-3" />
                     <span className="hidden xs:inline">یادداشت</span>
@@ -89,9 +91,10 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
                   <button
                     type="button"
                     onClick={() => setInteractionType('CALL')}
+                    disabled={readOnly}
                     className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
                       interactionType === 'CALL' ? 'bg-brand-500 text-white font-bold' : 'text-slate-500'
-                    }`}
+                    } disabled:opacity-50`}
                   >
                     <Phone className="w-3 h-3" />
                     <span className="hidden xs:inline">تماس</span>
@@ -100,9 +103,10 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
                   <button
                     type="button"
                     onClick={() => setInteractionType('EMAIL')}
+                    disabled={readOnly}
                     className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
                       interactionType === 'EMAIL' ? 'bg-brand-500 text-white font-bold' : 'text-slate-500'
-                    }`}
+                    } disabled:opacity-50`}
                   >
                     <Mail className="w-3.5 h-3.5" />
                     <span className="hidden xs:inline">ایمیل</span>
@@ -111,23 +115,30 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
                 </div>
               </div>
 
-              <form onSubmit={handleAddNote} className="flex flex-col sm:flex-row gap-2">
-                <input
-                  type="text"
-                  value={noteContent}
-                  onChange={e => setNoteContent(e.target.value)}
-                  placeholder="متن یادداشت یا خلاصه پیگیری را وارد کنید..."
-                  className="flex-1 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs focus:outline-hidden focus:border-brand-500 min-w-0"
-                />
-                <button
-                  type="submit"
-                  disabled={submitting || !noteContent.trim()}
-                  className="px-4 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5 shrink-0"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>ثبت</span>
-                </button>
-              </form>
+              {readOnly ? (
+                <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-800 dark:text-rose-200 text-[11px] leading-relaxed">
+                  <Lock className="w-3.5 h-3.5 shrink-0 mt-0.5 text-rose-500" />
+                  <span>در حالت «فقط-خواندنی» امکان ثبت یادداشت یا تعامل جدید وجود ندارد.</span>
+                </div>
+              ) : (
+                <form onSubmit={handleAddNote} className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    value={noteContent}
+                    onChange={e => setNoteContent(e.target.value)}
+                    placeholder="متن یادداشت یا خلاصه پیگیری را وارد کنید..."
+                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs focus:outline-hidden focus:border-brand-500 min-w-0"
+                  />
+                  <button
+                    type="submit"
+                    disabled={submitting || !noteContent.trim()}
+                    className="px-4 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5 shrink-0"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>ثبت</span>
+                  </button>
+                </form>
+              )}
             </div>
 
             {/* Interaction History Timeline */}

@@ -6,11 +6,10 @@ import {
   AdvisoryTriggerResult,
   ChatMessage,
   AuthTokenResponse,
+  RegisterOut,
+  ResendVerificationResponse,
   LoginPayload,
   RegisterPayload,
-  RegisterResponse,
-  VerifyEmailPayload,
-  ResendVerificationPayload,
   User
 } from '../types';
 
@@ -21,8 +20,52 @@ const getAuthToken = (): string | null => {
   return localStorage.getItem('shopeek_token');
 };
 
-// Custom fetch wrapper adding Authorization header
-const authFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+const getRefreshToken = (): string | null => {
+  return localStorage.getItem('shopeek_refresh_token');
+};
+
+const clearAuthStorage = (): void => {
+  localStorage.removeItem('shopeek_token');
+  localStorage.removeItem('shopeek_refresh_token');
+  localStorage.removeItem('shopeek_user');
+  window.dispatchEvent(new Event('shopeek_unauthorized'));
+};
+
+// Single-flight silent token refresh via the backend's GoTrue refresh grant.
+let refreshPromise: Promise<boolean> | null = null;
+
+const refreshAccessToken = async (): Promise<boolean> => {
+  if (refreshPromise) return refreshPromise;
+  refreshPromise = (async () => {
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) return false;
+    try {
+      const res = await fetch(`${API_BASE}/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+      if (!res.ok) return false;
+      const data = (await res.json()) as AuthTokenResponse;
+      localStorage.setItem('shopeek_token', data.access_token);
+      if (data.refresh_token) {
+        localStorage.setItem('shopeek_refresh_token', data.refresh_token);
+      }
+      localStorage.setItem('shopeek_user', JSON.stringify(data.user));
+      window.dispatchEvent(new Event('shopeek_token_refreshed'));
+      return true;
+    } catch {
+      return false;
+    }
+  })();
+  try {
+    return await refreshPromise;
+  } finally {
+    refreshPromise = null;
+  }
+};
+
+const doFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
   const token = getAuthToken();
   const headers = new Headers(init?.headers || {});
 
@@ -30,16 +73,26 @@ const authFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  const response = await fetch(input, {
+  return fetch(input, {
     ...init,
     headers,
   });
+};
+
+// Custom fetch wrapper adding the Authorization header, with on-401 refresh+retry.
+const authFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+  let response = await doFetch(input, init);
+
+  if (response.status === 401) {
+    const refreshed = await refreshAccessToken();
+    if (refreshed) {
+      response = await doFetch(input, init);
+    }
+  }
 
   if (response.status === 401) {
     // Clear invalid or expired token
-    localStorage.removeItem('shopeek_token');
-    localStorage.removeItem('shopeek_user');
-    window.dispatchEvent(new Event('shopeek_unauthorized'));
+    clearAuthStorage();
   }
 
   return response;
@@ -61,7 +114,7 @@ export const loginApi = async (payload: LoginPayload): Promise<AuthTokenResponse
   return res.json();
 };
 
-export const registerApi = async (payload: RegisterPayload): Promise<RegisterResponse> => {
+export const registerApi = async (payload: RegisterPayload): Promise<RegisterOut> => {
   const res = await fetch(`${API_BASE}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -75,30 +128,16 @@ export const registerApi = async (payload: RegisterPayload): Promise<RegisterRes
   return res.json();
 };
 
-export const verifyEmailApi = async (payload: VerifyEmailPayload): Promise<AuthTokenResponse> => {
-  const res = await fetch(`${API_BASE}/auth/verify-email`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: 'کد تایید وارد شده نامعتبر است یا منقضی شده است.' }));
-    throw new Error(err.detail || 'کد تایید وارد شده نامعتبر است یا منقضی شده است.');
-  }
-  return res.json();
-};
-
-export const resendVerificationApi = async (payload: ResendVerificationPayload): Promise<{ message: string; success?: boolean; already_verified?: boolean }> => {
+export const resendVerificationApi = async (email: string): Promise<ResendVerificationResponse> => {
   const res = await fetch(`${API_BASE}/auth/resend-verification`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ email }),
   });
 
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: 'خطا در ارسال مجدد کد تایید.' }));
-    throw new Error(err.detail || 'خطا در ارسال مجدد کد تایید.');
+    const err = await res.json().catch(() => ({ detail: 'خطا در ارسال مجدد لینک تأیید ایمیل' }));
+    throw new Error(err.detail || 'خطا در ارسال مجدد لینک تأیید ایمیل');
   }
   return res.json();
 };

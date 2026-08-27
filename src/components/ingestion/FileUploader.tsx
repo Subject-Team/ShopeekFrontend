@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { UploadCloud, FileText, CheckCircle2, ArrowLeft, Download, AlertCircle } from 'lucide-react';
+import { UploadCloud, FileText, CheckCircle2, ArrowLeft, Download, AlertCircle, Lock } from 'lucide-react';
 import { uploadSalesFile, previewSalesFile, getSampleCSV } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { formatPersianNumber, formatPersianDate } from '../../utils';
 
 interface FileUploaderProps {
   onSuccess?: () => void;
+  readOnly?: boolean;
 }
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
@@ -72,7 +73,7 @@ const validateFileSecurity = async (file: File): Promise<{ valid: boolean; error
   return { valid: true };
 };
 
-export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
+export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly = false }) => {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -81,6 +82,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
   const { showToast } = useToast();
 
   const handleFileChange = async (selectedFile: File) => {
+    if (readOnly) return;
     const validation = await validateFileSecurity(selectedFile);
     if (!validation.valid) {
       showToast(validation.error || 'فایل نامعتبر است.', 'error');
@@ -114,13 +116,14 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
+    if (readOnly) return;
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       handleFileChange(e.dataTransfer.files[0]);
     }
   };
 
   const handleUploadSubmit = async () => {
-    if (!file) return;
+    if (readOnly || !file) return;
     setProcessing(true);
     try {
       const res = await uploadSalesFile(file, preview?.detected_mapping);
@@ -160,12 +163,22 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
         <button
           data-guide="ingestion-sample-data"
           onClick={handleDownloadSample}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 border border-indigo-200 dark:border-indigo-800 text-xs font-bold transition-all shadow-xs"
+          disabled={readOnly}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 border border-indigo-200 dark:border-indigo-800 text-xs font-bold transition-all shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Download className="w-4 h-4 text-indigo-500" />
           <span>بارگیری داده‌های نمونه فروش</span>
         </button>
       </div>
+
+      {readOnly && (
+        <div className="flex items-start gap-3 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-800 dark:text-rose-200 text-xs leading-relaxed">
+          <Lock className="w-4 h-4 shrink-0 mt-0.5 text-rose-500" />
+          <span>
+            حساب شما در حالت «فقط‌-خواندنی» قرار دارد و امکان بارگذاری فایل فاکتور وجود ندارد. جهت رفع محدودیت، از طریق صفحه تماس با پشتیبانی شاپیک در ارتباط باشید.
+          </span>
+        </div>
+      )}
 
       {!preview ? (
         /* Drag and Drop Zone */
@@ -178,7 +191,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
             isDragging
               ? 'border-brand-500 bg-brand-50/50 dark:bg-brand-950/20 ring-4 ring-brand-500/10'
               : 'border-slate-300 dark:border-slate-700 hover:border-brand-500 dark:hover:border-brand-500 bg-slate-50/50 dark:bg-slate-800/30'
-          }`}
+          } ${readOnly ? 'pointer-events-none opacity-60 saturate-50' : ''}`}
         >
           <div className="w-16 h-16 rounded-3xl bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/10">
             <UploadCloud className="w-8 h-8" />
@@ -192,7 +205,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
             </p>
           </div>
           <label className="cursor-pointer px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition-all">
-            {loading ? 'در حال بررسی و پردازش فایل...' : 'انتخاب فایل (Excel / CSV)'}
+            {loading ? 'در حال بررسی و پردازش فایل...' : readOnly ? 'ثبت فاکتور غیرفعال است' : 'انتخاب فایل (Excel / CSV)'}
             <input
               type="file"
               accept=".csv, .xlsx, .xlsm, .xltx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, text/csv"
@@ -267,7 +280,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess }) => {
           <div className="flex justify-end gap-3 pt-4">
             <button
               onClick={handleUploadSubmit}
-              disabled={processing}
+              disabled={processing || readOnly}
               className="px-6 py-3 rounded-2xl bg-brand-500 hover:bg-brand-600 text-white font-extrabold text-xs shadow-lg shadow-brand-500/25 transition-all flex items-center gap-2 disabled:opacity-50"
             >
               <CheckCircle2 className="w-4 h-4" />

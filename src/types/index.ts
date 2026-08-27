@@ -4,34 +4,29 @@ export interface User {
   full_name: string;
   role: string;
   created_at: string;
-  is_email_verified?: boolean;
-  email_verified_at?: string | null;
   subscription_expires_at?: string | null;
   is_subscription_active?: boolean;
   is_infinite_subscription?: boolean;
   remaining_days?: number | null;
+  email_verified?: boolean;
+  is_read_only?: boolean;
+  restriction_reasons?: string[];
 }
 
 export interface AuthTokenResponse {
   access_token: string;
+  refresh_token?: string | null;
   token_type: string;
   user: User;
 }
 
-export interface RegisterResponse {
+export interface RegisterOut {
   message: string;
   email: string;
-  requires_verification: boolean;
 }
 
-export interface VerifyEmailPayload {
-  email: string;
-  code: string;
-}
-
-export interface ResendVerificationPayload {
-  email: string;
-  turnstile_token?: string;
+export interface ResendVerificationResponse {
+  message: string;
 }
 
 export interface LoginPayload {
