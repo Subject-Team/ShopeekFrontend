@@ -8,6 +8,9 @@ import {
   AuthTokenResponse,
   LoginPayload,
   RegisterPayload,
+  RegisterResponse,
+  VerifyEmailPayload,
+  ResendVerificationPayload,
   User
 } from '../types';
 
@@ -58,7 +61,7 @@ export const loginApi = async (payload: LoginPayload): Promise<AuthTokenResponse
   return res.json();
 };
 
-export const registerApi = async (payload: RegisterPayload): Promise<AuthTokenResponse> => {
+export const registerApi = async (payload: RegisterPayload): Promise<RegisterResponse> => {
   const res = await fetch(`${API_BASE}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -68,6 +71,34 @@ export const registerApi = async (payload: RegisterPayload): Promise<AuthTokenRe
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: 'خطا در ثبت‌نام کاربر' }));
     throw new Error(err.detail || 'خطا در ایجاد حساب جدید.');
+  }
+  return res.json();
+};
+
+export const verifyEmailApi = async (payload: VerifyEmailPayload): Promise<AuthTokenResponse> => {
+  const res = await fetch(`${API_BASE}/auth/verify-email`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'کد تایید وارد شده نامعتبر است یا منقضی شده است.' }));
+    throw new Error(err.detail || 'کد تایید وارد شده نامعتبر است یا منقضی شده است.');
+  }
+  return res.json();
+};
+
+export const resendVerificationApi = async (payload: ResendVerificationPayload): Promise<{ message: string; success?: boolean; already_verified?: boolean }> => {
+  const res = await fetch(`${API_BASE}/auth/resend-verification`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در ارسال مجدد کد تایید.' }));
+    throw new Error(err.detail || 'خطا در ارسال مجدد کد تایید.');
   }
   return res.json();
 };

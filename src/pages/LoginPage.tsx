@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SEO } from '../components/common/SEO';
 import { MinimalFooter } from '../components/layout/MinimalFooter';
+import { EmailVerificationModal } from '../components/auth/EmailVerificationModal';
 
 const TURNSTILE_SITE_KEY = (import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY as string) || '0x4AAAAAAEZPje7Wc0YAQw6O';
 
@@ -27,6 +28,8 @@ export const LoginPage: React.FC = () => {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
+  const [showVerifyModal, setShowVerifyModal] = useState<boolean>(false);
+  const [pendingVerifyEmail, setPendingVerifyEmail] = useState<string>('');
 
   // Password evaluation & strength calculation
   const passwordAnalysis = useMemo(() => {
@@ -181,13 +184,24 @@ export const LoginPage: React.FC = () => {
       if (mode === 'login') {
         await login(email.trim(), password, turnstileToken);
         showToast('ورود با موفقیت انجام شد. خوش آمدید!', 'success');
+        navigate('/dashboard');
       } else {
-        await register(email.trim(), password, fullName.trim(), turnstileToken);
-        showToast('حساب کاربری جدید با موفقیت ایجاد شد!', 'success');
+        const regRes = await register(email.trim(), password, fullName.trim(), turnstileToken);
+        if (regRes && regRes.requires_verification) {
+          setPendingVerifyEmail(email.trim());
+          setShowVerifyModal(true);
+          showToast(regRes.message || 'کد تایید ۶ رقمی به نشانی ایمیل شما ارسال شد.', 'success');
+        } else {
+          showToast('حساب کاربری با موفقیت ایجاد شد!', 'success');
+          navigate('/dashboard');
+        }
       }
-      navigate('/dashboard');
     } catch (err: any) {
       const msg = err.message || 'خطا در برقراری ارتباط با سرور';
+      if (msg.includes('ایمیل خود را تایید') || msg.includes('تایید نشانی ایمیل') || msg.includes('تایید نشده است')) {
+        setPendingVerifyEmail(email.trim());
+        setShowVerifyModal(true);
+      }
       setErrorMessage(msg);
       showToast(msg, 'error');
       // Reset Turnstile token on failure for a fresh challenge
@@ -599,6 +613,21 @@ export const LoginPage: React.FC = () => {
           </form>
         </div>
       </main>
+
+      {/* Email Verification OTP Modal */}
+      <EmailVerificationModal
+        isOpen={showVerifyModal}
+        email={pendingVerifyEmail}
+        onClose={() => setShowVerifyModal(false)}
+        onSuccess={() => {
+          setShowVerifyModal(false);
+          navigate('/dashboard');
+        }}
+        onEditEmail={() => {
+          setShowVerifyModal(false);
+          setMode('register');
+        }}
+      />
 
       {/* Minimal Footer with distinct spacing */}
       <div className="mt-8 shrink-0">

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, LoginPayload, RegisterPayload } from '../types';
-import { loginApi, registerApi, fetchMeApi } from '../services/api';
+import { User, RegisterResponse } from '../types';
+import { loginApi, registerApi, verifyEmailApi, resendVerificationApi, fetchMeApi } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -8,7 +8,9 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string, turnstileToken?: string) => Promise<void>;
-  register: (email: string, password: string, full_name: string, turnstileToken?: string) => Promise<void>;
+  register: (email: string, password: string, full_name: string, turnstileToken?: string) => Promise<RegisterResponse>;
+  verifyEmail: (email: string, code: string) => Promise<void>;
+  resendVerification: (email: string, turnstileToken?: string) => Promise<{ message: string; success?: boolean; already_verified?: boolean }>;
   logout: () => void;
 }
 
@@ -16,8 +18,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
-    const savedUser = localStorage.getItem('shopeek_user');
-    return savedUser ? JSON.parse(savedUser) : null;
+    try {
+      const savedUser = localStorage.getItem('shopeek_user');
+      return savedUser && savedUser !== 'undefined' ? JSON.parse(savedUser) : null;
+    } catch {
+      return null;
+    }
   });
   const [token, setToken] = useState<string | null>(() => {
     return localStorage.getItem('shopeek_token');
@@ -67,10 +73,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (email: string, password: string, full_name: string, turnstileToken?: string) => {
+  const register = async (email: string, password: string, full_name: string, turnstileToken?: string): Promise<RegisterResponse> => {
     setIsLoading(true);
     try {
       const response = await registerApi({ email, password, full_name, turnstile_token: turnstileToken });
+      return response;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const verifyEmail = async (email: string, code: string) => {
+    setIsLoading(true);
+    try {
+      const response = await verifyEmailApi({ email, code });
       setToken(response.access_token);
       setUser(response.user);
       localStorage.setItem('shopeek_token', response.access_token);
@@ -78,6 +94,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const resendVerification = async (email: string, turnstileToken?: string) => {
+    return await resendVerificationApi({ email, turnstile_token: turnstileToken });
   };
 
   const logout = () => {
@@ -96,6 +116,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         login,
         register,
+        verifyEmail,
+        resendVerification,
         logout,
       }}
     >

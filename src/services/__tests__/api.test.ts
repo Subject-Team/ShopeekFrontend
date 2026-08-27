@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   loginApi,
   registerApi,
+  verifyEmailApi,
+  resendVerificationApi,
   fetchMeApi,
   fetchKPISummary,
   fetchRevenueTrend,
@@ -57,13 +59,13 @@ describe('API Services', () => {
     ).rejects.toThrow('Invalid credentials');
   });
 
-  it('registerApi sends POST request and returns token response', async () => {
+  it('registerApi sends POST request and returns register response', async () => {
     window.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
-        access_token: 'new-tok-123',
-        token_type: 'bearer',
-        user: { id: 'u-2', email: 'new@shopeek.ir' },
+        message: 'کد تایید ارسال شد',
+        email: 'new@shopeek.ir',
+        requires_verification: true,
       }),
     });
 
@@ -72,7 +74,41 @@ describe('API Services', () => {
       password: 'Password123!',
       full_name: 'کاربر جدید',
     });
-    expect(res.access_token).toBe('new-tok-123');
+    expect(res.requires_verification).toBe(true);
+    expect(res.email).toBe('new@shopeek.ir');
+  });
+
+  it('verifyEmailApi sends POST request and returns auth token response', async () => {
+    window.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        access_token: 'verified-token-123',
+        token_type: 'bearer',
+        user: { id: 'u-2', email: 'new@shopeek.ir', is_email_verified: true },
+      }),
+    });
+
+    const res = await verifyEmailApi({
+      email: 'new@shopeek.ir',
+      code: '123456',
+    });
+    expect(res.access_token).toBe('verified-token-123');
+    expect(res.user.is_email_verified).toBe(true);
+  });
+
+  it('resendVerificationApi sends POST request', async () => {
+    window.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        message: 'کد تایید مجدداً ارسال شد',
+        success: true,
+      }),
+    });
+
+    const res = await resendVerificationApi({
+      email: 'new@shopeek.ir',
+    });
+    expect(res.success).toBe(true);
   });
 
   it('fetchMeApi includes Bearer token header', async () => {

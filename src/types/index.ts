@@ -4,6 +4,8 @@ export interface User {
   full_name: string;
   role: string;
   created_at: string;
+  is_email_verified?: boolean;
+  email_verified_at?: string | null;
   subscription_expires_at?: string | null;
   is_subscription_active?: boolean;
   is_infinite_subscription?: boolean;
@@ -14,6 +16,22 @@ export interface AuthTokenResponse {
   access_token: string;
   token_type: string;
   user: User;
+}
+
+export interface RegisterResponse {
+  message: string;
+  email: string;
+  requires_verification: boolean;
+}
+
+export interface VerifyEmailPayload {
+  email: string;
+  code: string;
+}
+
+export interface ResendVerificationPayload {
+  email: string;
+  turnstile_token?: string;
 }
 
 export interface LoginPayload {
