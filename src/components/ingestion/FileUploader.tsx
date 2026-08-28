@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UploadCloud, FileText, CheckCircle2, ArrowLeft, Download, AlertCircle, Lock } from 'lucide-react';
+import { UploadCloud, FileText, CheckCircle2, Download, Lock } from 'lucide-react';
 import { uploadSalesFile, previewSalesFile, getSampleCSV } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { formatPersianNumber, formatPersianDate } from '../../utils';

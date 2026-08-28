@@ -1,5 +1,5 @@
 import React from 'react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, act, render, screen } from '@testing-library/react';
 import { ThemeProvider, useTheme } from '../ThemeContext';
 import { ToastProvider, useToast } from '../ToastContext';
@@ -30,10 +30,6 @@ describe('ThemeContext', () => {
 });
 
 describe('ToastContext', () => {
-  const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <ToastProvider>{children}</ToastProvider>
-  );
-
   it('renders and displays toasts of different types', () => {
     const TestComponent = () => {
       const { showToast } = useToast();

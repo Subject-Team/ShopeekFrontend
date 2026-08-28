@@ -111,7 +111,6 @@ export const LoginPage: React.FC = () => {
     ? (passwordAnalysis.hasMinLength && passwordAnalysis.hasLower && passwordAnalysis.hasUpper && passwordAnalysis.hasSymbol)
     : password.length > 0;
   const isConfirmPasswordValid = Boolean(confirmPassword) && confirmPassword === password;
-  const isPrivacyValid = acceptedPrivacy === true;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

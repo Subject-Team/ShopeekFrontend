@@ -22,10 +22,8 @@ export const DashboardPage: React.FC = () => {
   const [advisory, setAdvisory] = useState<AIAdvisory | null>(null);
   const [advisoryHistory, setAdvisoryHistory] = useState<AIAdvisory[]>([]);
   const [topCustomers, setTopCustomers] = useState<Customer[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
 
   const loadDashboardData = async () => {
-    setLoading(true);
     try {
       const [kpiRes, trendRes, advRes, custRes, historyRes] = await Promise.all([
         fetchKPISummary(dateRangeDays),
@@ -41,8 +39,6 @@ export const DashboardPage: React.FC = () => {
       setTopCustomers(custRes.slice(0, 5));
     } catch (err) {
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 

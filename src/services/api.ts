@@ -237,8 +237,6 @@ export const uploadSalesFile = async (file: File, userMapping?: Record<string, s
   return res.json();
 };
 
-export const uploadCSVFile = uploadSalesFile;
-
 export const previewSalesFile = async (file: File) => {
   const formData = new FormData();
   formData.append('file', file);
@@ -254,8 +252,6 @@ export const previewSalesFile = async (file: File) => {
   }
   return res.json();
 };
-
-export const previewCSVFile = previewSalesFile;
 
 export const getSampleCSV = async () => {
   const res = await authFetch(`${API_BASE}/ingestion/sample`);

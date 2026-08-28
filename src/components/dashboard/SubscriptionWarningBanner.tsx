@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, Clock } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { User } from '../../types';
 import { formatPersianDate, formatPersianNumber } from '../../utils';
 

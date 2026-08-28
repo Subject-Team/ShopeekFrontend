@@ -6,7 +6,6 @@ import {
   ChevronLeft,
   Check,
   Lightbulb,
-  HelpCircle,
 } from 'lucide-react';
 import { useGuide } from '../../context/GuideContext';
 import { formatPersianNumber } from '../../utils';
