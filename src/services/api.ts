@@ -39,7 +39,7 @@ type RefreshOutcome = 'ok' | 'invalid' | 'unavailable';
 
 let refreshPromise: Promise<RefreshOutcome> | null = null;
 
-const refreshAccessToken = async (): Promise<RefreshOutcome> => {
+export const refreshAccessToken = async (): Promise<RefreshOutcome> => {
   if (refreshPromise) return refreshPromise;
   refreshPromise = (async () => {
     const refreshToken = getRefreshToken();

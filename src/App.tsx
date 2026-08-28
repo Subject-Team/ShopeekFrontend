@@ -6,6 +6,7 @@ import { PageContextProvider } from './context/PageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { GuideProvider } from './context/GuideContext';
 import { ScrollToTop } from './components/common/ScrollToTop';
+import { GoTrueCallbackHandler } from './components/auth/GoTrueCallbackHandler';
 import { Shell } from './components/layout/Shell';
 import { LandingPage } from './pages/LandingPage';
 import { PrivacyPage } from './pages/PrivacyPage';
@@ -93,6 +94,7 @@ export function App() {
             <BrowserRouter>
               <GuideProvider>
                 <ScrollToTop />
+                <GoTrueCallbackHandler />
                 <AppRoutes />
               </GuideProvider>
             </BrowserRouter>
