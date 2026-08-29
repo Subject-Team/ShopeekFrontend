@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { LogIn, UserPlus, Lock, Mail, User, Sparkles, ArrowRight, Eye, EyeOff, AlertCircle, Home, CheckSquare, Square, MessageSquare, ShieldCheck } from 'lucide-react';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { useAuth } from '../context/AuthContext';
@@ -10,7 +10,7 @@ import { MinimalFooter } from '../components/layout/MinimalFooter';
 const TURNSTILE_SITE_KEY = (import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY as string) || '0x4AAAAAAEZPje7Wc0YAQw6O';
 
 export const LoginPage: React.FC = () => {
-  const { login, register, isLoading } = useAuth();
+  const { login, register, isLoading, isAuthenticated } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -199,6 +199,14 @@ export const LoginPage: React.FC = () => {
       setSubmitting(false);
     }
   };
+
+  // An already-signed-in user (validated live session) has no business being on
+  // the login page. Placed after every hook so the hook count stays stable across
+  // renders. Wait for mount session validation so a stale/invalid token that gets
+  // conclusively rejected still lets the user reach the form.
+  if (isAuthenticated && !isLoading) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return (
     <div className="min-h-screen w-full bg-slate-50 text-slate-900 flex flex-col font-vazir dir-rtl selection:bg-brand-500 selection:text-white relative overflow-x-hidden">

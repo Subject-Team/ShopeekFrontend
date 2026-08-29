@@ -20,6 +20,7 @@ vi.mock('../../services/api', () => ({
   loginApi: vi.fn(),
   registerApi: vi.fn(),
   fetchMeApi: vi.fn(),
+  setWebSessionId: vi.fn(),
 }));
 
 describe('LoginPage Comprehensive Tests', () => {
@@ -153,6 +154,57 @@ describe('LoginPage Comprehensive Tests', () => {
 
     await waitFor(() => {
       expect(screen.getByText('صفحه تأیید ایمیل')).toBeInTheDocument();
+    });
+  });
+
+  it('redirects an already-authenticated user to the dashboard', async () => {
+    localStorage.setItem('shopeek_token', 'test-access-token');
+    localStorage.setItem(
+      'shopeek_user',
+      JSON.stringify({ id: 'u-1', email: 'active@shopeek.ir', full_name: 'کاربر فعال', role: 'User' })
+    );
+    (api.fetchMeApi as any).mockResolvedValue({
+      id: 'u-1',
+      email: 'active@shopeek.ir',
+      full_name: 'کاربر فعال',
+      role: 'User',
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/login']}>
+        <AuthProvider>
+          <ToastProvider>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/dashboard" element={<div>داشبورد کاربر</div>} />
+            </Routes>
+          </ToastProvider>
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('داشبورد کاربر')).toBeInTheDocument();
+    });
+    expect(api.fetchMeApi).toHaveBeenCalled();
+  });
+
+  it('renders the login form for a stale token that gets conclusively rejected', async () => {
+    localStorage.setItem('shopeek_token', 'stale-token');
+    localStorage.setItem(
+      'shopeek_user',
+      JSON.stringify({ id: 'u-1', email: 'stale@shopeek.ir', full_name: 'کاربر', role: 'User' })
+    );
+    // fetchMeApi rejects conclusively -> authFetch clears storage + fires event.
+    (api.fetchMeApi as any).mockRejectedValueOnce(() => {
+      localStorage.removeItem('shopeek_token');
+      return Promise.reject(new Error('Session invalid'));
+    });
+
+    renderLogin();
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('name@example.com')).toBeInTheDocument();
     });
   });
 
