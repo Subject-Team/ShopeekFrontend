@@ -83,7 +83,7 @@ export const DashboardPage: React.FC = () => {
           title="فروش کل (تومان)"
           value={kpi ? formatPersianNumber(kpi.total_revenue) : '۰'}
           changePercentage={kpi?.revenue_change_percentage}
-          subtitle={`در ${dateRangeDays} روز گذشته`}
+          subtitle={`در ${formatPersianNumber(dateRangeDays)} روز گذشته`}
           icon={DollarSign}
           color="emerald"
           forecastValue={kpi?.revenue_forecast}
@@ -93,7 +93,7 @@ export const DashboardPage: React.FC = () => {
           title="تعداد کل سفارشات"
           value={kpi ? formatPersianNumber(kpi.order_count) : '۰'}
           changePercentage={kpi?.order_count_change_percentage}
-          subtitle={`در ${dateRangeDays} روز گذشته`}
+          subtitle={`در ${formatPersianNumber(dateRangeDays)} روز گذشته`}
           icon={ShoppingBag}
           color="indigo"
           forecastValue={kpi?.order_count_forecast}
