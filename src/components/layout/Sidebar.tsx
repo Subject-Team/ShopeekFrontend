@@ -5,6 +5,7 @@ import {
   TrendingUp,
   Users,
   UploadCloud,
+  Settings as SettingsIcon,
   Sparkles,
   ChevronRight,
   Home,
@@ -29,6 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     { path: '/dashboard/analytics', label: 'تحلیل و آمار فروش', icon: TrendingUp },
     { path: '/dashboard/customers', label: 'مدیریت مشتریان (CRM)', icon: Users },
     { path: '/dashboard/ingestion', label: 'ورود داده‌ها (CSV/Excel)', icon: UploadCloud },
+    { path: '/dashboard/settings', label: 'تنظیمات', icon: SettingsIcon },
   ];
 
   return (

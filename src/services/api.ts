@@ -10,7 +10,8 @@ import {
   ResendVerificationResponse,
   LoginPayload,
   RegisterPayload,
-  User
+  User,
+  SettingsData
 } from '../types';
 
 const API_BASE = '/api/v1';
@@ -24,10 +25,21 @@ const getRefreshToken = (): string | null => {
   return localStorage.getItem('shopeek_refresh_token');
 };
 
+// The current device's web-session id, issued by the backend on login. It lets
+// the frontend (a) mark its own session in the Settings list and (b) tell the
+// refresh flow which session it belongs to so revoked sessions cannot renew.
+const SESSION_ID_KEY = 'shopeek_session_id';
+export const getWebSessionId = (): string | null => localStorage.getItem(SESSION_ID_KEY);
+export const setWebSessionId = (id: string | null): void => {
+  if (id) localStorage.setItem(SESSION_ID_KEY, id);
+  else localStorage.removeItem(SESSION_ID_KEY);
+};
+
 const clearAuthStorage = (): void => {
   localStorage.removeItem('shopeek_token');
   localStorage.removeItem('shopeek_refresh_token');
   localStorage.removeItem('shopeek_user');
+  setWebSessionId(null);
   window.dispatchEvent(new Event('shopeek_unauthorized'));
 };
 
@@ -48,7 +60,10 @@ export const refreshAccessToken = async (): Promise<RefreshOutcome> => {
       const res = await fetch(`${API_BASE}/auth/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refresh_token: refreshToken }),
+        body: JSON.stringify({
+          refresh_token: refreshToken,
+          ...(getWebSessionId() ? { session_id: getWebSessionId() } : {}),
+        }),
       });
       if (!res.ok) return 'invalid';
       const data = (await res.json()) as AuthTokenResponse;
@@ -57,6 +72,7 @@ export const refreshAccessToken = async (): Promise<RefreshOutcome> => {
         localStorage.setItem('shopeek_refresh_token', data.refresh_token);
       }
       localStorage.setItem('shopeek_user', JSON.stringify(data.user));
+      if (data.web_session_id) setWebSessionId(data.web_session_id);
       window.dispatchEvent(new Event('shopeek_token_refreshed'));
       return 'ok';
     } catch {
@@ -121,7 +137,9 @@ export const loginApi = async (payload: LoginPayload): Promise<AuthTokenResponse
     const err = await res.json().catch(() => ({ detail: 'خطا در ورود به حساب کاربری' }));
     throw new Error(err.detail || 'ایمیل یا کلمه عبور وارد شده نادرست است.');
   }
-  return res.json();
+  const data = (await res.json()) as AuthTokenResponse;
+  if (data.web_session_id) setWebSessionId(data.web_session_id);
+  return data;
 };
 
 export const registerApi = async (payload: RegisterPayload): Promise<RegisterOut> => {
@@ -297,4 +315,49 @@ export const createCustomer = async (data: { name: string; email?: string; phone
     throw new Error(err.detail || 'خطا در ایجاد مشتری');
   }
   return res.json();
+};
+
+// --- SETTINGS & SESSION MANAGEMENT API METHODS ---
+
+export const fetchSettings = async (): Promise<SettingsData> => {
+  const res = await authFetch(`${API_BASE}/settings`);
+  if (!res.ok) throw new Error('خطا در دریافت تنظیمات');
+  return res.json();
+};
+
+export const revokeWebSession = async (sessionId: string): Promise<void> => {
+  const headers = new Headers();
+  const current = getWebSessionId();
+  if (current) headers.set('X-Web-Session-ID', current);
+  const res = await authFetch(`${API_BASE}/settings/web-sessions/${sessionId}`, {
+    method: 'DELETE',
+    headers,
+  });
+  if (!res.ok && res.status !== 204) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در خروج از دستگاه مورد نظر' }));
+    throw new Error(err.detail || 'خطا در خروج از دستگاه مورد نظر');
+  }
+};
+
+export const revokeAllOtherSessions = async (): Promise<void> => {
+  const current = getWebSessionId();
+  const res = await authFetch(`${API_BASE}/settings/web-sessions/revoke-others`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ current_session_id: current }),
+  });
+  if (!res.ok && res.status !== 204) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در خروج از سایر دستگاه‌ها' }));
+    throw new Error(err.detail || 'خطا در خروج از سایر دستگاه‌ها');
+  }
+};
+
+export const unlinkTelegramSession = async (sessionId: string): Promise<void> => {
+  const res = await authFetch(`${API_BASE}/settings/telegram-sessions/${sessionId}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok && res.status !== 204) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در قطع اتصال ربات تلگرام' }));
+    throw new Error(err.detail || 'خطا در قطع اتصال ربات تلگرام');
+  }
 };

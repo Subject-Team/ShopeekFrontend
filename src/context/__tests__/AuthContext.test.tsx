@@ -8,6 +8,8 @@ vi.mock('../../services/api', () => ({
   loginApi: vi.fn(),
   registerApi: vi.fn(),
   fetchMeApi: vi.fn(),
+  setWebSessionId: vi.fn(),
+  getWebSessionId: vi.fn(() => null),
 }));
 
 describe('AuthContext', () => {

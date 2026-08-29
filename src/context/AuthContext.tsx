@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, RegisterOut } from '../types';
-import { loginApi, registerApi, fetchMeApi } from '../services/api';
+import { loginApi, registerApi, fetchMeApi, setWebSessionId } from '../services/api';
+import { getDeviceId, getDeviceLabel } from '../utils/device';
 
 interface AuthContextType {
   user: User | null;
@@ -69,7 +70,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string, turnstileToken?: string) => {
     setIsLoading(true);
     try {
-      const response = await loginApi({ email, password, turnstile_token: turnstileToken });
+      const response = await loginApi({
+        email,
+        password,
+        turnstile_token: turnstileToken,
+        device_id: getDeviceId(),
+        device_label: getDeviceLabel(),
+      });
       setToken(response.access_token);
       setUser(response.user);
       localStorage.setItem('shopeek_token', response.access_token);
@@ -98,6 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('shopeek_token');
     localStorage.removeItem('shopeek_refresh_token');
     localStorage.removeItem('shopeek_user');
+    setWebSessionId(null);
   };
 
   return (

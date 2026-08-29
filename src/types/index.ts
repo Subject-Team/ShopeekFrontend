@@ -18,6 +18,7 @@ export interface AuthTokenResponse {
   refresh_token?: string | null;
   token_type: string;
   user: User;
+  web_session_id?: string | null;
 }
 
 export interface RegisterOut {
@@ -33,6 +34,8 @@ export interface LoginPayload {
   email: string;
   password: string;
   turnstile_token?: string;
+  device_id?: string;
+  device_label?: string;
 }
 
 export interface RegisterPayload {
@@ -109,4 +112,26 @@ export interface ChatMessage {
   sender: 'USER' | 'ASSISTANT';
   message_content: string;
   created_at: string;
+}
+
+export interface WebSession {
+  id: string;
+  device_id: string;
+  device_label: string;
+  user_agent?: string | null;
+  ip?: string | null;
+  login_at: string;
+  last_seen_at: string;
+}
+
+export interface TelegramSession {
+  id: string;
+  telegram_chat_id: string;
+  created_at: string;
+}
+
+export interface SettingsData {
+  profile: User;
+  web_sessions: WebSession[];
+  telegram_sessions: TelegramSession[];
 }
