@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, BarChart3, Bot, FileText, ArrowUpLeft, MessageSquare, Send, Instagram } from 'lucide-react';
+import { Shield, BarChart3, Bot, FileText, ArrowUpLeft, MessageSquare, Send, Instagram, Mail } from 'lucide-react';
 
 export const MainFooter: React.FC = () => {
   return (
@@ -42,6 +42,14 @@ export const MainFooter: React.FC = () => {
                 >
                   <Instagram className="w-4 h-4" />
                 </a>
+                <a
+                  href="mailto:support@shopeekapp.ir"
+                  className="p-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all shadow-2xs"
+                  title="ایمیل پشتیبانی شاپیک (support@shopeekapp.ir)"
+                  aria-label="ایمیل پشتیبانی شاپیک"
+                >
+                  <Mail className="w-4 h-4" />
+                </a>
               </div>
             </div>
           </div>
@@ -73,7 +81,7 @@ export const MainFooter: React.FC = () => {
           <div className="space-y-3">
             <h3 className="text-sm font-bold text-slate-900 tracking-wide border-b border-slate-200 pb-2">ارتباط با پشتیبانی</h3>
             <p className="text-xs text-slate-500 leading-relaxed">
-              برای خرید و تمدید اشتراک، دریافت راهنمایی فنی و کسب اطلاعات بیشتر می‌توانید با شناسه ShopeekApp@ در تلگرام و اینستاگرام در ارتباط باشید.
+              برای خرید و تمدید اشتراک، دریافت راهنمایی فنی و کسب اطلاعات بیشتر می‌توانید از طریق ایمیل support@shopeekapp.ir یا شناسه ShopeekApp@ در تلگرام و اینستاگرام در ارتباط باشید.
             </p>
             <div className="pt-2 flex flex-col gap-2">
               <Link

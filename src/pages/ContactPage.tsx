@@ -1,5 +1,5 @@
 import React from 'react';
-import { Send, Instagram, ShieldCheck, HelpCircle, ShoppingBag, Info, MessageSquare, ArrowRight } from 'lucide-react';
+import { Send, Instagram, Mail, ShieldCheck, HelpCircle, ShoppingBag, Info, MessageSquare, ArrowRight } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { PublicHeader } from '../components/layout/PublicHeader';
 import { MainFooter } from '../components/layout/MainFooter';
@@ -9,7 +9,7 @@ export const ContactPage: React.FC = () => {
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-vazir dir-rtl selection:bg-brand-500 selection:text-white">
       <SEO
         title="تماس با ما | شاپیک"
-        description="ارتباط با پشتیبانی سامانه شاپیک در تلگرام و اینستاگرام جهت خرید و تمدید اشتراک، دریافت راهنمایی و کسب اطلاعات بیشتر."
+        description="ارتباط با پشتیبانی سامانه شاپیک از طریق ایمیل، تلگرام و اینستاگرام جهت خرید و تمدید اشتراک، دریافت راهنمایی و کسب اطلاعات بیشتر."
         canonicalPath="/contact"
       />
 
@@ -34,8 +34,40 @@ export const ContactPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Support Direct Contact Cards (Telegram & Instagram) - Light Theme */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Support Direct Contact Cards (Email, Telegram & Instagram) - Light Theme */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Support Email Card */}
+          <a
+            href="mailto:support@shopeekapp.ir"
+            className="p-6 rounded-3xl bg-white border border-slate-200 hover:border-emerald-500/50 shadow-md hover:shadow-lg transition-all space-y-4 group relative overflow-hidden"
+          >
+            <div className="flex items-center justify-between">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+                <Mail className="w-6 h-6" />
+              </div>
+              <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                ایمیل پشتیبانی
+              </span>
+            </div>
+
+            <div className="space-y-1">
+              <h2 className="text-lg font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
+                ایمیل پشتیبانی شاپیک
+              </h2>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                ارسال ایمیل برای پیگیری خرید و تمدید اشتراک، دریافت راهنمایی فنی و پاسخ‌گویی به سوالات شما.
+              </p>
+            </div>
+
+            <div className="pt-2 flex items-center justify-between border-t border-slate-100 text-xs font-bold text-emerald-600">
+              <span dir="ltr">support@shopeekapp.ir</span>
+              <div className="flex items-center gap-1">
+                <span>ارسال ایمیل</span>
+                <ArrowRight className="w-3.5 h-3.5 rotate-180" />
+              </div>
+            </div>
+          </a>
+
           {/* Telegram Channel / Support Card */}
           <a
             href="https://t.me/ShopeekApp"

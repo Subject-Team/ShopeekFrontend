@@ -187,7 +187,11 @@ export const PrivacyPage: React.FC = () => {
               <span>۱۲. نحوه اعمال حقوق شما</span>
             </h2>
             <p className="text-slate-600 text-xs leading-relaxed">
-              برای درخواست حذف، دسترسی یا اصلاح اطلاعات، لطفاً از همان راهی که اشتراک خود را تهیه کرده‌اید (از طریق پشتیبانی سامانه) اقدام کنید. درخواست شما حداکثر ظرف ۷ روز کاری بررسی خواهد شد.
+              برای درخواست حذف، دسترسی یا اصلاح اطلاعات، لطفاً از طریق ایمیل{' '}
+              <a href="mailto:support@shopeekapp.ir" className="text-brand-600 hover:text-brand-700 font-semibold underline underline-offset-2" dir="ltr">
+                support@shopeekapp.ir
+              </a>{' '}
+              یا همان راهی که اشتراک خود را تهیه کرده‌اید (از طریق پشتیبانی سامانه) اقدام کنید. درخواست شما حداکثر ظرف ۷ روز کاری بررسی خواهد شد.
             </p>
           </section>
 
