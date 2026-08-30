@@ -1,13 +1,45 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Sparkles, TrendingUp, Users, UploadCloud, ShieldCheck, ArrowLeft, BarChart3, Bot, Zap, MessageSquare } from 'lucide-react';
+import { Sparkles, TrendingUp, Users, UploadCloud, ShieldCheck, ArrowLeft, BarChart3, Bot, Zap, MessageSquare, HelpCircle, ChevronDown } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { PublicHeader } from '../components/layout/PublicHeader';
 import { MainFooter } from '../components/layout/MainFooter';
 
+const faqs: { q: string; a: string }[] = [
+  {
+    q: 'شاپیک برای چه کسب‌وکارهایی مناسب است؟',
+    a: 'شاپیک برای فروشگاه‌های کوچک و متوسط، پیج‌های اینستاگرامی، کسب‌وکارهای دانش‌بنیان و هر فروشنده‌ای که می‌خواهد آمار فروش خود را هوشمندانه تحلیل کند طراحی شده است؛ بدون نیاز به دانش فنی یا کارشناس داده.',
+  },
+  {
+    q: 'چطور می‌توانم داده‌های فروش خود را وارد کنم؟',
+    a: 'می‌توانید فایل‌های اکسل یا CSV فاکتورهای خود را مستقیماً بارگذاری کنید؛ سیستم ستون‌ها را به‌صورت هوشمند تطبیق می‌دهد. همچنین با ربات تلگرام شاپیک می‌توانید تراکنش‌ها را با یک مکالمه ساده به‌صورت روزانه ثبت کنید.',
+  },
+  {
+    q: 'مشاوره هوش مصنوعی چگونه کار می‌کند؟',
+    a: 'شاپیک هر ۳ ساعت یک‌بار داده‌های فروش شما را تحلیل کرده و توصیه‌های کاربردی ارائه می‌دهد. همچنین می‌توانید از طریق گفتگوی آنلاین، سوالات مدیریتی خود را از دستیار هوشمند بپرسید.',
+  },
+  {
+    q: 'آیا داده‌های من امن و محرمانه است؟',
+    a: 'بله؛ داده‌های هر کسب‌وکار به‌صورت کاملاً جداگانه ذخیره و مدیریت می‌شود و اطلاعات هویتی مشتریان (PII) ناشناس‌سازی می‌شود تا حریم خصوصی شما و مشتریانتان حفظ شود.',
+  },
+  {
+    q: 'آیا تقویم و تاریخ شمسی پشتیبانی می‌شود؟',
+    a: 'بله؛ تمام تحلیل‌ها، نمودارها و گزارش‌های شاپیک بر اساس تقویم هجری شمسی و ارز تومان ارائه می‌شود تا با نیاز فروشندگان ایرانی کاملاً همگام باشد.',
+  },
+  {
+    q: 'آیا شاپیک روی موبایل هم در دسترس است؟',
+    a: 'بله؛ شاپیک یک PWA (برنامه وب پیشرفته) است که روی موبایل و دسکتاپ به‌راحتی قابل استفاده است و می‌توانید آن را به صفحه اصلی گوشی خود اضافه کنید.',
+  },
+  {
+    q: 'چطور می‌توانم شروع کنم؟',
+    a: 'کافی است از طریق صفحه «تماس برای شروع» با تیم پشتیبانی در ارتباط باشید تا در سریع‌ترین زمان ممکن حساب کسب‌وکار شما فعال شود و شروع کنید.',
+  },
+];
+
 export const LandingPage: React.FC = () => {
   const location = useLocation();
   const featuresRef = useRef<HTMLDivElement>(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useEffect(() => {
     if (location.hash === '#features' && featuresRef.current) {
@@ -182,6 +214,52 @@ export const LandingPage: React.FC = () => {
               دسترسی سریع روی موبایل و دسکتاپ به همراه تفکیک کامل داده‌های هر کسب‌وکار و ناشناس‌سازی PII.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* FAQ Section — compact accordion */}
+      <section className="py-14 md:py-20 px-6 max-w-3xl mx-auto w-full border-t border-slate-200/80">
+        <div className="text-center space-y-3 mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-[11px] sm:text-xs font-semibold">
+            <HelpCircle className="w-3.5 h-3.5 text-brand-600" />
+            <span>پرسش‌های پرتکرار</span>
+          </div>
+          <h2 className="text-xl md:text-3xl font-black text-slate-900">سوالات متداول</h2>
+        </div>
+
+        <div className="space-y-3">
+          {faqs.map((faq, i) => {
+            const isOpen = openFaq === i;
+            return (
+              <div
+                key={i}
+                className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden"
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(isOpen ? null : i)}
+                  aria-expanded={isOpen}
+                  className={`w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-3.5 sm:py-4 text-right cursor-pointer transition-colors ${isOpen ? '' : 'hover:bg-slate-50'}`}
+                >
+                  <span className="text-sm sm:text-[15px] font-bold text-slate-900 leading-relaxed">
+                    {faq.q}
+                  </span>
+                  <ChevronDown
+                    className={`w-4 h-4 shrink-0 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-brand-600' : ''}`}
+                  />
+                </button>
+                <div
+                  className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
+                >
+                  <div className="overflow-hidden">
+                    <p className="px-4 sm:px-5 pb-4 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                      {faq.a}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
