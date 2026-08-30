@@ -135,3 +135,15 @@ export interface SettingsData {
   web_sessions: WebSession[];
   telegram_sessions: TelegramSession[];
 }
+
+export interface ChangePasswordPayload {
+  current_password: string;
+  new_password: string;
+  confirm_new_password: string;
+}
+
+export interface ChangePasswordResponse {
+  message: string;
+  access_token?: string | null;
+  refresh_token?: string | null;
+}

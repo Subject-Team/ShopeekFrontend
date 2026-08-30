@@ -11,7 +11,9 @@ import {
   LoginPayload,
   RegisterPayload,
   User,
-  SettingsData
+  SettingsData,
+  ChangePasswordPayload,
+  ChangePasswordResponse
 } from '../types';
 
 const API_BASE = '/api/v1';
@@ -360,4 +362,27 @@ export const unlinkTelegramSession = async (sessionId: string): Promise<void> =>
     const err = await res.json().catch(() => ({ detail: 'خطا در قطع اتصال ربات تلگرام' }));
     throw new Error(err.detail || 'خطا در قطع اتصال ربات تلگرام');
   }
+};
+
+export const changePassword = async (
+  payload: ChangePasswordPayload
+): Promise<ChangePasswordResponse> => {
+  const res = await authFetch(`${API_BASE}/auth/change-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در تغییر کلمه عبور' }));
+    throw new Error(err.detail || 'خطا در تغییر کلمه عبور');
+  }
+  const data = (await res.json()) as ChangePasswordResponse;
+  // GoTrue rotates the user's token on a successful password change. Swap the
+  // stored session so the user stays signed in without a forced re-login.
+  if (data.access_token) localStorage.setItem('shopeek_token', data.access_token);
+  if (data.refresh_token) localStorage.setItem('shopeek_refresh_token', data.refresh_token);
+  if (data.access_token || data.refresh_token) {
+    window.dispatchEvent(new Event('shopeek_token_refreshed'));
+  }
+  return data;
 };
