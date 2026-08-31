@@ -7,6 +7,9 @@
 @config "../tailwind.config.js";
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     font-family: 'Vazirmatn', sans-serif;
   }
