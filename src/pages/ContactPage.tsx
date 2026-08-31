@@ -1,5 +1,5 @@
 import React from 'react';
-import { Send, Instagram, Mail, ShieldCheck, HelpCircle, ShoppingBag, Info, MessageSquare, ArrowRight } from 'lucide-react';
+import { Send, Camera, Mail, ShieldCheck, HelpCircle, ShoppingBag, Info, MessageSquare, ArrowRight } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { PublicHeader } from '../components/layout/PublicHeader';
 import { MainFooter } from '../components/layout/MainFooter';
@@ -111,7 +111,7 @@ export const ContactPage: React.FC = () => {
           >
             <div className="flex items-center justify-between">
               <div className="w-12 h-12 rounded-2xl bg-pink-50 border border-pink-200 flex items-center justify-center text-pink-600 group-hover:scale-110 transition-transform">
-                <Instagram className="w-6 h-6" />
+                <Camera className="w-6 h-6" />
               </div>
               <span className="text-xs font-bold px-3 py-1 rounded-full bg-pink-50 text-pink-700 border border-pink-200">
                 صفحه اینستاگرام

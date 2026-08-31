@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, BarChart3, Bot, FileText, ArrowUpLeft, MessageSquare, Send, Instagram, Mail } from 'lucide-react';
+import { Shield, BarChart3, Bot, FileText, ArrowUpLeft, MessageSquare, Send, Camera, Mail } from 'lucide-react';
 
 export const MainFooter: React.FC = () => {
   return (
@@ -40,7 +40,7 @@ export const MainFooter: React.FC = () => {
                   className="p-2 rounded-xl bg-pink-50 border border-pink-200 text-pink-600 hover:bg-pink-600 hover:text-white transition-all shadow-2xs"
                   title="اینستاگرام شاپیک (ShopeekApp@)"
                 >
-                  <Instagram className="w-4 h-4" />
+                  <Camera className="w-4 h-4" />
                 </a>
                 <a
                   href="mailto:support@shopeekapp.ir"
