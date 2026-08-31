@@ -1,6 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Tailwind v4 is class-based dark mode, matching the previous darkMode:'class' config */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Keep loading project theme (colors, fonts) from the existing JS config */
+@config "../tailwind.config.js";
 
 @layer base {
   body {

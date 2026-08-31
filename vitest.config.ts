@@ -9,10 +9,8 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     // Node >=22.4 exposes a non-functional experimental localStorage that
     // shadows jsdom's working implementation; disable it for worker processes.
-    poolOptions: {
-      forks: { execArgv: ['--no-experimental-webstorage'] },
-      threads: { execArgv: ['--no-experimental-webstorage'] },
-    },
+    // Vitest 4 moved pool execArgv to top-level `test.execArgv`.
+    execArgv: ['--no-experimental-webstorage'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
