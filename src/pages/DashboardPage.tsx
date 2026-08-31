@@ -11,10 +11,13 @@ import { useAuth } from '../context/AuthContext';
 import { fetchKPISummary, fetchRevenueTrend, fetchLatestAdvisory, fetchAdvisoryHistory, fetchCustomers } from '../services/api';
 import { KPISummary, RevenuePoint, AIAdvisory, Customer } from '../types';
 import { formatPersianNumber } from '../utils';
+import { formatJalaliRangeLabel } from '../utils/jalali';
 import { SEO } from '../components/common/SEO';
 
+
+
 export const DashboardPage: React.FC = () => {
-  const { dateRangeDays } = usePageContext();
+  const { dateRangeDays, startDate, endDate, isHistorical } = usePageContext();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [kpi, setKpi] = useState<KPISummary | null>(null);
@@ -26,8 +29,8 @@ export const DashboardPage: React.FC = () => {
   const loadDashboardData = async () => {
     try {
       const [kpiRes, trendRes, advRes, custRes, historyRes] = await Promise.all([
-        fetchKPISummary(dateRangeDays),
-        fetchRevenueTrend(dateRangeDays),
+        fetchKPISummary(dateRangeDays, startDate, endDate),
+        fetchRevenueTrend(dateRangeDays, startDate, endDate),
         fetchLatestAdvisory(),
         fetchCustomers(),
         fetchAdvisoryHistory()
@@ -44,7 +47,8 @@ export const DashboardPage: React.FC = () => {
 
   useEffect(() => {
     loadDashboardData();
-  }, [dateRangeDays]);
+  }, [startDate, endDate, dateRangeDays]);
+
 
   return (
     <div className="space-y-6">
@@ -83,20 +87,28 @@ export const DashboardPage: React.FC = () => {
           title="فروش کل (تومان)"
           value={kpi ? formatPersianNumber(kpi.total_revenue) : '۰'}
           changePercentage={kpi?.revenue_change_percentage}
-          subtitle={`در ${formatPersianNumber(dateRangeDays)} روز گذشته`}
+          subtitle={
+            isHistorical
+              ? formatJalaliRangeLabel(startDate, endDate)
+              : `در ${formatPersianNumber(dateRangeDays)} روز گذشته`
+          }
           icon={DollarSign}
           color="emerald"
-          forecastValue={kpi?.revenue_forecast}
+          forecastValue={isHistorical ? undefined : kpi?.revenue_forecast}
           forecastLabel="تومان"
         />
         <KpiCard
           title="تعداد کل سفارشات"
           value={kpi ? formatPersianNumber(kpi.order_count) : '۰'}
           changePercentage={kpi?.order_count_change_percentage}
-          subtitle={`در ${formatPersianNumber(dateRangeDays)} روز گذشته`}
+          subtitle={
+            isHistorical
+              ? formatJalaliRangeLabel(startDate, endDate)
+              : `در ${formatPersianNumber(dateRangeDays)} روز گذشته`
+          }
           icon={ShoppingBag}
           color="indigo"
-          forecastValue={kpi?.order_count_forecast}
+          forecastValue={isHistorical ? undefined : kpi?.order_count_forecast}
         />
         <KpiCard
           title="میانگین ارزش فاکتور (AOV)"
@@ -105,7 +117,7 @@ export const DashboardPage: React.FC = () => {
           subtitle="تومان"
           icon={CreditCard}
           color="amber"
-          forecastValue={kpi?.aov_forecast}
+          forecastValue={isHistorical ? undefined : kpi?.aov_forecast}
           forecastLabel="تومان"
         />
         <KpiCard
@@ -115,17 +127,18 @@ export const DashboardPage: React.FC = () => {
           subtitle="مشتری ثبت‌شده"
           icon={Users}
           color="cyan"
-          forecastValue={kpi?.customer_count_forecast}
+          forecastValue={isHistorical ? undefined : kpi?.customer_count_forecast}
         />
       </div>
 
       {/* Revenue Trend & Forecast Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div data-guide="dashboard-chart" className="lg:col-span-2">
-          <RevenueChart data={trend} />
+          <RevenueChart data={trend} hideForecast={isHistorical} />
         </div>
 
         {/* Side Widget: Top Customers Summary, Data Import CTA, & Subscription Card */}
+
         <div className="space-y-6">
           <div className="glass-card p-5 rounded-2xl shadow-xs space-y-4">
             <div className="flex items-center justify-between">

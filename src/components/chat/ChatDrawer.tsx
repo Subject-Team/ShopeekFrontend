@@ -67,9 +67,12 @@ const assistantMarkdownComponents: Components = {
   img: ({ node: _node, ...props }) => <img {...props} className="max-w-full rounded-lg my-1" alt="" />,
 };
 
+import { formatJalaliRangeLabel } from '../../utils/jalali';
+
 export const ChatDrawer: React.FC = () => {
-  const { isChatOpen, setIsChatOpen, activePage, dateRangeDays } = usePageContext();
+  const { isChatOpen, setIsChatOpen, activePage, dateRangeDays, startDate, endDate, isHistorical } = usePageContext();
   const { user } = useAuth();
+
   const readOnly = Boolean(user?.is_read_only);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState<string>('');
@@ -177,10 +180,15 @@ export const ChatDrawer: React.FC = () => {
                 <h3 className="font-extrabold text-slate-900 dark:text-white text-sm">دستیار هوشمند شاپیک</h3>
                 <div className="flex items-center gap-1.5 text-[10px] text-slate-400 mt-0.5">
                   <Layers className="w-3 h-3 text-indigo-500" />
-                  <span>زمینه فعال: {activePage} ({formatPersianNumber(dateRangeDays)} روز)</span>
+                  <span>
+                    زمینه فعال: {activePage} (
+                    {isHistorical ? formatJalaliRangeLabel(startDate, endDate) : `${formatPersianNumber(dateRangeDays)} روز`}
+                    )
+                  </span>
                 </div>
               </div>
             </div>
+
 
             <div className="flex items-center gap-1">
               <button

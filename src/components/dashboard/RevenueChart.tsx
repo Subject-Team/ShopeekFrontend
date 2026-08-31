@@ -14,9 +14,15 @@ import { formatPersianDate, formatCompressedToman, formatPersianNumber } from '.
 interface RevenueChartProps {
   data: RevenuePoint[];
   title?: string;
+  hideForecast?: boolean;
 }
 
-export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'روند فروش و پیش‌بینی هوشمند' }) => {
+export const RevenueChart: React.FC<RevenueChartProps> = ({
+  data,
+  title = 'روند فروش و پیش‌بینی هوشمند',
+  hideForecast = false
+}) => {
+
   const [formattedData, setFormattedData] = useState<RevenuePoint[]>([]);
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 640);
 
@@ -84,7 +90,9 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
         <div>
           <h3 className="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base lg:text-lg">{title}</h3>
           <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            داده‌های واقعی به همراه خط‌چین پیش‌بینی هوشمند برای روز آینده
+            {hideForecast
+              ? 'داده‌های واقعی فروش بر اساس بازه انتخابی'
+              : 'داده‌های واقعی به همراه خط‌چین پیش‌بینی هوشمند برای روز آینده'}
           </p>
         </div>
         <div className="flex items-center gap-3 text-[10px] sm:text-xs font-semibold">
@@ -92,12 +100,15 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
             <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-brand-500" />
             <span className="text-slate-600 dark:text-slate-400">واقعی</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-accent-500" />
-            <span className="text-slate-600 dark:text-slate-400">پیش‌بینی</span>
-          </div>
+          {!hideForecast && (
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-accent-500" />
+              <span className="text-slate-600 dark:text-slate-400">پیش‌بینی</span>
+            </div>
+          )}
         </div>
       </div>
+
 
       <div className="h-64 sm:h-72 w-full pt-1">
         <ResponsiveContainer width="100%" height="100%">
@@ -145,18 +156,21 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, title = 'رو�
               tickCount={isMobile ? 4 : 6}
             />
             <Tooltip content={<CustomTooltip />} />
+            {!hideForecast && (
+              <Area
+                type="monotone"
+                dataKey="forecast_revenue"
+                name="پیش‌بینی AI"
+                stroke="#6366f1"
+                strokeWidth={3}
+                strokeDasharray="5 5"
+                fillOpacity={1}
+                fill="url(#colorForecast)"
+                connectNulls={false}
+              />
+            )}
             <Area
-              type="monotone"
-              dataKey="forecast_revenue"
-              name="پیش‌بینی AI"
-              stroke="#6366f1"
-              strokeWidth={3}
-              strokeDasharray="5 5"
-              fillOpacity={1}
-              fill="url(#colorForecast)"
-              connectNulls={false}
-            />
-            <Area
+
               type="monotone"
               dataKey="revenue"
               name="فروش واقعی"

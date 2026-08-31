@@ -57,9 +57,10 @@ export const GUIDE_CONFIGS: Record<string, PageGuideConfig> = {
         id: 'date-filter',
         targetSelector: '[data-guide="date-filter"]',
         title: 'تنظیم بازه زمانی گزارشات',
-        description: 'می‌توانید بازه تحلیل را بین ۷، ۱۴ یا ۳۰ روز گذشته تغییر دهید. تمام نمودارها و آمارها متناسب با این بازه بروز می‌شوند.',
+        description: 'با کلیک روی تقویم شمسی می‌توانید بازه دلخواه حتی بین دو ماه را انتخاب کنید یا از بازه‌های سریع ۷، ۱۴ و ۳۰ روز اخیر بهره ببرید.',
         placement: 'bottom',
       },
+
       {
         id: 'dashboard-subscription',
         targetSelector: '[data-guide="dashboard-subscription"]',

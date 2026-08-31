@@ -80,13 +80,21 @@ describe('Layout Components', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('۱۴ روز')).toBeInTheDocument();
-    expect(screen.getByText('۷ روز')).toBeInTheDocument();
-    expect(screen.getByText('۳۰ روز')).toBeInTheDocument();
+    // Date filter trigger button is rendered
+    const dateBtn = screen.getByTitle(/انتخاب بازه زمانی/i);
+    expect(dateBtn).toBeInTheDocument();
+    fireEvent.click(dateBtn);
 
-    // Click date filter
-    fireEvent.click(screen.getByText('۷ روز'));
-    fireEvent.click(screen.getByText('۳۰ روز'));
+    // Modal opens showing Jalali calendar and presets
+    expect(screen.getByText('انتخاب بازه زمانی (شمسی)')).toBeInTheDocument();
+    expect(screen.getByText('۷ روز اخیر')).toBeInTheDocument();
+    expect(screen.getByText('۱۴ روز اخیر')).toBeInTheDocument();
+    expect(screen.getByText('۳۰ روز اخیر')).toBeInTheDocument();
+
+    // Click 14-day preset and apply
+    fireEvent.click(screen.getByText('۱۴ روز اخیر'));
+    fireEvent.click(screen.getByText('تأیید و اعمال بازه'));
+
 
     // Click theme toggle
     const themeBtn = screen.getByTitle(/تغییر به حالت/i);

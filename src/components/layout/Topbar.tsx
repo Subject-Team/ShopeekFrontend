@@ -13,6 +13,9 @@ import {
 import { useTheme } from '../../context/ThemeContext';
 import { usePageContext } from '../../context/PageContext';
 import { useAuth } from '../../context/AuthContext';
+import { JalaliDateRangeModal } from '../common/JalaliDateRangeModal';
+import { formatJalaliRangeLabel } from '../../utils/jalali';
+
 
 interface TopbarProps {
   onMenuClick: () => void;
@@ -20,10 +23,18 @@ interface TopbarProps {
 
 export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   const { theme, toggleTheme } = useTheme();
-  const { dateRangeDays, setDateRangeDays, setIsChatOpen } = usePageContext();
+  const {
+    dateRangeDays,
+    startDate,
+    endDate,
+    isHistorical,
+    setDateRange,
+    setIsChatOpen,
+  } = usePageContext();
   const { user, logout } = useAuth();
   const location = useLocation();
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 1024);
+  const [isDateModalOpen, setIsDateModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -51,16 +62,15 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
     }
   };
 
-  const dateRangeOptions = [
-    { value: 7, label: '۷ روز' },
-    { value: 14, label: '۱۴ روز' },
-    { value: 30, label: '۳۰ روز' },
-  ];
-
   const showDateFilter =
     location.pathname === '/dashboard' ||
     location.pathname === '/dashboard/' ||
     location.pathname === '/dashboard/analytics';
+
+  const getDateButtonLabel = () => {
+    return formatJalaliRangeLabel(startDate, endDate);
+  };
+
 
   return (
     <header className="h-16 sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 lg:px-8 flex items-center justify-between transition-colors duration-200 dir-rtl">
@@ -80,46 +90,42 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
       </div>
 
       <div className="flex items-center gap-3">
-        {/* Date Filter Selection - Desktop (buttons) */}
-        {showDateFilter && !isMobile && (
-          <div
-            data-guide="date-filter"
-            className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300"
-          >
-            <Calendar className="w-3.5 h-3.5 mr-1 text-slate-400" />
-            {dateRangeOptions.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => setDateRangeDays(opt.value)}
-                className={`px-2.5 py-1 rounded-lg transition-all ${
-                  dateRangeDays === opt.value
-                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-bold'
-                    : 'hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
+        {/* Date Range Selector Trigger */}
+        {showDateFilter && (
+          <div data-guide="date-filter" className="relative">
+            <button
+              onClick={() => setIsDateModalOpen(true)}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all shadow-xs ${
+                isHistorical
+                  ? 'bg-amber-500/10 border-amber-500/40 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20'
+                  : 'bg-slate-100 dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-200 hover:bg-slate-200/70 dark:hover:bg-slate-700'
+              }`}
+              title={isHistorical ? 'در حال مشاهده آمار گذشته' : 'انتخاب بازه زمانی'}
+            >
+              <Calendar className={`w-3.5 h-3.5 ${isHistorical ? 'text-amber-500' : 'text-slate-400'}`} />
+              {/* Hide text label on mobile screens to prevent topbar overflow */}
+              <span className="hidden sm:inline">
+                {getDateButtonLabel()}
+              </span>
+              {isHistorical && (
+                <span className="hidden md:inline-block px-1.5 py-0.5 text-[10px] bg-amber-500/20 text-amber-700 dark:text-amber-300 rounded-md font-medium">
+                  آرشیو
+                </span>
+              )}
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+            </button>
+
+            {/* Jalali Calendar Modal */}
+            <JalaliDateRangeModal
+              isOpen={isDateModalOpen}
+              onClose={() => setIsDateModalOpen(false)}
+              startDate={startDate}
+              endDate={endDate}
+              onApply={(newStart, newEnd) => setDateRange(newStart, newEnd)}
+            />
           </div>
         )}
 
-        {/* Date Filter Selection - Mobile (dropdown) */}
-        {showDateFilter && isMobile && (
-          <div data-guide="date-filter" className="relative">
-            <select
-              value={dateRangeDays}
-              onChange={(e) => setDateRangeDays(Number(e.target.value))}
-              className="appearance-none pl-7 pr-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300 border-0 focus:ring-2 focus:ring-brand-500 outline-none cursor-pointer"
-            >
-              {dateRangeOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
-          </div>
-        )}
 
         {/* Floating Chat Drawer Trigger */}
         <button

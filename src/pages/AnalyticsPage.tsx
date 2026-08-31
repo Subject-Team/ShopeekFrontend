@@ -5,22 +5,23 @@ import { fetchRevenueTrend, fetchKPISummary } from '../services/api';
 import { RevenuePoint, KPISummary } from '../types';
 import { usePageContext } from '../context/PageContext';
 import { formatPersianNumber } from '../utils';
+import { formatJalaliRangeLabel } from '../utils/jalali';
 import { SEO } from '../components/common/SEO';
 
 export const AnalyticsPage: React.FC = () => {
-  const { dateRangeDays } = usePageContext();
+  const { dateRangeDays, startDate, endDate, isHistorical } = usePageContext();
   const [trend, setTrend] = useState<RevenuePoint[]>([]);
   const [kpi, setKpi] = useState<KPISummary | null>(null);
 
   useEffect(() => {
     Promise.all([
-      fetchRevenueTrend(dateRangeDays),
-      fetchKPISummary(dateRangeDays)
+      fetchRevenueTrend(dateRangeDays, startDate, endDate),
+      fetchKPISummary(dateRangeDays, startDate, endDate)
     ]).then(([trendData, kpiData]) => {
       setTrend(trendData);
       setKpi(kpiData);
     });
-  }, [dateRangeDays]);
+  }, [startDate, endDate, dateRangeDays]);
 
   return (
     <div className="space-y-6">
@@ -44,13 +45,19 @@ export const AnalyticsPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-400 font-bold text-xs flex items-center gap-2">
             <Filter className="w-4 h-4" />
-            <span>بازه ارزیابی: {formatPersianNumber(dateRangeDays)} روز گذشته</span>
+            <span>
+              بازه ارزیابی: {isHistorical ? formatJalaliRangeLabel(startDate, endDate) : `${formatPersianNumber(dateRangeDays)} روز گذشته`}
+            </span>
           </div>
         </div>
       </div>
 
       <div data-guide="analytics-chart">
-        <RevenueChart data={trend} title="نمودار تفکیکی فروش روزانه و خط پیش‌بینی" />
+        <RevenueChart
+          data={trend}
+          hideForecast={isHistorical}
+          title={isHistorical ? "نمودار تفکیکی فروش روزانه" : "نمودار تفکیکی فروش روزانه و خط پیش‌بینی"}
+        />
       </div>
 
       {/* Analytics Breakdown Grid */}
@@ -60,8 +67,11 @@ export const AnalyticsPage: React.FC = () => {
           <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white">
             {kpi ? `${formatPersianNumber(kpi.revenue_change_percentage)}%` : '0%'}
           </h3>
-          <p className="text-xs text-slate-500">تغییر خالص نسبت به دوره قبلی ({dateRangeDays} روز قبل)</p>
+          <p className="text-xs text-slate-500">
+            تغییر خالص نسبت به دوره قبلی ({formatPersianNumber(dateRangeDays)} روز قبل)
+          </p>
         </div>
+
         <div className="glass-card p-5 rounded-2xl space-y-2">
           <span className="text-xs font-semibold text-slate-400">تغییر مطلق فروش (تومان)</span>
           <h3 className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">

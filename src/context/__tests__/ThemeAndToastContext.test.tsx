@@ -62,8 +62,9 @@ describe('PageContext', () => {
 
   it('manages dateRangeDays and isChatOpen', () => {
     const { result } = renderHook(() => usePageContext(), { wrapper });
-    expect(result.current.dateRangeDays).toBe(14);
+    expect(result.current.dateRangeDays).toBe(7);
     expect(result.current.isChatOpen).toBe(false);
+    expect(result.current.isHistorical).toBe(false);
 
     act(() => {
       result.current.setDateRangeDays(30);
@@ -72,5 +73,13 @@ describe('PageContext', () => {
 
     expect(result.current.dateRangeDays).toBe(30);
     expect(result.current.isChatOpen).toBe(true);
+
+    act(() => {
+      result.current.setDateRange('2026-08-01', '2026-08-10');
+    });
+    expect(result.current.startDate).toBe('2026-08-01');
+    expect(result.current.endDate).toBe('2026-08-10');
+    expect(result.current.isHistorical).toBe(true);
   });
 });
+

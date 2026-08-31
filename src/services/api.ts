@@ -180,17 +180,34 @@ export const fetchMeApi = async (): Promise<User> => {
 
 // --- ANALYTICS & DASHBOARD API METHODS ---
 
-export const fetchKPISummary = async (days: number = 30): Promise<KPISummary> => {
-  const res = await authFetch(`${API_BASE}/analytics/kpi-summary?days=${days}`);
+export const fetchKPISummary = async (
+  days: number = 7,
+  startDate?: string,
+  endDate?: string
+): Promise<KPISummary> => {
+  let url = `${API_BASE}/analytics/kpi-summary?days=${days}`;
+  if (startDate && endDate) {
+    url += `&start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`;
+  }
+  const res = await authFetch(url);
   if (!res.ok) throw new Error('خطا در دریافت خلاصه آمار و شاخص‌ها');
   return res.json();
 };
 
-export const fetchRevenueTrend = async (days: number = 14): Promise<RevenuePoint[]> => {
-  const res = await authFetch(`${API_BASE}/analytics/revenue-trend?days=${days}`);
+export const fetchRevenueTrend = async (
+  days: number = 7,
+  startDate?: string,
+  endDate?: string
+): Promise<RevenuePoint[]> => {
+  let url = `${API_BASE}/analytics/revenue-trend?days=${days}`;
+  if (startDate && endDate) {
+    url += `&start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`;
+  }
+  const res = await authFetch(url);
   if (!res.ok) throw new Error('خطا در دریافت نمودار روند فروش');
   return res.json();
 };
+
 
 export const fetchCustomers = async (): Promise<Customer[]> => {
   const res = await authFetch(`${API_BASE}/customers`);
