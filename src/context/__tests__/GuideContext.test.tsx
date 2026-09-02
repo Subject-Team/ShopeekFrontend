@@ -50,6 +50,12 @@ describe('GuideContext', () => {
     });
     expect(result.current.activePageKey).toBe('ingestion');
     expect(result.current.currentConfig?.pageKey).toBe('ingestion');
+
+    const { result: settingsResult } = renderHook(() => useGuide(), {
+      wrapper: createWrapper('/dashboard/settings'),
+    });
+    expect(settingsResult.current.activePageKey).toBe('settings');
+    expect(settingsResult.current.currentConfig?.pageKey).toBe('settings');
   });
 
   it('allows manual starting and step progression', () => {

@@ -2,11 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { GUIDE_CONFIGS } from '../guideSteps';
 
 describe('guideSteps configuration validation', () => {
-  it('has configurations for all 4 dashboard pages', () => {
+  it('has configurations for all 5 dashboard pages', () => {
     expect(GUIDE_CONFIGS).toHaveProperty('dashboard');
     expect(GUIDE_CONFIGS).toHaveProperty('ingestion');
     expect(GUIDE_CONFIGS).toHaveProperty('customers');
     expect(GUIDE_CONFIGS).toHaveProperty('analytics');
+    expect(GUIDE_CONFIGS).toHaveProperty('settings');
   });
 
   it('each guide page config has valid steps with selectors and titles', () => {
@@ -31,5 +32,14 @@ describe('guideSteps configuration validation', () => {
     expect(dashboardStepIds).toContain('dashboard-chart');
     expect(dashboardStepIds).toContain('dashboard-advisory');
     expect(dashboardStepIds).toContain('dashboard-subscription');
+  });
+
+  it('settings guide has critical steps for tabs, profile, password, sessions, and telegram', () => {
+    const settingsStepIds = GUIDE_CONFIGS.settings.steps.map((s) => s.id);
+    expect(settingsStepIds).toContain('settings-tabs');
+    expect(settingsStepIds).toContain('settings-profile');
+    expect(settingsStepIds).toContain('settings-password');
+    expect(settingsStepIds).toContain('settings-sessions');
+    expect(settingsStepIds).toContain('settings-telegram');
   });
 });

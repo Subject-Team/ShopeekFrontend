@@ -12,6 +12,7 @@ import {
 } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useOptionalGuide } from '../context/GuideContext';
 import { ChangePasswordPayload, SettingsData } from '../types';
 import { formatPersianDateAsUTC, formatPersianTimeAsUTC } from '../utils';
 import { SEO } from '../components/common/SEO';
@@ -43,6 +44,24 @@ export const SettingsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [revokingId, setRevokingId] = useState<string | null>(null);
   const [targetId, setTargetId] = useState<string | null>(null);
+
+  const guide = useOptionalGuide();
+  const currentStep = guide?.currentStep;
+  const isGuideOpen = guide?.isGuideOpen;
+
+  // Auto-switch active tab when guide navigates between account and security sections
+  useEffect(() => {
+    if (!isGuideOpen || !currentStep) return;
+    if (
+      currentStep.id === 'settings-password' ||
+      currentStep.id === 'settings-sessions' ||
+      currentStep.id === 'settings-telegram'
+    ) {
+      setActiveTab('security');
+    } else if (currentStep.id === 'settings-profile') {
+      setActiveTab('account');
+    }
+  }, [isGuideOpen, currentStep]);
 
   // Password change form state
   const [currentPassword, setCurrentPassword] = useState('');
@@ -164,7 +183,7 @@ export const SettingsPage: React.FC = () => {
   );
 
   const renderWebSessions = () => (
-    <div className={cardClass}>
+    <div data-guide="settings-sessions" className={cardClass}>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h3 className="font-extrabold text-slate-900 dark:text-white text-base">نشست‌های وب</h3>
@@ -228,7 +247,7 @@ export const SettingsPage: React.FC = () => {
   );
 
   const renderTelegram = () => (
-    <div className={cardClass}>
+    <div data-guide="settings-telegram" className={cardClass}>
       <div className="flex items-center justify-between">
         <div>
           <h3 className="font-extrabold text-slate-900 dark:text-white text-base">اتصال به ربات تلگرام</h3>
@@ -279,7 +298,7 @@ export const SettingsPage: React.FC = () => {
   );
 
   const renderPasswordForm = () => (
-    <div className={cardClass}>
+    <div data-guide="settings-password" className={cardClass}>
       <div className="flex items-center gap-3">
         <div className="w-11 h-11 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-600/25 shrink-0">
           <KeyRound className="w-5 h-5" />
@@ -410,7 +429,7 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex overflow-x-auto gap-2 pb-1">
+      <div data-guide="settings-tabs" className="flex overflow-x-auto gap-2 pb-1">
         <button onClick={() => setActiveTab('account')} className={tabItemClass(activeTab === 'account')}>
           <UserIcon className="w-4 h-4" /> حساب کاربری
         </button>
@@ -420,7 +439,7 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {activeTab === 'account' && (
-        <div className={cardClass}>
+        <div data-guide="settings-profile" className={cardClass}>
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-600/25 shrink-0">
               <UserIcon className="w-7 h-7" />

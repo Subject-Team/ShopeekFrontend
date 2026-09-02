@@ -71,6 +71,7 @@ export const GuideProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (path === '/dashboard/ingestion') return 'ingestion';
     if (path === '/dashboard/customers') return 'customers';
     if (path === '/dashboard/analytics') return 'analytics';
+    if (path === '/dashboard/settings') return 'settings';
     if (path === '/dashboard' || path === '/dashboard/') return 'dashboard';
     return '';
   }, [location.pathname]);
@@ -266,3 +267,8 @@ export const useGuide = () => {
   }
   return context;
 };
+
+export const useOptionalGuide = () => {
+  return useContext(GuideContext);
+};
+
