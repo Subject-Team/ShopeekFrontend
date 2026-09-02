@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ArrowLeft, LayoutDashboard, LogIn, MessageSquare, Shield, BarChart3 } from 'lucide-react';
+import { Menu, X, LayoutDashboard, LogIn, MessageSquare, Shield, BarChart3 } from 'lucide-react';
 
 export const PublicHeader: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
@@ -91,21 +91,22 @@ export const PublicHeader: React.FC = () => {
           {/* Right side: Action Buttons */}
           <div className="hidden md:flex items-center gap-3 shrink-0 transition-all duration-300">
             <Link
-              to="/login"
-              className={`rounded-xl border border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-900 font-semibold text-xs transition-all bg-white shadow-2xs ${
-                scrolled ? 'px-3.5 py-2' : 'px-4 py-2.5'
-              }`}
-            >
-              ورود / ثبت‌نام
-            </Link>
-            <Link
               to="/dashboard"
-              className={`rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition-all flex items-center gap-1.5 ${
+              className={`rounded-xl border border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-900 font-semibold text-xs transition-all bg-white shadow-2xs flex items-center gap-1.5 ${
                 scrolled ? 'px-3.5 py-2' : 'px-4 py-2.5'
               }`}
             >
               <span>ورود به داشبورد</span>
-              <ArrowLeft className="w-3.5 h-3.5" />
+              <LayoutDashboard className="w-3.5 h-3.5" />
+            </Link>
+            <Link
+              to="/login"
+              className={`rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition-all flex items-center gap-1.5 ${
+                scrolled ? 'px-3.5 py-2' : 'px-4 py-2.5'
+              }`}
+            >
+              <span>ورود / ثبت‌نام</span>
+              <LogIn className="w-3.5 h-3.5" />
             </Link>
           </div>
 
@@ -186,20 +187,20 @@ export const PublicHeader: React.FC = () => {
 
           <div className="flex flex-col gap-2.5 pt-1">
             <Link
-              to="/login"
+              to="/dashboard"
               onClick={() => setMobileMenuOpen(false)}
               className="w-full py-3 px-4 rounded-xl border border-slate-300 text-slate-800 font-bold text-xs text-center bg-slate-50 flex items-center justify-center gap-2"
             >
-              <LogIn className="w-4 h-4 text-slate-600" />
-              <span>ورود / ثبت‌نام حساب</span>
+              <LayoutDashboard className="w-4 h-4 text-slate-600" />
+              <span>ورود به داشبورد</span>
             </Link>
             <Link
-              to="/dashboard"
+              to="/login"
               onClick={() => setMobileMenuOpen(false)}
               className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 text-white font-bold text-xs shadow-md shadow-brand-500/20 text-center flex items-center justify-center gap-2"
             >
-              <LayoutDashboard className="w-4 h-4" />
-              <span>ورود به داشبورد</span>
+              <LogIn className="w-4 h-4" />
+              <span>ورود / ثبت‌نام حساب</span>
             </Link>
           </div>
         </div>
