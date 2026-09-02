@@ -6,7 +6,7 @@ export const MainFooter: React.FC = () => {
   return (
     <footer className="w-full bg-white text-slate-600 border-t border-slate-200 font-vazir dir-rtl">
       <div className="max-w-7xl mx-auto px-6 py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
           {/* Brand & Socials Column */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
@@ -98,6 +98,16 @@ export const MainFooter: React.FC = () => {
                 <Shield className="w-3.5 h-3.5 text-emerald-600" />
                 <span>مطالعه سند کامل حریم خصوصی</span>
               </Link>
+            </div>
+          </div>
+
+          {/* Enamad Trust Seal Column */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-bold text-slate-900 tracking-wide border-b border-slate-200 pb-2">نماد اعتماد الکترونیکی</h3>
+            <div className="pt-2">
+              <a referrerPolicy="origin" target="_blank" href="https://trustseal.enamad.ir/?id=7579754&Code=Lfk3xisJsBvjf8W8gduTSP9zRBMnddBm">
+                <img referrerPolicy="origin" src="https://trustseal.enamad.ir/logo.aspx?id=7579754&Code=Lfk3xisJsBvjf8W8gduTSP9zRBMnddBm" alt="" style={{ cursor: 'pointer' }} {...{ code: 'Lfk3xisJsBvjf8W8gduTSP9zRBMnddBm' }} />
+              </a>
             </div>
           </div>
         </div>
