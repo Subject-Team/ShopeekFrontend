@@ -82,20 +82,20 @@ export const LandingPage: React.FC = () => {
 
         {/* Hero Action Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full max-w-md mb-16">
-          <a
-            href="#features"
+          <Link
+            to="/login"
             className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-brand-500/25 transition-all flex items-center justify-center gap-2"
           >
-            <BarChart3 className="w-4 h-4" />
-            <span>مشاهده قابلیت‌ها</span>
-          </a>
-          <Link
-            to="/contact"
+            <Zap className="w-4 h-4" />
+            <span>شروع رایگان</span>
+          </Link>
+          <a
+            href="#features"
             className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-2xl bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 font-bold text-sm shadow-2xs transition-all flex items-center justify-center gap-2"
           >
-            <MessageSquare className="w-4 h-4 text-brand-600" />
-            <span>تماس برای شروع</span>
-          </Link>
+            <BarChart3 className="w-4 h-4 text-brand-600" />
+            <span>مشاهده قابلیت‌ها</span>
+          </a>
         </div>
 
         {/* Hero Interactive Dashboard Mockup Card (Light Theme) */}
@@ -273,17 +273,18 @@ export const LandingPage: React.FC = () => {
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              to="/contact"
+              to="/login"
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-extrabold text-sm shadow-xl transition-all border border-slate-200"
             >
-              <span className="text-slate-900 font-extrabold">تماس با پشتیبانی و شروع</span>
+              <span className="text-slate-900 font-extrabold">همین حالا شروع کنید</span>
               <ArrowLeft className="w-4 h-4 text-slate-900 shrink-0" />
             </Link>
             <Link
-              to="/login"
+              to="/contact"
               className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-brand-800/60 hover:bg-brand-800 border border-brand-500/50 text-white font-bold text-sm transition-all"
             >
-              <span>ورود به حساب کاربری</span>
+              <MessageSquare className="w-4 h-4" />
+              <span>تماس با پشتیبانی</span>
             </Link>
           </div>
         </div>
