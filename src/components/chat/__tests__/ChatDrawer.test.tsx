@@ -101,6 +101,34 @@ describe('ChatDrawer Component', () => {
     expect(screen.queryByText('متن')).not.toBeInTheDocument();
   });
 
+  it('parses GFM tables in assistant messages', async () => {
+    (api.fetchChatHistory as any).mockResolvedValue([
+      makeMsg({
+        sender: 'ASSISTANT',
+        message_content: '| ستون ۱ | ستون ۲ |\n| --- | --- |\n| مقدار ۱ | مقدار ۲ |',
+      }),
+    ]);
+
+    const { container } = render(
+      <AuthProvider>
+        <PageContextProvider>
+          <TestWrapper />
+        </PageContextProvider>
+      </AuthProvider>
+    );
+    fireEvent.click(screen.getByText('Open Chat'));
+
+    await waitFor(() => {
+      expect(container.querySelector('table')).toBeInTheDocument();
+    });
+    expect(container.querySelector('thead')).toBeInTheDocument();
+    expect(container.querySelector('tbody')).toBeInTheDocument();
+    expect(container.querySelectorAll('th').length).toBe(2);
+    expect(container.querySelectorAll('td').length).toBe(2);
+    expect(screen.getByText('ستون ۱')).toBeInTheDocument();
+    expect(screen.getByText('مقدار ۲')).toBeInTheDocument();
+  });
+
   it('clears chat via header button after confirmation', async () => {
     (api.fetchChatHistory as any).mockResolvedValue([
       makeMsg({ message_content: 'پاسخ قبلی دستیار' }),

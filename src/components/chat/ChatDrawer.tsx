@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { X, Sparkles, Send, Bot, User, Layers, RefreshCw, Trash2, Lock } from 'lucide-react';
 import { usePageContext } from '../../context/PageContext';
 import { useAuth } from '../../context/AuthContext';
@@ -53,13 +54,16 @@ const assistantMarkdownComponents: Components = {
       <table className="w-full border-collapse text-[10px]">{children}</table>
     </div>
   ),
+  thead: ({ node: _node, ...props }) => <thead {...props} />,
+  tbody: ({ node: _node, ...props }) => <tbody {...props} />,
+  tr: ({ node: _node, ...props }) => <tr {...props} />,
   th: ({ node: _node, children, ...props }) => (
-    <th {...props} className="border border-slate-300 dark:border-slate-600 bg-slate-200/60 dark:bg-slate-700/60 px-1.5 py-1 font-bold">
+    <th {...props} className="border border-slate-300 dark:border-slate-600 bg-slate-200/60 dark:bg-slate-700/60 px-1.5 py-1 font-bold [&>p]:my-0">
       {children}
     </th>
   ),
   td: ({ node: _node, children, ...props }) => (
-    <td {...props} className="border border-slate-300 dark:border-slate-600 px-1.5 py-1">
+    <td {...props} className="border border-slate-300 dark:border-slate-600 px-1.5 py-1 [&>p]:my-0">
       {children}
     </td>
   ),
@@ -233,7 +237,7 @@ export const ChatDrawer: React.FC = () => {
                   }`}
                 >
                   {msg.sender === 'ASSISTANT' ? (
-                    <ReactMarkdown components={assistantMarkdownComponents}>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={assistantMarkdownComponents}>
                       {msg.message_content}
                     </ReactMarkdown>
                   ) : (
