@@ -1,5 +1,5 @@
 import React from 'react';
-import { Send, Camera, Mail, ShieldCheck, HelpCircle, ShoppingBag, Info, MessageSquare, ArrowRight } from 'lucide-react';
+import { Send, Camera, Mail, ShieldCheck, HelpCircle, ShoppingBag, Info, MessageSquare, ArrowRight, Clock, Headphones } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { PublicHeader } from '../components/layout/PublicHeader';
 import { MainFooter } from '../components/layout/MainFooter';
@@ -32,6 +32,21 @@ export const ContactPage: React.FC = () => {
           <p className="text-xs md:text-sm text-slate-600 leading-relaxed">
             تیم پشتیبانی شاپیک آماده پاسخ‌گویی به سوالات، راهنمایی در نحوه استفاده و فعال‌سازی اشتراک حساب شماست.
           </p>
+        </div>
+
+        {/* Support Promise Banner */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 p-5 rounded-2xl bg-gradient-to-l from-brand-50 to-emerald-50 border border-brand-200/60 text-center sm:text-right">
+          <div className="flex items-center gap-2 text-brand-700 shrink-0">
+            <Headphones className="w-5 h-5 text-brand-600" />
+            <span className="text-sm font-black text-brand-800">پشتیبانی ۲۴ ساعته، ۷ روز هفته</span>
+          </div>
+          <div className="hidden sm:block w-px h-5 bg-brand-300" />
+          <div className="flex items-center gap-2 text-emerald-700 shrink-0">
+            <Clock className="w-4 h-4 text-emerald-600" />
+            <span className="text-xs font-bold text-emerald-700">
+              تعهد پاسخ‌گویی در کمتر از <span className="text-emerald-800 font-black text-sm">۶ ساعت</span>
+            </span>
+          </div>
         </div>
 
         {/* Support Direct Contact Cards (Email, Telegram & Instagram) - Light Theme */}
