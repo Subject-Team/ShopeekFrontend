@@ -267,11 +267,14 @@ export const LoginPage: React.FC = () => {
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
             {mode === 'register' && (
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700 block">نام و نام خانوادگی</label>
+                <label htmlFor="auth-fullname" className="text-xs font-semibold text-slate-700 block">نام و نام خانوادگی</label>
                 <div className="relative">
                   <User className={`w-4 h-4 absolute right-3.5 top-3.5 transition-colors ${hasSubmitted && !isFullNameValid ? 'text-rose-400' : 'text-slate-400'}`} />
                   <input
+                    id="auth-fullname"
+                    name="name"
                     type="text"
+                    autoComplete="name"
                     placeholder="مثلاً: سارا احمدی"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
@@ -286,11 +289,14 @@ export const LoginPage: React.FC = () => {
             )}
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-700 block">نشانی ایمیل</label>
+              <label htmlFor="auth-email" className="text-xs font-semibold text-slate-700 block">نشانی ایمیل</label>
               <div className="relative">
                 <Mail className={`w-4 h-4 absolute right-3.5 top-3.5 transition-colors ${hasSubmitted && !isEmailValid ? 'text-rose-400' : 'text-slate-400'}`} />
                 <input
+                  id="auth-email"
+                  name="email"
                   type="email"
+                  autoComplete="username"
                   placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -304,11 +310,14 @@ export const LoginPage: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-700 block">کلمه عبور</label>
+              <label htmlFor="auth-password" className="text-xs font-semibold text-slate-700 block">کلمه عبور</label>
               <div className="relative">
                 <Lock className={`w-4 h-4 absolute right-3.5 top-3.5 transition-colors ${hasSubmitted && !isPasswordValid ? 'text-rose-400' : 'text-slate-400'}`} />
                 <input
+                  id="auth-password"
+                  name="password"
                   type={showPassword ? 'text' : 'password'}
+                  autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -446,11 +455,14 @@ export const LoginPage: React.FC = () => {
             {/* Repeat Password Field in Register Mode */}
             {mode === 'register' && (
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700 block">تکرار کلمه عبور</label>
+                <label htmlFor="auth-confirm-password" className="text-xs font-semibold text-slate-700 block">تکرار کلمه عبور</label>
                 <div className="relative">
                   <Lock className={`w-4 h-4 absolute right-3.5 top-3.5 transition-colors ${hasSubmitted && !isConfirmPasswordValid ? 'text-rose-400' : 'text-slate-400'}`} />
                   <input
+                    id="auth-confirm-password"
+                    name="confirm-password"
                     type={showConfirmPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
                     placeholder="••••••••"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}

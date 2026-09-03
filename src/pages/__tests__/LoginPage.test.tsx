@@ -224,4 +224,57 @@ describe('LoginPage Comprehensive Tests', () => {
       expect(screen.getByText('ایمیل خود را تأیید نکرده‌اید؟')).toBeInTheDocument();
     });
   });
+
+  it('supports browser password suggestion and autofill with standard HTML attributes', () => {
+    renderLogin();
+
+    // Login mode attributes
+    const loginEmail = screen.getByPlaceholderText('name@example.com');
+    const loginPassword = screen.getByPlaceholderText('••••••••');
+
+    expect(loginEmail).toHaveAttribute('autocomplete', 'username');
+    expect(loginEmail).toHaveAttribute('name', 'email');
+    expect(loginEmail).toHaveAttribute('id', 'auth-email');
+
+    expect(loginPassword).toHaveAttribute('autocomplete', 'current-password');
+    expect(loginPassword).toHaveAttribute('name', 'password');
+    expect(loginPassword).toHaveAttribute('id', 'auth-password');
+
+    // Switch to register mode
+    fireEvent.click(screen.getByText('ثبت‌نام کاربر جدید'));
+
+    const registerName = screen.getByPlaceholderText('مثلاً: سارا احمدی');
+    const registerEmail = screen.getByPlaceholderText('name@example.com');
+    const passwordInputs = screen.getAllByPlaceholderText('••••••••');
+    const registerPassword = passwordInputs[0];
+    const registerConfirmPassword = passwordInputs[1];
+
+    expect(registerName).toHaveAttribute('autocomplete', 'name');
+    expect(registerName).toHaveAttribute('name', 'name');
+    expect(registerName).toHaveAttribute('id', 'auth-fullname');
+
+    expect(registerEmail).toHaveAttribute('autocomplete', 'username');
+    expect(registerEmail).toHaveAttribute('name', 'email');
+    expect(registerEmail).toHaveAttribute('id', 'auth-email');
+
+    // Password suggestion trigger: autoComplete="new-password" on both fields
+    expect(registerPassword).toHaveAttribute('autocomplete', 'new-password');
+    expect(registerPassword).toHaveAttribute('name', 'password');
+    expect(registerPassword).toHaveAttribute('id', 'auth-password');
+
+    expect(registerConfirmPassword).toHaveAttribute('autocomplete', 'new-password');
+    expect(registerConfirmPassword).toHaveAttribute('name', 'confirm-password');
+    expect(registerConfirmPassword).toHaveAttribute('id', 'auth-confirm-password');
+
+    // Simulate Google Chrome filling suggested strong password into both inputs
+    const suggestedPassword = 'sT9!vK#82_mZ@51$';
+    fireEvent.change(registerPassword, { target: { value: suggestedPassword } });
+    fireEvent.change(registerConfirmPassword, { target: { value: suggestedPassword } });
+
+    // Both values must match and show highest security level
+    expect(registerPassword).toHaveValue(suggestedPassword);
+    expect(registerConfirmPassword).toHaveValue(suggestedPassword);
+    expect(screen.getByText('بسیار قوی')).toBeInTheDocument();
+    expect(screen.getByText('تطابق تکرار رمز')).toBeInTheDocument();
+  });
 });
