@@ -8,7 +8,6 @@ import * as api from '../../services/api';
 
 vi.mock('../../services/api', () => ({
   loginApi: vi.fn(),
-  registerApi: vi.fn(),
   fetchMeApi: vi.fn(),
 }));
 

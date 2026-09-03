@@ -6,7 +6,6 @@ import * as api from '../../services/api';
 
 vi.mock('../../services/api', () => ({
   loginApi: vi.fn(),
-  registerApi: vi.fn(),
   fetchMeApi: vi.fn(),
   setWebSessionId: vi.fn(),
   getWebSessionId: vi.fn(() => null),
@@ -74,41 +73,6 @@ describe('AuthContext', () => {
     expect(result.current.user?.email).toBe('test@shopeek.ir');
     expect(localStorage.getItem('shopeek_token')).toBe('mock-token-123');
     expect(localStorage.getItem('shopeek_refresh_token')).toBe('mock-refresh-token');
-  });
-
-  it('successful registration returns verification message without storing a token', async () => {
-    const mockUser = {
-      id: 'u-2',
-      email: 'new@shopeek.ir',
-      full_name: 'کاربر ثبت نامی',
-      role: 'User',
-      is_subscription_active: false,
-      remaining_days: 0,
-      is_infinite_subscription: false,
-      email_verified: false,
-      is_read_only: true,
-      restriction_reasons: ['email_unverified'],
-    };
-    (api.registerApi as any).mockResolvedValue({
-      message: 'ایمیل تأیید برای حساب شما ارسال شد.',
-      email: 'new@shopeek.ir',
-    });
-    (api.fetchMeApi as any).mockResolvedValue(mockUser);
-
-    const { result } = renderHook(() => useAuth(), { wrapper });
-
-    let regResult;
-    await act(async () => {
-      regResult = await result.current.register('new@shopeek.ir', 'Password123!', 'کاربر ثبت نامی');
-    });
-
-    expect(regResult!.email).toBe('new@shopeek.ir');
-    expect(regResult!.message).toContain('تأیید');
-    // Registration does NOT auto-login: the user must verify their email first.
-    expect(result.current.isAuthenticated).toBe(false);
-    expect(result.current.token).toBeNull();
-    expect(result.current.user).toBeNull();
-    expect(localStorage.getItem('shopeek_token')).toBeNull();
   });
 
   it('logout clears state and localStorage', async () => {

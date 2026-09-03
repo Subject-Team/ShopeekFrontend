@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, RegisterOut } from '../types';
+import { User } from '../types';
 import {
   loginApi,
-  registerApi,
   fetchMeApi,
   setWebSessionId,
   sendOtpApi,
@@ -18,7 +17,6 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (identifier: string, password: string, turnstileToken?: string, isPhone?: boolean) => Promise<void>;
-  register: (email: string, password: string, full_name: string, turnstileToken?: string) => Promise<RegisterOut>;
   sendOtp: (phone: string, turnstileToken?: string) => Promise<OtpSendResponse>;
   verifyOtp: (phone: string, code: string, turnstileToken?: string) => Promise<OtpVerifyResponse>;
   loginWithPhone: (phone: string, password: string, turnstileToken?: string) => Promise<void>;
@@ -110,16 +108,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await login(phone, password, turnstileToken, true);
   };
 
-  const register = async (email: string, password: string, full_name: string, turnstileToken?: string) => {
-    setIsLoading(true);
-    try {
-      const response = await registerApi({ email, password, full_name, turnstile_token: turnstileToken });
-      return response;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const sendOtp = async (phone: string, turnstileToken?: string): Promise<OtpSendResponse> => {
     return sendOtpApi({ phone, turnstile_token: turnstileToken });
   };
@@ -170,7 +158,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAuthenticated: !!token && !!user,
         isLoading,
         login,
-        register,
         sendOtp,
         verifyOtp,
         loginWithPhone,

@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   loginApi,
-  registerApi,
   resendVerificationApi,
   fetchMeApi,
   fetchKPISummary,
@@ -56,33 +55,6 @@ describe('API Services', () => {
     await expect(
       loginApi({ email: 'test@shopeek.ir', password: 'wrong' })
     ).rejects.toThrow('Invalid credentials');
-  });
-
-  it('registerApi sends POST request and returns message + email (no token)', async () => {
-    window.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        message: 'ایمیل تأیید برای حساب شما ارسال شد.',
-        email: 'new@shopeek.ir',
-      }),
-    });
-
-    const res = await registerApi({
-      email: 'new@shopeek.ir',
-      password: 'Password123!',
-      full_name: 'کاربر جدید',
-    });
-    expect(res.email).toBe('new@shopeek.ir');
-    expect(res.message).toContain('تأیید');
-    expect((res as unknown as Record<string, unknown>).access_token).toBeUndefined();
-
-    expect(window.fetch).toHaveBeenCalledWith(
-      '/api/v1/auth/register',
-      expect.objectContaining({
-        method: 'POST',
-        body: expect.any(String),
-      })
-    );
   });
 
   it('resendVerificationApi POSTs the email to resend-verification', async () => {

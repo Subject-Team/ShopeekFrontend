@@ -56,7 +56,7 @@ const useCountdown = (active: boolean, seconds: number) => {
 };
 
 export const LoginPage: React.FC = () => {
-  const { login, register, sendOtp, verifyOtp, loginWithPhone, registerWithPhone, isLoading, isAuthenticated } =
+  const { login, sendOtp, verifyOtp, loginWithPhone, registerWithPhone, isLoading, isAuthenticated } =
     useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -67,8 +67,7 @@ export const LoginPage: React.FC = () => {
   /* ─── Login sub-method (3 options) ─── */
   const [loginMethod, setLoginMethod] = useState<'email' | 'phone-password' | 'phone-otp'>('email');
 
-  /* ─── Register sub-step: 'email' = legacy form, 'phone' | 'verify' | 'details' = OTP wizard ─── */
-  const [registerMethod, setRegisterMethod] = useState<'email' | 'phone'>('email');
+  /* ─── Register sub-step: 'phone' | 'verify' | 'details' OTP wizard ─── */
   const [registerStep, setRegisterStep] = useState<'phone' | 'verify' | 'details'>('phone');
 
   /* ─── Login OTP sub-step (when loginMethod === 'phone-otp') ─── */
@@ -104,7 +103,7 @@ export const LoginPage: React.FC = () => {
   const isFullNameValid = fullName.trim().length > 0;
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const isPasswordValid =
-    mode === 'register' && registerMethod === 'email'
+    mode === 'register'
       ? passwordAnalysis.hasMinLength &&
         passwordAnalysis.hasLower &&
         passwordAnalysis.hasUpper &&
@@ -116,7 +115,7 @@ export const LoginPage: React.FC = () => {
   useEffect(() => {
     setTurnstileToken(null);
     turnstileRef.current?.reset();
-  }, [mode, registerMethod, registerStep, loginMethod, loginOtpStep]);
+  }, [mode, registerStep, loginMethod, loginOtpStep]);
 
   /* ─── Reset errors on mode change ─── */
   useEffect(() => {
@@ -219,7 +218,6 @@ export const LoginPage: React.FC = () => {
       const res = await sendOtp(phone.trim(), turnstileToken);
       if (!res.registered) {
         setMode('register');
-        setRegisterMethod('phone');
         setRegisterStep('phone');
         showToast('این شماره ثبت‌نام نشده است. لطفاً ابتدا حساب بسازید.', 'info');
         return;
@@ -255,7 +253,6 @@ export const LoginPage: React.FC = () => {
       const res = await verifyOtp(phone.trim(), otpCode, turnstileToken);
       if (!res.registered) {
         setMode('register');
-        setRegisterMethod('phone');
         setRegisterStep('phone');
         setPhone(phone.trim());
         showToast('این شماره ثبت‌نام نشده است. لطفاً حساب خود را بسازید.', 'info');
@@ -406,75 +403,6 @@ export const LoginPage: React.FC = () => {
     } catch (err: any) {
       const msg = err.message || 'خطا در ایجاد حساب کاربری';
       setErrorMessage(msg);
-      showToast(msg, 'error');
-      setTurnstileToken(null);
-      turnstileRef.current?.reset();
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  /* --- Register: email (legacy) --- */
-  const handleEmailRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMessage(null);
-    setHasSubmitted(true);
-    if (!fullName.trim()) {
-      showToast('لطفاً نام و نام خانوادگی خود را وارد کنید.', 'warning');
-      return;
-    }
-    if (!email.trim()) {
-      showToast('لطفاً نشانی ایمیل خود را وارد نمایید.', 'warning');
-      return;
-    }
-    if (!isEmailValid) {
-      showToast('لطفاً یک نشانی ایمیل معتبر وارد نمایید.', 'warning');
-      return;
-    }
-    if (!password) {
-      showToast('لطفاً کلمه عبور خود را وارد نمایید.', 'warning');
-      return;
-    }
-    if (!passwordAnalysis.hasMinLength) {
-      showToast('کلمه عبور باید حداقل ۸ کاراکتر باشد.', 'warning');
-      return;
-    }
-    if (!passwordAnalysis.hasLower || !passwordAnalysis.hasUpper) {
-      showToast('کلمه عبور باید شامل حروف بزرگ و کوچک انگلیسی باشد.', 'warning');
-      return;
-    }
-    if (!passwordAnalysis.hasSymbol) {
-      showToast('کلمه عبور باید حداقل شامل یک علامت یا نماد خاص (!@#...) باشد.', 'warning');
-      return;
-    }
-    if (!confirmPassword) {
-      showToast('لطفاً تکرار کلمه عبور را وارد کنید.', 'warning');
-      return;
-    }
-    if (password !== confirmPassword) {
-      showToast('کلمه عبور و تکرار آن یکسان نیستند.', 'warning');
-      return;
-    }
-    if (!acceptedPrivacy) {
-      showToast('لطفاً جهت ایجاد حساب، سیاست حفظ حریم خصوصی را بپذیرید.', 'warning');
-      return;
-    }
-    if (!turnstileToken) {
-      showToast('لطفاً اعتبارسنجی امنیتی را تکمیل نمایید.', 'warning');
-      return;
-    }
-    setSubmitting(true);
-    try {
-      const result = await register(email.trim(), password, fullName.trim(), turnstileToken);
-      showToast(
-        result.message || 'حساب کاربری ایجاد شد؛ لطفاً ایمیل خود را تأیید کنید.',
-        'success',
-      );
-      navigate('/verify-email', { state: { email: email.trim() } });
-    } catch (err: any) {
-      const msg = err.message || 'خطا در برقراری ارتباط با سرور';
-      setErrorMessage(msg);
-      setVerificationError(msg.includes('ایمیل') && msg.includes('تأیید'));
       showToast(msg, 'error');
       setTurnstileToken(null);
       turnstileRef.current?.reset();
@@ -671,7 +599,6 @@ export const LoginPage: React.FC = () => {
               onClick={() => {
                 if (mode !== 'register') {
                   setMode('register');
-                  setRegisterMethod('email');
                   setRegisterStep('phone');
                 }
               }}
@@ -978,7 +905,6 @@ export const LoginPage: React.FC = () => {
                       type="button"
                       onClick={() => {
                         setMode('register');
-                        setRegisterMethod('phone');
                         setRegisterStep('phone');
                       }}
                       className="text-brand-600 hover:text-brand-700 font-bold underline underline-offset-4"
@@ -1148,49 +1074,9 @@ export const LoginPage: React.FC = () => {
           ============================================================ */}
           {mode === 'register' && (
             <>
-              {/* Register Method Toggle */}
-              <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
-                <button
-                  type="button"
-                  data-testid="otp-method"
-                  onClick={() => {
-                    setRegisterMethod('phone');
-                    setRegisterStep('phone');
-                    setErrorMessage(null);
-                    setHasSubmitted(false);
-                  }}
-                  className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                    registerMethod === 'phone'
-                      ? 'bg-white text-brand-700 shadow-sm border border-slate-200'
-                      : 'text-slate-500 hover:text-slate-700'
-                  }`}
-                >
-                  <Smartphone className="w-3.5 h-3.5" />
-                  <span>شماره موبایل (پیامکی)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setRegisterMethod('email');
-                    setRegisterStep('phone');
-                    setErrorMessage(null);
-                    setHasSubmitted(false);
-                  }}
-                  className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                    registerMethod === 'email'
-                      ? 'bg-white text-brand-700 shadow-sm border border-slate-200'
-                      : 'text-slate-500 hover:text-slate-700'
-                  }`}
-                >
-                  <Mail className="w-3.5 h-3.5" />
-                  <span>ایمیل و کلمه عبور</span>
-                </button>
-              </div>
-
               {/* ── Register: Phone+OTP Flow ── */}
-              {registerMethod === 'phone' && (
-                <div className="space-y-4">
-                  {/* Step Indicator */}
+              <div className="space-y-4">
+                {/* Step Indicator */}
                   <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
                     <span className={registerStep === 'phone' ? 'text-brand-600 font-bold' : ''}>
                       ۱. شماره
@@ -1607,232 +1493,6 @@ export const LoginPage: React.FC = () => {
                     </form>
                   )}
                 </div>
-              )}
-
-              {/* ── Register: Email (Legacy) ── */}
-              {registerMethod === 'email' && (
-                <form onSubmit={handleEmailRegister} noValidate className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label htmlFor="auth-fullname" className="text-xs font-semibold text-slate-700 block">
-                      نام و نام خانوادگی
-                    </label>
-                    <div className="relative">
-                      <User
-                        className={`w-4 h-4 absolute right-3.5 top-3.5 transition-colors ${
-                          hasSubmitted && !isFullNameValid ? 'text-rose-400' : 'text-slate-400'
-                        }`}
-                      />
-                      <input
-                        id="auth-fullname"
-                        name="name"
-                        type="text"
-                        autoComplete="name"
-                        placeholder="مثلاً: سارا احمدی"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        className={`w-full pr-10 pl-4 py-2.5 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition-all ${
-                          hasSubmitted && !isFullNameValid
-                            ? 'border border-rose-400 focus:border-rose-500 bg-rose-50/20 ring-1 ring-rose-400/50'
-                            : 'bg-slate-50 border border-slate-200 focus:border-brand-500'
-                        }`}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label htmlFor="auth-email" className="text-xs font-semibold text-slate-700 block">
-                      نشانی ایمیل
-                    </label>
-                    <div className="relative">
-                      <Mail
-                        className={`w-4 h-4 absolute right-3.5 top-3.5 transition-colors ${
-                          hasSubmitted && !isEmailValid ? 'text-rose-400' : 'text-slate-400'
-                        }`}
-                      />
-                      <input
-                        id="auth-email"
-                        name="email"
-                        type="email"
-                        autoComplete="username"
-                        placeholder="name@example.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className={`w-full pr-10 pl-4 py-2.5 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition-all dir-ltr text-right ${
-                          hasSubmitted && !isEmailValid
-                            ? 'border border-rose-400 focus:border-rose-500 bg-rose-50/20 ring-1 ring-rose-400/50'
-                            : 'bg-slate-50 border border-slate-200 focus:border-brand-500'
-                        }`}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label htmlFor="auth-password" className="text-xs font-semibold text-slate-700 block">
-                      کلمه عبور
-                    </label>
-                    <div className="relative">
-                      <Lock
-                        className={`w-4 h-4 absolute right-3.5 top-3.5 transition-colors ${
-                          hasSubmitted && !isPasswordValid ? 'text-rose-400' : 'text-slate-400'
-                        }`}
-                      />
-                      <input
-                        id="auth-password"
-                        name="password"
-                        type={showPassword ? 'text' : 'password'}
-                        autoComplete="new-password"
-                        placeholder="••••••••"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className={`w-full pr-10 pl-10 py-2.5 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition-all dir-ltr text-right ${
-                          hasSubmitted && !isPasswordValid
-                            ? 'border border-rose-400 focus:border-rose-500 bg-rose-50/20 ring-1 ring-rose-400/50'
-                            : 'bg-slate-50 border border-slate-200 focus:border-brand-500'
-                        }`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute left-3.5 top-3 text-slate-400 hover:text-slate-600"
-                        aria-label={showPassword ? 'مخفی‌سازی کلمه عبور' : 'نمایش کلمه عبور'}
-                      >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-                    {renderPasswordStrength()}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label htmlFor="auth-confirm-password" className="text-xs font-semibold text-slate-700 block">
-                      تکرار کلمه عبور
-                    </label>
-                    <div className="relative">
-                      <Lock
-                        className={`w-4 h-4 absolute right-3.5 top-3.5 transition-colors ${
-                          hasSubmitted && !isConfirmPasswordValid ? 'text-rose-400' : 'text-slate-400'
-                        }`}
-                      />
-                      <input
-                        id="auth-confirm-password"
-                        name="confirm-password"
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        autoComplete="new-password"
-                        placeholder="••••••••"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className={`w-full pr-10 pl-10 py-2.5 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition-all dir-ltr text-right ${
-                          hasSubmitted && !isConfirmPasswordValid
-                            ? 'border border-rose-400 focus:border-rose-500 bg-rose-50/20 ring-1 ring-rose-400/50'
-                            : confirmPassword && password !== confirmPassword
-                            ? 'border border-rose-300 focus:border-rose-500 bg-rose-50/20'
-                            : confirmPassword && password === confirmPassword
-                            ? 'border border-emerald-300 focus:border-emerald-500 bg-emerald-50/20'
-                            : 'bg-slate-50 border border-slate-200 focus:border-brand-500'
-                        }`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute left-3.5 top-3 text-slate-400 hover:text-slate-600"
-                        aria-label={
-                          showConfirmPassword ? 'مخفی‌سازی تکرار کلمه عبور' : 'نمایش تکرار کلمه عبور'
-                        }
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </button>
-                    </div>
-                    {((confirmPassword && password !== confirmPassword) ||
-                      (hasSubmitted && !isConfirmPasswordValid)) && (
-                      <p className="text-[11px] text-rose-600 font-semibold flex items-center gap-1 mt-1">
-                        <AlertCircle className="w-3 h-3 shrink-0" />
-                        <span>کلمه عبور و تکرار آن یکسان نیستند.</span>
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Privacy Checkbox */}
-                  <div className="pt-1">
-                    <div
-                      className={`p-2.5 rounded-2xl transition-all ${
-                        hasSubmitted && !acceptedPrivacy
-                          ? 'border border-rose-300 bg-rose-50/30'
-                          : 'border border-transparent'
-                      }`}
-                    >
-                      <label className="flex items-start gap-2.5 cursor-pointer text-xs text-slate-700 select-none leading-relaxed">
-                        <input
-                          type="checkbox"
-                          checked={acceptedPrivacy}
-                          onChange={(e) => setAcceptedPrivacy(e.target.checked)}
-                          className="sr-only"
-                        />
-                        <div
-                          className={`mt-0.5 shrink-0 transition-colors ${
-                            hasSubmitted && !acceptedPrivacy ? 'text-rose-500' : 'text-brand-600'
-                          }`}
-                        >
-                          {acceptedPrivacy ? (
-                            <CheckSquare className="w-4 h-4" />
-                          ) : (
-                            <Square
-                              className={`w-4 h-4 ${
-                                hasSubmitted && !acceptedPrivacy ? 'text-rose-400' : 'text-slate-400'
-                              }`}
-                            />
-                          )}
-                        </div>
-                        <span className="underline underline-offset-4 decoration-slate-300">
-                          من{' '}
-                          <Link
-                            to="/privacy-policy"
-                            target="_blank"
-                            className="text-brand-600 hover:text-brand-700 font-bold underline underline-offset-4"
-                          >
-                            سیاست حفظ حریم خصوصی
-                          </Link>{' '}
-                          شاپیک را خوانده‌ام و می‌پذیرم.
-                        </span>
-                      </label>
-                      {hasSubmitted && !acceptedPrivacy && (
-                        <p className="text-[11px] text-rose-600 font-semibold flex items-center gap-1 mt-2 pr-6">
-                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                          <span>پذیرش سیاست حفظ حریم خصوصی جهت ایجاد حساب کاربری الزامی است.</span>
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex justify-center items-center py-2 min-h-[65px] w-full overflow-hidden">
-                    <Turnstile
-                      ref={turnstileRef}
-                      siteKey={TURNSTILE_SITE_KEY}
-                      onSuccess={(token) => setTurnstileToken(token)}
-                      onExpire={() => setTurnstileToken(null)}
-                      onError={() => setTurnstileToken(null)}
-                      options={{ theme: 'light', language: 'fa', size: 'normal' }}
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={submitting || isLoading}
-                    className="w-full py-3 px-4 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-md shadow-brand-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 mt-2 text-sm"
-                  >
-                    {submitting ? (
-                      <span className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    ) : (
-                      <>
-                        <span>ایجاد حساب کاربری</span>
-                        <ArrowRight className="w-4 h-4 rotate-180" />
-                      </>
-                    )}
-                  </button>
-                </form>
-              )}
             </>
           )}
         </div>

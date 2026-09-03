@@ -12,7 +12,6 @@ const { MOCK_USER } = vi.hoisted(() => ({
 
 vi.mock('../../../services/api', () => ({
   loginApi: vi.fn(),
-  registerApi: vi.fn(),
   fetchMeApi: vi.fn().mockResolvedValue(MOCK_USER),
   uploadSalesFile: vi.fn(),
   previewSalesFile: vi.fn(),

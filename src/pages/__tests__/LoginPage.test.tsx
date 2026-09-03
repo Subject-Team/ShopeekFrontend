@@ -18,7 +18,6 @@ vi.mock('@marsidev/react-turnstile', () => ({
 
 vi.mock('../../services/api', () => ({
   loginApi: vi.fn(),
-  registerApi: vi.fn(),
   fetchMeApi: vi.fn(),
   sendOtpApi: vi.fn(),
   verifyOtpApi: vi.fn(),
@@ -56,14 +55,32 @@ describe('LoginPage Comprehensive Tests', () => {
     expect(passwordInput.type).toBe('text');
   });
 
-  it('switches to register mode and validates password requirements dynamically', () => {
+  it('walking the phone OTP register flow reaches details and validates password requirements dynamically', async () => {
+    (api.sendOtpApi as any).mockResolvedValue({ sent: true, message_id: 1, registered: false });
+    (api.verifyOtpApi as any).mockResolvedValue({
+      phone: '09123456789',
+      verified: true,
+      message: 'کد تأیید صحیح است.',
+      registered: false,
+    });
+
     renderLogin();
 
     // Switch to register mode
-    const registerTab = screen.getByText('ثبت‌نام کاربر جدید');
-    fireEvent.click(registerTab);
+    fireEvent.click(screen.getByText('ثبت‌نام کاربر جدید'));
+    expect(screen.getByTestId('otp-phone')).toBeInTheDocument();
 
-    expect(screen.getByPlaceholderText('مثلاً: سارا احمدی')).toBeInTheDocument();
+    // Walk to the details step
+    fireEvent.change(screen.getByTestId('otp-phone'), { target: { value: '09123456789' } });
+    fireEvent.click(screen.getByTestId('otp-send-btn'));
+    await waitFor(() => {
+      expect(screen.getByTestId('otp-code')).toBeInTheDocument();
+    });
+    fireEvent.change(screen.getByTestId('otp-code'), { target: { value: '123456' } });
+    fireEvent.click(screen.getByTestId('otp-verify-btn'));
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('مثلاً: سارا احمدی')).toBeInTheDocument();
+    });
 
     const passwordInputs = screen.getAllByPlaceholderText('••••••••');
     const passwordInput = passwordInputs[0];
@@ -77,88 +94,6 @@ describe('LoginPage Comprehensive Tests', () => {
     expect(screen.getByText('حروف بزرگ و کوچک')).toBeInTheDocument();
     expect(screen.getByText('علامت یا نماد خاص')).toBeInTheDocument();
     expect(screen.getByText('تطابق تکرار رمز')).toBeInTheDocument();
-  });
-
-  it('submits registration when form is valid and privacy policy is accepted', async () => {
-    (api.registerApi as any).mockResolvedValue({
-      message: 'ایمیل تأیید برای حساب شما ارسال شد.',
-      email: 'test@shopeek.ir',
-    });
-    (api.fetchMeApi as any).mockResolvedValue({
-      id: 'u-1',
-      email: 'test@shopeek.ir',
-      full_name: 'کاربر جدید',
-      role: 'User',
-    });
-
-    renderLogin();
-
-    // Switch to register
-    fireEvent.click(screen.getByText('ثبت‌نام کاربر جدید'));
-
-    fireEvent.change(screen.getByPlaceholderText('مثلاً: سارا احمدی'), { target: { value: 'کاربر جدید' } });
-    fireEvent.change(screen.getByPlaceholderText('name@example.com'), { target: { value: 'test@shopeek.ir' } });
-
-    const passwordInputs = screen.getAllByPlaceholderText('••••••••');
-    fireEvent.change(passwordInputs[0], {
-      target: { value: 'StrongPass123!' },
-    });
-    fireEvent.change(passwordInputs[1], {
-      target: { value: 'StrongPass123!' },
-    });
-
-    // Accept privacy checkbox
-    const checkbox = screen.getByRole('checkbox');
-    fireEvent.click(checkbox);
-
-    // Submit
-    const submitBtn = screen.getByText('ایجاد حساب کاربری');
-    fireEvent.click(submitBtn);
-
-    await waitFor(() => {
-      expect(api.registerApi).toHaveBeenCalled();
-    });
-  });
-
-  it('navigates to verify-email page after successful registration', async () => {
-    (api.registerApi as any).mockResolvedValue({
-      message: 'ایمیل تأیید برای حساب شما ارسال شد.',
-      email: 'test@shopeek.ir',
-    });
-    (api.fetchMeApi as any).mockResolvedValue({
-      id: 'u-1',
-      email: 'test@shopeek.ir',
-      full_name: 'کاربر جدید',
-      role: 'User',
-    });
-
-    render(
-      <MemoryRouter initialEntries={['/login']}>
-        <AuthProvider>
-          <ToastProvider>
-            <Routes>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/verify-email" element={<div>صفحه تأیید ایمیل</div>} />
-            </Routes>
-          </ToastProvider>
-        </AuthProvider>
-      </MemoryRouter>
-    );
-
-    fireEvent.click(screen.getByText('ثبت‌نام کاربر جدید'));
-    fireEvent.change(screen.getByPlaceholderText('مثلاً: سارا احمدی'), { target: { value: 'کاربر جدید' } });
-    fireEvent.change(screen.getByPlaceholderText('name@example.com'), { target: { value: 'test@shopeek.ir' } });
-
-    const passwordInputs = screen.getAllByPlaceholderText('••••••••');
-    fireEvent.change(passwordInputs[0], { target: { value: 'StrongPass123!' } });
-    fireEvent.change(passwordInputs[1], { target: { value: 'StrongPass123!' } });
-
-    fireEvent.click(screen.getByRole('checkbox'));
-    fireEvent.click(screen.getByText('ایجاد حساب کاربری'));
-
-    await waitFor(() => {
-      expect(screen.getByText('صفحه تأیید ایمیل')).toBeInTheDocument();
-    });
   });
 
   it('redirects an already-authenticated user to the dashboard', async () => {
@@ -229,7 +164,15 @@ describe('LoginPage Comprehensive Tests', () => {
     });
   });
 
-  it('supports browser password suggestion and autofill with standard HTML attributes', () => {
+  it('supports browser password suggestion and autofill with standard HTML attributes', async () => {
+    (api.sendOtpApi as any).mockResolvedValue({ sent: true, message_id: 1, registered: false });
+    (api.verifyOtpApi as any).mockResolvedValue({
+      phone: '09123456789',
+      verified: true,
+      message: 'کد تأیید صحیح است.',
+      registered: false,
+    });
+
     renderLogin();
 
     // Login mode attributes
@@ -246,6 +189,18 @@ describe('LoginPage Comprehensive Tests', () => {
 
     // Switch to register mode
     fireEvent.click(screen.getByText('ثبت‌نام کاربر جدید'));
+
+    // Walk the phone OTP flow to the details step
+    fireEvent.change(screen.getByTestId('otp-phone'), { target: { value: '09123456789' } });
+    fireEvent.click(screen.getByTestId('otp-send-btn'));
+    await waitFor(() => {
+      expect(screen.getByTestId('otp-code')).toBeInTheDocument();
+    });
+    fireEvent.change(screen.getByTestId('otp-code'), { target: { value: '123456' } });
+    fireEvent.click(screen.getByTestId('otp-verify-btn'));
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('مثلاً: سارا احمدی')).toBeInTheDocument();
+    });
 
     const registerName = screen.getByPlaceholderText('مثلاً: سارا احمدی');
     const registerEmail = screen.getByPlaceholderText('name@example.com');
@@ -389,7 +344,6 @@ describe('LoginPage Comprehensive Tests', () => {
     );
 
     fireEvent.click(screen.getByText('ثبت‌نام کاربر جدید'));
-    fireEvent.click(screen.getByTestId('otp-method'));
 
     fireEvent.change(screen.getByTestId('otp-phone'), { target: { value: '09123456789' } });
     fireEvent.click(screen.getByTestId('otp-send-btn'));

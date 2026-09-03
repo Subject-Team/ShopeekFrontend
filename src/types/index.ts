@@ -23,11 +23,6 @@ export interface AuthTokenResponse {
   web_session_id?: string | null;
 }
 
-export interface RegisterOut {
-  message: string;
-  email: string;
-}
-
 export interface ResendVerificationResponse {
   message: string;
 }
@@ -39,14 +34,6 @@ export interface LoginPayload {
   turnstile_token?: string;
   device_id?: string;
   device_label?: string;
-}
-
-export interface RegisterPayload {
-  email: string;
-  password: string;
-  full_name: string;
-  role?: string;
-  turnstile_token?: string;
 }
 
 export interface OtpSendPayload {

@@ -6,10 +6,8 @@ import {
   AdvisoryTriggerResult,
   ChatMessage,
   AuthTokenResponse,
-  RegisterOut,
   ResendVerificationResponse,
   LoginPayload,
-  RegisterPayload,
   User,
   SettingsData,
   ChangePasswordPayload,
@@ -150,20 +148,6 @@ export const loginApi = async (payload: LoginPayload): Promise<AuthTokenResponse
   const data = (await res.json()) as AuthTokenResponse;
   if (data.web_session_id) setWebSessionId(data.web_session_id);
   return data;
-};
-
-export const registerApi = async (payload: RegisterPayload): Promise<RegisterOut> => {
-  const res = await fetch(`${API_BASE}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: 'خطا در ثبت‌نام کاربر' }));
-    throw new Error(err.detail || 'خطا در ایجاد حساب جدید.');
-  }
-  return res.json();
 };
 
 export const resendVerificationApi = async (email: string): Promise<ResendVerificationResponse> => {
