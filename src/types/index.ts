@@ -2,6 +2,7 @@ export interface User {
   id: string;
   email: string;
   full_name: string;
+  phone?: string | null;
   role: string;
   created_at: string;
   subscription_expires_at?: string | null;
@@ -9,6 +10,7 @@ export interface User {
   is_infinite_subscription?: boolean;
   remaining_days?: number | null;
   email_verified?: boolean;
+  phone_verified?: boolean;
   is_read_only?: boolean;
   restriction_reasons?: string[];
 }
@@ -31,7 +33,8 @@ export interface ResendVerificationResponse {
 }
 
 export interface LoginPayload {
-  email: string;
+  email?: string;
+  phone?: string;
   password: string;
   turnstile_token?: string;
   device_id?: string;
@@ -44,6 +47,41 @@ export interface RegisterPayload {
   full_name: string;
   role?: string;
   turnstile_token?: string;
+}
+
+export interface OtpSendPayload {
+  phone: string;
+  turnstile_token?: string;
+}
+
+export interface OtpSendResponse {
+  sent: boolean;
+  message_id?: number | null;
+  registered: boolean;
+}
+
+export interface OtpVerifyPayload {
+  phone: string;
+  code: string;
+  turnstile_token?: string;
+}
+
+export interface OtpVerifyResponse {
+  phone: string;
+  verified: boolean;
+  message: string;
+  registered: boolean;
+}
+
+export interface RegisterWithPhonePayload {
+  phone: string;
+  code: string;
+  email: string;
+  password: string;
+  full_name: string;
+  turnstile_token?: string;
+  device_id?: string;
+  device_label?: string;
 }
 
 export interface KPISummary {

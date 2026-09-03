@@ -1,6 +1,15 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, RegisterOut } from '../types';
-import { loginApi, registerApi, fetchMeApi, setWebSessionId } from '../services/api';
+import {
+  loginApi,
+  registerApi,
+  fetchMeApi,
+  setWebSessionId,
+  sendOtpApi,
+  verifyOtpApi,
+  registerWithPhoneApi,
+} from '../services/api';
+import { OtpSendResponse, OtpVerifyResponse } from '../types';
 import { getDeviceId, getDeviceLabel } from '../utils/device';
 
 interface AuthContextType {
@@ -8,8 +17,15 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string, turnstileToken?: string) => Promise<void>;
+  login: (identifier: string, password: string, turnstileToken?: string, isPhone?: boolean) => Promise<void>;
   register: (email: string, password: string, full_name: string, turnstileToken?: string) => Promise<RegisterOut>;
+  sendOtp: (phone: string, turnstileToken?: string) => Promise<OtpSendResponse>;
+  verifyOtp: (phone: string, code: string, turnstileToken?: string) => Promise<OtpVerifyResponse>;
+  loginWithPhone: (phone: string, password: string, turnstileToken?: string) => Promise<void>;
+  registerWithPhone: (
+    payload: { phone: string; code: string; email: string; password: string; full_name: string },
+    turnstileToken?: string
+  ) => Promise<void>;
   logout: () => void;
 }
 
@@ -67,11 +83,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [token]);
 
-  const login = async (email: string, password: string, turnstileToken?: string) => {
+  const login = async (identifier: string, password: string, turnstileToken?: string, isPhone?: boolean) => {
     setIsLoading(true);
     try {
       const response = await loginApi({
-        email,
+        email: isPhone ? undefined : identifier,
+        phone: isPhone ? identifier : undefined,
         password,
         turnstile_token: turnstileToken,
         device_id: getDeviceId(),
@@ -89,11 +106,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const loginWithPhone = async (phone: string, password: string, turnstileToken?: string) => {
+    await login(phone, password, turnstileToken, true);
+  };
+
   const register = async (email: string, password: string, full_name: string, turnstileToken?: string) => {
     setIsLoading(true);
     try {
       const response = await registerApi({ email, password, full_name, turnstile_token: turnstileToken });
       return response;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const sendOtp = async (phone: string, turnstileToken?: string): Promise<OtpSendResponse> => {
+    return sendOtpApi({ phone, turnstile_token: turnstileToken });
+  };
+
+  const verifyOtp = async (phone: string, code: string, turnstileToken?: string): Promise<OtpVerifyResponse> => {
+    return verifyOtpApi({ phone, code, turnstile_token: turnstileToken });
+  };
+
+  const registerWithPhone = async (
+    payload: { phone: string; code: string; email: string; password: string; full_name: string },
+    turnstileToken?: string
+  ) => {
+    setIsLoading(true);
+    try {
+      const response = await registerWithPhoneApi({
+        ...payload,
+        turnstile_token: turnstileToken,
+        device_id: getDeviceId(),
+        device_label: getDeviceLabel(),
+      });
+      setToken(response.access_token);
+      setUser(response.user);
+      localStorage.setItem('shopeek_token', response.access_token);
+      if (response.refresh_token) {
+        localStorage.setItem('shopeek_refresh_token', response.refresh_token);
+      }
+      localStorage.setItem('shopeek_user', JSON.stringify(response.user));
+      if (response.web_session_id) setWebSessionId(response.web_session_id);
     } finally {
       setIsLoading(false);
     }
@@ -117,6 +171,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         login,
         register,
+        sendOtp,
+        verifyOtp,
+        loginWithPhone,
+        registerWithPhone,
         logout,
       }}
     >

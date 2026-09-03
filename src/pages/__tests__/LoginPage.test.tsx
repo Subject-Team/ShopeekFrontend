@@ -20,7 +20,11 @@ vi.mock('../../services/api', () => ({
   loginApi: vi.fn(),
   registerApi: vi.fn(),
   fetchMeApi: vi.fn(),
+  sendOtpApi: vi.fn(),
+  verifyOtpApi: vi.fn(),
+  registerWithPhoneApi: vi.fn(),
   setWebSessionId: vi.fn(),
+  getWebSessionId: vi.fn(),
 }));
 
 describe('LoginPage Comprehensive Tests', () => {
@@ -276,5 +280,206 @@ describe('LoginPage Comprehensive Tests', () => {
     expect(registerConfirmPassword).toHaveValue(suggestedPassword);
     expect(screen.getByText('بسیار قوی')).toBeInTheDocument();
     expect(screen.getByText('تطابق تکرار رمز')).toBeInTheDocument();
+  });
+
+  it('switches to phone OTP login when the phone-otp method is selected', () => {
+    renderLogin();
+
+    fireEvent.click(screen.getByTestId('login-method-phone-otp'));
+
+    expect(screen.getByTestId('otp-phone')).toBeInTheDocument();
+    expect(screen.getByTestId('otp-send-btn')).toBeInTheDocument();
+  });
+
+  it('sends an OTP and presents the code input for a registered phone during phone-otp login', async () => {
+    (api.sendOtpApi as any).mockResolvedValue({ sent: true, message_id: 42, registered: true });
+
+    renderLogin();
+
+    fireEvent.click(screen.getByTestId('login-method-phone-otp'));
+    fireEvent.change(screen.getByTestId('otp-phone'), { target: { value: '09123456789' } });
+    fireEvent.click(screen.getByTestId('otp-send-btn'));
+
+    await waitFor(() => {
+      expect(api.sendOtpApi).toHaveBeenCalledWith(
+        expect.objectContaining({ phone: '09123456789', turnstile_token: 'mock-turnstile-token' })
+      );
+    });
+    expect(screen.getByTestId('otp-code')).toBeInTheDocument();
+  });
+
+  it('verifies a phone OTP and switches to password entry for login', async () => {
+    (api.sendOtpApi as any).mockResolvedValue({ sent: true, message_id: 42, registered: true });
+    (api.verifyOtpApi as any).mockResolvedValue({
+      phone: '09123456789',
+      verified: true,
+      message: 'کد تأیید صحیح است.',
+      registered: true,
+    });
+
+    renderLogin();
+
+    fireEvent.click(screen.getByTestId('login-method-phone-otp'));
+    fireEvent.change(screen.getByTestId('otp-phone'), { target: { value: '09123456789' } });
+    fireEvent.click(screen.getByTestId('otp-send-btn'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('otp-code')).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByTestId('otp-code'), { target: { value: '123456' } });
+    fireEvent.click(screen.getByTestId('otp-verify-btn'));
+
+    await waitFor(() => {
+      expect(api.verifyOtpApi).toHaveBeenCalledWith(
+        expect.objectContaining({ phone: '09123456789', code: '123456' })
+      );
+    });
+
+    expect(screen.getByPlaceholderText('••••••••')).toBeInTheDocument();
+  });
+
+  it('switches an unregistered phone from login to register mode', async () => {
+    (api.sendOtpApi as any).mockResolvedValue({ sent: true, message_id: 42, registered: false });
+
+    renderLogin();
+
+    fireEvent.click(screen.getByTestId('login-method-phone-otp'));
+    fireEvent.change(screen.getByTestId('otp-phone'), { target: { value: '09123456789' } });
+    fireEvent.click(screen.getByTestId('otp-send-btn'));
+
+    await waitFor(() => {
+      expect(api.sendOtpApi).toHaveBeenCalled();
+    });
+  });
+
+  it('performs full phone OTP registration and redirects to the dashboard', async () => {
+    (api.sendOtpApi as any).mockResolvedValue({ sent: true, message_id: 1, registered: false });
+    (api.verifyOtpApi as any).mockResolvedValue({
+      phone: '09123456789',
+      verified: true,
+      message: 'کد تأیید صحیح است.',
+      registered: false,
+    });
+    (api.registerWithPhoneApi as any).mockResolvedValue({
+      access_token: 'access-1',
+      refresh_token: 'refresh-1',
+      token_type: 'bearer',
+      web_session_id: 'ses-1',
+      user: { id: 'u-otp', email: 'otp@shopeek.ir', full_name: 'کاربر موبایل', role: 'User' },
+    });
+    (api.fetchMeApi as any).mockResolvedValue({
+      id: 'u-otp',
+      email: 'otp@shopeek.ir',
+      full_name: 'کاربر موبایل',
+      role: 'User',
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/login']}>
+        <AuthProvider>
+          <ToastProvider>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/dashboard" element={<div>داشبورد کاربر</div>} />
+            </Routes>
+          </ToastProvider>
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByText('ثبت‌نام کاربر جدید'));
+    fireEvent.click(screen.getByTestId('otp-method'));
+
+    fireEvent.change(screen.getByTestId('otp-phone'), { target: { value: '09123456789' } });
+    fireEvent.click(screen.getByTestId('otp-send-btn'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('otp-code')).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByTestId('otp-code'), { target: { value: '123456' } });
+    fireEvent.click(screen.getByTestId('otp-verify-btn'));
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('مثلاً: سارا احمدی')).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('مثلاً: سارا احمدی'), { target: { value: 'کاربر موبایل' } });
+    fireEvent.change(screen.getByPlaceholderText('name@example.com'), { target: { value: 'otp@shopeek.ir' } });
+
+    const passwordInputs = screen.getAllByPlaceholderText('••••••••');
+    fireEvent.change(passwordInputs[0], { target: { value: 'StrongPass123!' } });
+    fireEvent.change(passwordInputs[1], { target: { value: 'StrongPass123!' } });
+
+    fireEvent.click(screen.getByRole('checkbox'));
+    fireEvent.click(screen.getByText('ایجاد حساب کاربری'));
+
+    await waitFor(() => {
+      expect(api.registerWithPhoneApi).toHaveBeenCalledWith(
+        expect.objectContaining({
+          phone: '09123456789',
+          code: '123456',
+          email: 'otp@shopeek.ir',
+          full_name: 'کاربر موبایل',
+        })
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('داشبورد کاربر')).toBeInTheDocument();
+    });
+  });
+
+  it('logs in with phone+password', async () => {
+    (api.loginApi as any).mockResolvedValue({
+      access_token: 'access-1',
+      refresh_token: 'refresh-1',
+      token_type: 'bearer',
+      web_session_id: 'ses-1',
+      user: { id: 'u-phone', email: 'phone@shopeek.ir', full_name: 'کاربر', role: 'User', phone: '09123456789' },
+    });
+    (api.fetchMeApi as any).mockResolvedValue({
+      id: 'u-phone',
+      email: 'phone@shopeek.ir',
+      full_name: 'کاربر',
+      role: 'User',
+      phone: '09123456789',
+    });
+
+    const { container } = render(
+      <MemoryRouter initialEntries={['/login']}>
+        <AuthProvider>
+          <ToastProvider>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/dashboard" element={<div>داشبورد کاربر</div>} />
+            </Routes>
+          </ToastProvider>
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByTestId('login-method-phone-password'));
+
+    fireEvent.change(screen.getByTestId('otp-phone'), { target: { value: '09123456789' } });
+    const passwordInput = container.querySelector('input[id="auth-password"]') as HTMLInputElement;
+    fireEvent.change(passwordInput, { target: { value: 'SomePass123!' } });
+
+    fireEvent.click(screen.getByText('ورود به داشبورد'));
+
+    await waitFor(() => {
+      expect(api.loginApi).toHaveBeenCalledWith(
+        expect.objectContaining({
+          phone: '09123456789',
+          email: undefined,
+          password: 'SomePass123!',
+        })
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('داشبورد کاربر')).toBeInTheDocument();
+    });
   });
 });

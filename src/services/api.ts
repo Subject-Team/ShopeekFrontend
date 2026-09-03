@@ -16,7 +16,12 @@ import {
   ChangePasswordResponse,
   SalesSuggestions,
   CreateInvoicePayload,
-  InvoiceResult
+  InvoiceResult,
+  OtpSendPayload,
+  OtpSendResponse,
+  OtpVerifyPayload,
+  OtpVerifyResponse,
+  RegisterWithPhonePayload
 } from '../types';
 
 const API_BASE = '/api/v1';
@@ -140,7 +145,7 @@ export const loginApi = async (payload: LoginPayload): Promise<AuthTokenResponse
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: 'خطا در ورود به حساب کاربری' }));
-    throw new Error(err.detail || 'ایمیل یا کلمه عبور وارد شده نادرست است.');
+    throw new Error(err.detail || 'شناسه ورود یا کلمه عبور وارد شده نادرست است.');
   }
   const data = (await res.json()) as AuthTokenResponse;
   if (data.web_session_id) setWebSessionId(data.web_session_id);
@@ -179,6 +184,60 @@ export const fetchMeApi = async (): Promise<User> => {
   const res = await authFetch(`${API_BASE}/auth/me`);
   if (!res.ok) throw new Error('خطا در دریافت اطلاعات کاربر');
   return res.json();
+};
+
+// --- OTP (SMS VERIFICATION) API METHODS ---
+
+export const sendOtpApi = async (payload: OtpSendPayload): Promise<OtpSendResponse> => {
+  const res = await fetch(`${API_BASE}/auth/otp/send`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({
+      detail: 'خطا در ارسال کد تأیید پیامکی',
+    }));
+    throw new Error(err.detail || 'خطا در ارسال کد تأیید پیامکی');
+  }
+  return res.json();
+};
+
+export const verifyOtpApi = async (payload: OtpVerifyPayload): Promise<OtpVerifyResponse> => {
+  const res = await fetch(`${API_BASE}/auth/otp/verify`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({
+      detail: 'خطا در تأیید کد پیامکی',
+    }));
+    throw new Error(err.detail || 'خطا در تأیید کد پیامکی');
+  }
+  return res.json();
+};
+
+export const registerWithPhoneApi = async (
+  payload: RegisterWithPhonePayload
+): Promise<AuthTokenResponse> => {
+  const res = await fetch(`${API_BASE}/auth/otp/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({
+      detail: 'خطا در ایجاد حساب کاربری',
+    }));
+    throw new Error(err.detail || 'خطا در ایجاد حساب کاربری');
+  }
+  const data = (await res.json()) as AuthTokenResponse;
+  if (data.web_session_id) setWebSessionId(data.web_session_id);
+  return data;
 };
 
 // --- ANALYTICS & DASHBOARD API METHODS ---
