@@ -55,6 +55,8 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
         return 'مدیریت مشتریان (CRM)';
       case '/dashboard/ingestion':
         return 'ورود داده‌ها';
+      case '/dashboard/invoice':
+        return 'ثبت فاکتور';
       case '/dashboard/settings':
         return 'تنظیمات';
       default:

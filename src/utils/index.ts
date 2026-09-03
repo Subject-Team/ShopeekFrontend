@@ -90,3 +90,36 @@ export const formatCompressedToman = (val: number) => {
   }
   return formatPersianNumber(val.toString());
 };
+
+const tomanUnit = (value: number): { coefficient: number; unit: string } | null => {
+  if (value >= 1_000_000_000) return { coefficient: value / 1_000_000_000, unit: 'میلیارد' };
+  if (value >= 1_000_000) return { coefficient: value / 1_000_000, unit: 'میلیون' };
+  if (value >= 1_000) return { coefficient: value / 1_000, unit: 'هزار' };
+  return null;
+};
+
+const formatCoefficient = (coefficient: number): string => {
+  const rounded = Math.round(coefficient * 10) / 10;
+  if (Number.isInteger(rounded)) return formatPersianNumber(rounded.toString());
+  return formatPersianNumber(rounded.toFixed(1));
+};
+
+/**
+ * Renders a real IRR amount as Persian commercial shorthand, e.g.
+ * 2_000_000 -> «۲ میلیون تومان», 2_500_000 -> «۲٫۵ میلیون تومان».
+ */
+export const formatTomanWords = (realValue: number): string => {
+  if (realValue === undefined || realValue === null || isNaN(realValue)) return '';
+  const unit = tomanUnit(realValue);
+  if (!unit) return `${formatPersianNumber(realValue.toString())} تومان`;
+  return `${formatCoefficient(unit.coefficient)} ${unit.unit} تومان`;
+};
+
+/**
+ * Renders a real IRR amount grouped with comma separators in Latin digits,
+ * e.g. 2_000_000 -> '2,000,000'.
+ */
+export const formatGroupedRealValue = (realValue: number): string => {
+  if (realValue === undefined || realValue === null || isNaN(realValue)) return '';
+  return realValue.toLocaleString('en-US');
+};

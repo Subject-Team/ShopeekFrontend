@@ -147,3 +147,25 @@ export interface ChangePasswordResponse {
   access_token?: string | null;
   refresh_token?: string | null;
 }
+
+export interface SalesSuggestions {
+  products: { last: string | null; top3: string[]; names: string[] };
+  customers: { last: string | null; top3: string[]; items: { id: string; name: string; email?: string | null }[] };
+}
+
+export interface CreateInvoicePayload {
+  product_name: string;
+  customer_name: string;
+  customer_email?: string;
+  total_amount: number; // thousand-toman; server multiplies by 1000
+  transaction_date?: string; // 'today' | 'yesterday' | yyyy-mm-dd
+}
+
+export interface InvoiceResult {
+  transaction_reference: string;
+  product_name: string;
+  customer_name: string;
+  customer_email?: string | null;
+  total_amount: number;
+  transaction_date: string;
+}

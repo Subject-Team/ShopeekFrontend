@@ -13,7 +13,10 @@ import {
   User,
   SettingsData,
   ChangePasswordPayload,
-  ChangePasswordResponse
+  ChangePasswordResponse,
+  SalesSuggestions,
+  CreateInvoicePayload,
+  InvoiceResult
 } from '../types';
 
 const API_BASE = '/api/v1';
@@ -332,6 +335,27 @@ export const createCustomer = async (data: { name: string; email?: string; phone
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: 'خطا در ایجاد مشتری' }));
     throw new Error(err.detail || 'خطا در ایجاد مشتری');
+  }
+  return res.json();
+};
+
+// --- DIRECT INVOICE (ثبت فاکتور) API METHODS ---
+
+export const fetchSalesSuggestions = async (): Promise<SalesSuggestions> => {
+  const res = await authFetch(`${API_BASE}/sales/suggestions`);
+  if (!res.ok) throw new Error('خطا در دریافت اطلاعات محصولات و مشتریان');
+  return res.json();
+};
+
+export const createInvoice = async (payload: CreateInvoicePayload): Promise<InvoiceResult> => {
+  const res = await authFetch(`${API_BASE}/sales/invoices`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در ثبت فاکتور' }));
+    throw new Error(err.detail || 'خطا در ثبت فاکتور');
   }
   return res.json();
 };
