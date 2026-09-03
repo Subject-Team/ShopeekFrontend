@@ -416,7 +416,7 @@ export const InvoicePage: React.FC = () => {
                 </span>
               </div>
 
-              <div className="rounded-2xl bg-white dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 p-3">
+              <div className="max-w-xs w-full rounded-2xl bg-white dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 p-3">
                 <div className="flex items-center justify-between mb-3">
                   <button
                     type="button"
