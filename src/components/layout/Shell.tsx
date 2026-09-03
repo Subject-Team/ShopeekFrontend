@@ -26,7 +26,7 @@ export const Shell: React.FC<ShellProps> = ({ children }) => {
       {/* Main Content Viewport */}
       <div className="flex-1 flex flex-col min-w-0 lg:mr-64 transition-all duration-300 min-h-screen">
         <Topbar onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 p-4 lg:px-8 max-w-7xl w-full mx-auto space-y-6 py-8">
+        <main className="flex-1 p-4 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
           <RestrictionBanner user={user} />
           {children}
         </main>
