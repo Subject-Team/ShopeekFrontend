@@ -100,11 +100,11 @@ describe('InvoicePage (ثبت فاکتور)', () => {
       expect(screen.getAllByText(/ثبت فاکتور مستقیم/i).length).toBeGreaterThan(0);
     });
 
-    const amountInput = screen.getByPlaceholderText(/مثلاً ۲۰۰۰ برای ۲ میلیون تومان/i);
+    const amountInput = screen.getByPlaceholderText(/مثلاً 2000/i);
     fireEvent.change(amountInput, { target: { value: '2000' } });
 
     await waitFor(() => {
-      expect(screen.getByText('2,000,000')).toBeInTheDocument();
+      expect(screen.getByText('۲٬۰۰۰٬۰۰۰')).toBeInTheDocument();
       expect(screen.getByText(/۲ میلیون تومان/i)).toBeInTheDocument();
     });
   });
@@ -120,7 +120,7 @@ describe('InvoicePage (ثبت فاکتور)', () => {
     fireEvent.click(screen.getByText('آخرین: چای'));
     fireEvent.click(screen.getByText('آخرین: علی'));
 
-    const amountInput = screen.getByPlaceholderText(/مثلاً ۲۰۰۰ برای ۲ میلیون تومان/i);
+    const amountInput = screen.getByPlaceholderText(/مثلاً 2000/i);
     fireEvent.change(amountInput, { target: { value: '2000' } });
 
     fireEvent.click(screen.getByRole('button', { name: /ثبت فاکتور$/i }));

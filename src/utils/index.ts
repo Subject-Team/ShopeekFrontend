@@ -116,10 +116,10 @@ export const formatTomanWords = (realValue: number): string => {
 };
 
 /**
- * Renders a real IRR amount grouped with comma separators in Latin digits,
- * e.g. 2_000_000 -> '2,000,000'.
+ * Renders a real IRR amount grouped with separators in Persian digits,
+ * e.g. 2_000_000 -> '۲٬۰۰۰٬۰۰۰'.
  */
 export const formatGroupedRealValue = (realValue: number): string => {
   if (realValue === undefined || realValue === null || isNaN(realValue)) return '';
-  return realValue.toLocaleString('en-US');
+  return new Intl.NumberFormat('fa-IR').format(realValue);
 };

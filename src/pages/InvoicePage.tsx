@@ -8,13 +8,25 @@ import {
   Check,
   ReceiptText,
   Loader2,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { fetchSalesSuggestions, createInvoice } from '../services/api';
 import type { SalesSuggestions } from '../types';
-import { formatGroupedRealValue, formatTomanWords } from '../utils';
+import { formatGroupedRealValue, formatPersianNumber, formatTomanWords } from '../utils';
+import {
+  toJalali,
+  toIsoDate,
+  formatJalaliNumeric,
+  getJalaliMonthDays,
+  jalaliToGregorian,
+  getPersianDayOfWeek,
+  PERSIAN_MONTH_NAMES,
+  PERSIAN_WEEKDAY_NAMES,
+} from '../utils/jalali';
 
 const inputClass =
   'w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500 transition-all disabled:opacity-60 disabled:cursor-not-allowed';
@@ -137,8 +149,16 @@ export const InvoicePage: React.FC = () => {
   const [customer, setCustomer] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
   const [amount, setAmount] = useState('');
-  const [dateChoice, setDateChoice] = useState<'today' | 'yesterday' | 'custom'>('today');
-  const [customDate, setCustomDate] = useState('');
+
+  const today = new Date();
+  const todayIso = toIsoDate(today);
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  const yesterdayIso = toIsoDate(yesterday);
+
+  const [selectedIso, setSelectedIso] = useState(todayIso);
+  const [viewYear, setViewYear] = useState(() => toJalali(todayIso).jy);
+  const [viewMonth, setViewMonth] = useState(() => toJalali(todayIso).jm);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -176,19 +196,29 @@ export const InvoicePage: React.FC = () => {
     return parsed * 1000;
   }, [amount]);
 
+  const selectedJ = toJalali(selectedIso);
+  const transaction_date =
+    selectedIso === todayIso
+      ? 'today'
+      : selectedIso === yesterdayIso
+      ? 'yesterday'
+      : `${selectedJ.jy}/${selectedJ.jm}/${selectedJ.jd}`;
+
+  const currentJ = toJalali(todayIso);
+  const daysInMonth = getJalaliMonthDays(viewYear, viewMonth);
+  const { gy, gm, gd } = jalaliToGregorian(viewYear, viewMonth, 1);
+  const startDow = getPersianDayOfWeek(new Date(gy, gm - 1, gd));
+
   const canSubmit =
     !readOnly &&
     product.trim().length > 0 &&
     customer.trim().length > 0 &&
-    realValue > 0 &&
-    (dateChoice !== 'custom' || customDate.trim().length > 0);
+    realValue > 0;
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
     setSubmitting(true);
     try {
-      const transaction_date =
-        dateChoice === 'today' ? 'today' : dateChoice === 'yesterday' ? 'yesterday' : customDate.trim();
       const payload: { product_name: string; customer_name: string; total_amount: number; customer_email?: string; transaction_date?: string } = {
         product_name: product.trim(),
         customer_name: customer.trim(),
@@ -204,8 +234,7 @@ export const InvoicePage: React.FC = () => {
       setCustomer('');
       setCustomerEmail('');
       setAmount('');
-      setDateChoice('today');
-      setCustomDate('');
+      setSelectedIso(todayIso);
     } catch (err) {
       showToast(err instanceof Error ? err.message : 'خطا در ثبت فاکتور', 'error');
     } finally {
@@ -337,9 +366,9 @@ export const InvoicePage: React.FC = () => {
                   min="0"
                   value={amount}
                   onChange={e => setAmount(e.target.value)}
-                  placeholder="مثلاً ۲۰۰۰ برای ۲ میلیون تومان"
+                  placeholder="مثلاً 2000"
                   disabled={readOnly}
-                  className={inputClass}
+                  className={`${inputClass} pl-24`}
                   dir="ltr"
                 />
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
@@ -360,33 +389,107 @@ export const InvoicePage: React.FC = () => {
             </div>
 
             {/* Date */}
-            <div data-guide="invoice-date" className="space-y-2">
+            <div data-guide="invoice-date" className="space-y-3">
               <label className="flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-200">
                 <Calendar className="w-4 h-4 text-brand-500" />
                 <span>تاریخ فاکتور</span>
               </label>
-              <div className="flex flex-wrap gap-2">
-                <button type="button" onClick={() => setDateChoice('today')} className={chipClass(dateChoice === 'today')} disabled={readOnly}>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedIso(todayIso)}
+                  className={chipClass(selectedIso === todayIso)}
+                  disabled={readOnly}
+                >
                   امروز
                 </button>
-                <button type="button" onClick={() => setDateChoice('yesterday')} className={chipClass(dateChoice === 'yesterday')} disabled={readOnly}>
+                <button
+                  type="button"
+                  onClick={() => setSelectedIso(yesterdayIso)}
+                  className={chipClass(selectedIso === yesterdayIso)}
+                  disabled={readOnly}
+                >
                   دیروز
                 </button>
-                <button type="button" onClick={() => setDateChoice('custom')} className={chipClass(dateChoice === 'custom')} disabled={readOnly}>
-                  تاریخ دلخواه
-                </button>
+                <span className="text-sm text-slate-600 dark:text-slate-300 font-semibold self-center">
+                  تاریخ انتخابی: {formatJalaliNumeric(selectedIso)}
+                </span>
               </div>
-              {dateChoice === 'custom' && (
-                <input
-                  type="text"
-                  value={customDate}
-                  onChange={e => setCustomDate(e.target.value)}
-                  placeholder="سال-ماه-روز (مثلاً ۱۴۰۵-۰۵-۱۱)"
-                  disabled={readOnly}
-                  className={inputClass}
-                  dir="ltr"
-                />
-              )}
+
+              <div className="rounded-2xl bg-white dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 p-3">
+                <div className="flex items-center justify-between mb-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (viewMonth === 1) {
+                        setViewYear(y => y - 1);
+                        setViewMonth(12);
+                      } else {
+                        setViewMonth(m => m - 1);
+                      }
+                    }}
+                    disabled={readOnly}
+                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 disabled:opacity-40"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                  <span className="font-bold text-sm text-slate-800 dark:text-slate-100">
+                    {PERSIAN_MONTH_NAMES[viewMonth - 1]} {formatPersianNumber(viewYear)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (viewMonth === 12) {
+                        setViewYear(y => y + 1);
+                        setViewMonth(1);
+                      } else {
+                        setViewMonth(m => m + 1);
+                      }
+                    }}
+                    disabled={readOnly || (viewYear === currentJ.jy && viewMonth === currentJ.jm)}
+                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 disabled:opacity-40"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-7 gap-1 text-center mb-1">
+                  {PERSIAN_WEEKDAY_NAMES.map(d => (
+                    <div key={d} className="text-[11px] font-medium text-slate-400 py-1">
+                      {d}
+                    </div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-7 gap-1">
+                  {Array.from({ length: startDow }).map((_, i) => (
+                    <div key={`pad-${i}`} className="h-8 w-8" />
+                  ))}
+                  {Array.from({ length: daysInMonth }).map((_, day) => {
+                    const dIso = toIsoDate(new Date(gy, gm - 1, gd + day));
+                    const isDisabled = dIso > todayIso;
+                    const active = selectedIso === dIso;
+                    const isToday = dIso === todayIso;
+                    return (
+                      <button
+                        key={day + 1}
+                        type="button"
+                        onClick={() => setSelectedIso(dIso)}
+                        disabled={isDisabled || readOnly}
+                        className={`h-8 w-8 sm:h-9 sm:w-9 mx-auto rounded-lg text-xs font-semibold transition-all ${
+                          isDisabled
+                            ? 'text-slate-300 dark:text-slate-600 opacity-40 cursor-not-allowed'
+                            : active
+                              ? 'bg-brand-600 text-white shadow-md shadow-brand-500/30 scale-105 z-10'
+                              : isToday
+                                ? 'border border-brand-500/50 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
+                        }`}
+                      >
+                        {formatPersianNumber(day + 1)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
 
             {/* Submit */}
