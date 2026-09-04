@@ -16,16 +16,16 @@ describe('utils/index.ts Persian formatting functions', () => {
       expect(formatPersianNumber(undefined)).toBe('');
     });
 
-    it('converts numbers to localized Persian numbers', () => {
-      const formatted = formatPersianNumber(123456);
-      expect(formatted).toBeTruthy();
-      // Persian 123,456
-      expect(formatted.length).toBeGreaterThan(0);
+    it('converts numbers to Persian digits without separators', () => {
+      expect(formatPersianNumber(123456)).toBe('۱۲۳۴۵۶');
+    });
+
+    it('converts phone numbers preserving leading zero and no splitting', () => {
+      expect(formatPersianNumber('09123456789')).toBe('۰۹۱۲۳۴۵۶۷۸۹');
     });
 
     it('handles numeric strings with commas', () => {
-      const formatted = formatPersianNumber('1,234,567');
-      expect(formatted).toBeTruthy();
+      expect(formatPersianNumber('1,234,567')).toBe('۱,۲۳۴,۵۶۷');
     });
 
     it('returns string fallback for non-numeric string', () => {
