@@ -1,8 +1,13 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { RestrictionBanner } from '../RestrictionBanner';
 import { User } from '../../../types';
+import { ToastProvider } from '../../../context/ToastContext';
+
+vi.mock('../../../services/api', () => ({
+  resendVerificationApi: vi.fn().mockResolvedValue({ message: 'لینک ارسال شد.' }),
+}));
 
 const baseUser = (overrides: Partial<User>): User => ({
   id: 'u-1',
@@ -17,23 +22,25 @@ describe('RestrictionBanner', () => {
   const renderBanner = (user: User | null) =>
     render(
       <MemoryRouter>
-        <RestrictionBanner user={user} />
+        <ToastProvider>
+          <RestrictionBanner user={user} />
+        </ToastProvider>
       </MemoryRouter>
     );
 
   it('renders nothing for a null user', () => {
-    const { container } = renderBanner(null);
-    expect(container).toBeEmptyDOMElement();
+    renderBanner(null);
+    expect(screen.queryByText(/فقط.*خواندنی/)).not.toBeInTheDocument();
   });
 
   it('renders nothing for a full-access user', () => {
-    const { container } = renderBanner(
+    renderBanner(
       baseUser({ is_read_only: false, restriction_reasons: [] })
     );
-    expect(container).toBeEmptyDOMElement();
+    expect(screen.queryByText(/فقط.*خواندنی/)).not.toBeInTheDocument();
   });
 
-  it('shows the email-unverified explanation and resumption hint', () => {
+  it('shows the email-unverified explanation with resend link', () => {
     renderBanner(
       baseUser({
         is_read_only: true,
@@ -45,10 +52,10 @@ describe('RestrictionBanner', () => {
     expect(screen.getByText(/فقط.*خواندنی/)).toBeInTheDocument();
     expect(screen.getByText(/ایمیل حساب شما تأیید نشده است/)).toBeInTheDocument();
     expect(screen.getByText(/پس از تأیید ایمیل/)).toBeInTheDocument();
-    expect(screen.getByText('تماس با پشتیبانی')).toBeInTheDocument();
+    expect(screen.getByText(/ارسال مجدد لینک تأیید ایمیل/)).toBeInTheDocument();
   });
 
-  it('shows the subscription-expired explanation and lists disabled capabilities', () => {
+  it('shows the subscription-expired explanation and contact support', () => {
     renderBanner(
       baseUser({
         is_read_only: true,

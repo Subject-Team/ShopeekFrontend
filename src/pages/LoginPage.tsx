@@ -194,6 +194,7 @@ export const LoginPage: React.FC = () => {
     } catch (err: any) {
       const msg = err.message || 'خطا در برقراری ارتباط با سرور';
       setErrorMessage(msg);
+      setVerificationError(msg.includes('ایمیل') && msg.includes('تأیید'));
       showToast(msg, 'error');
       setTurnstileToken(null);
       turnstileRef.current?.reset();
@@ -677,6 +678,7 @@ export const LoginPage: React.FC = () => {
                 >
                   <Mail className="w-3.5 h-3.5" />
                   <span>ایمیل و کلمه عبور</span>
+                  <span className="text-[8px] text-amber-600 font-medium">فقط ایمیل تأیید شده</span>
                 </button>
                 <button
                   type="button"
