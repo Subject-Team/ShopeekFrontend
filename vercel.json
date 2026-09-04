@@ -1,5 +1,6 @@
 {
   "framework": "vite",
+  "installCommand": "npm ci --prefer-offline",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "headers": [
