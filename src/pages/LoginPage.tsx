@@ -26,16 +26,12 @@ import { useToast } from '../context/ToastContext';
 import { SEO } from '../components/common/SEO';
 import { MinimalFooter } from '../components/layout/MinimalFooter';
 import { analyzePassword } from '../utils/passwordStrength';
+import { formatPersianNumber } from '../utils';
 
 const TURNSTILE_SITE_KEY =
   (import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY as string) || '0x4AAAAAAEZPje7Wc0YAQw6O';
 
 const PHONE_REGEX = /^09\d{9}$/;
-
-const maskPhone = (p: string) => {
-  if (p.length < 7) return p;
-  return p.slice(0, 3) + '***' + p.slice(-4);
-};
 
 const useCountdown = (active: boolean, seconds: number) => {
   const [remaining, setRemaining] = useState(0);
@@ -819,7 +815,7 @@ export const LoginPage: React.FC = () => {
                     <div className="space-y-4">
                       <p className="text-xs text-slate-600 text-center">
                         کد تأیید به شماره{' '}
-                        <span className="font-bold text-slate-800">{maskPhone(phone)}</span> ارسال شد.
+                        <span className="font-bold text-slate-800">{formatPersianNumber(phone)}</span> ارسال شد.
                       </p>
 
                       <div className="space-y-1.5">
@@ -874,7 +870,7 @@ export const LoginPage: React.FC = () => {
                               : 'text-brand-600 hover:text-brand-700'
                           }`}
                         >
-                          {otpCooldown > 0 ? `ارسال مجدد کد (${otpCooldown}ثانیه)` : 'ارسال مجدد کد'}
+                          {otpCooldown > 0 ? `ارسال مجدد کد (${formatPersianNumber(otpCooldown)}ثانیه)` : 'ارسال مجدد کد'}
                         </button>
                         <span className="text-slate-300">|</span>
                         <button
@@ -996,7 +992,7 @@ export const LoginPage: React.FC = () => {
                       <div className="flex items-center justify-between">
                         <p className="text-xs text-slate-600">
                           کد تأیید به{' '}
-                          <span className="font-bold text-slate-800">{maskPhone(phone)}</span> ارسال شد.
+                          <span className="font-bold text-slate-800">{formatPersianNumber(phone)}</span> ارسال شد.
                         </p>
                         <button
                           type="button"
@@ -1062,7 +1058,7 @@ export const LoginPage: React.FC = () => {
                           }`}
                         >
                           {otpCooldown > 0
-                            ? `ارسال مجدد کد (${otpCooldown}ثانیه)`
+                            ? `ارسال مجدد کد (${formatPersianNumber(otpCooldown)}ثانیه)`
                             : 'ارسال مجدد کد'}
                         </button>
                       </div>
@@ -1073,7 +1069,7 @@ export const LoginPage: React.FC = () => {
                   {registerStep === 'details' && (
                     <form onSubmit={handleRegisterDetails} noValidate className="space-y-4">
                       <p className="text-xs text-emerald-700 text-center font-medium bg-emerald-50 rounded-xl py-2 border border-emerald-200">
-                        شماره {maskPhone(phone)} تأیید شد. اکنون اطلاعات حساب خود را تکمیل کنید.
+                        شماره {formatPersianNumber(phone)} تأیید شد. اکنون اطلاعات حساب خود را تکمیل کنید.
                       </p>
                       <button
                         type="button"
