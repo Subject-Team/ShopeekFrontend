@@ -23,13 +23,8 @@ export interface AuthTokenResponse {
   web_session_id?: string | null;
 }
 
-export interface ResendVerificationResponse {
-  message: string;
-}
-
 export interface LoginPayload {
-  email?: string;
-  phone?: string;
+  phone: string;
   password: string;
   turnstile_token?: string;
   device_id?: string;

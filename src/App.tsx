@@ -6,13 +6,11 @@ import { PageContextProvider } from './context/PageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { GuideProvider } from './context/GuideContext';
 import { ScrollToTop } from './components/common/ScrollToTop';
-import { GoTrueCallbackHandler } from './components/auth/GoTrueCallbackHandler';
 import { Shell } from './components/layout/Shell';
 import { LandingPage } from './pages/LandingPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { ContactPage } from './pages/ContactPage';
 import { LoginPage } from './pages/LoginPage';
-import { VerifyEmailPage } from './pages/VerifyEmailPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { CustomersPage } from './pages/CustomersPage';
@@ -70,9 +68,6 @@ const AppRoutes: React.FC = () => {
       {/* Auth Login / Register Page */}
       <Route path="/login" element={<LoginPage />} />
 
-      {/* Post-Registration Email Verification Screen */}
-      <Route path="/verify-email" element={<VerifyEmailPage />} />
-
       {/* Contact Support Page */}
       <Route path="/contact" element={<ContactPage />} />
 
@@ -98,7 +93,6 @@ export function App() {
             <BrowserRouter>
               <GuideProvider>
                 <ScrollToTop />
-                <GoTrueCallbackHandler />
                 <AppRoutes />
               </GuideProvider>
             </BrowserRouter>

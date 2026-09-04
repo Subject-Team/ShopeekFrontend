@@ -6,7 +6,6 @@ import {
   AdvisoryTriggerResult,
   ChatMessage,
   AuthTokenResponse,
-  ResendVerificationResponse,
   LoginPayload,
   User,
   SettingsData,
@@ -148,20 +147,6 @@ export const loginApi = async (payload: LoginPayload): Promise<AuthTokenResponse
   const data = (await res.json()) as AuthTokenResponse;
   if (data.web_session_id) setWebSessionId(data.web_session_id);
   return data;
-};
-
-export const resendVerificationApi = async (email: string): Promise<ResendVerificationResponse> => {
-  const res = await fetch(`${API_BASE}/auth/resend-verification`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: 'خطا در ارسال مجدد لینک تأیید ایمیل' }));
-    throw new Error(err.detail || 'خطا در ارسال مجدد لینک تأیید ایمیل');
-  }
-  return res.json();
 };
 
 export const fetchMeApi = async (): Promise<User> => {

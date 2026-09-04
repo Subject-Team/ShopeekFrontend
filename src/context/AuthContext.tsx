@@ -16,7 +16,7 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (identifier: string, password: string, turnstileToken?: string, isPhone?: boolean) => Promise<void>;
+  login: (phone: string, password: string, turnstileToken?: string) => Promise<void>;
   sendOtp: (phone: string, turnstileToken?: string) => Promise<OtpSendResponse>;
   verifyOtp: (phone: string, code: string, turnstileToken?: string) => Promise<OtpVerifyResponse>;
   loginWithPhone: (phone: string, password: string, turnstileToken?: string) => Promise<void>;
@@ -81,12 +81,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [token]);
 
-  const login = async (identifier: string, password: string, turnstileToken?: string, isPhone?: boolean) => {
+  const login = async (phone: string, password: string, turnstileToken?: string) => {
     setIsLoading(true);
     try {
       const response = await loginApi({
-        email: isPhone ? undefined : identifier,
-        phone: isPhone ? identifier : undefined,
+        phone,
         password,
         turnstile_token: turnstileToken,
         device_id: getDeviceId(),
@@ -105,7 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const loginWithPhone = async (phone: string, password: string, turnstileToken?: string) => {
-    await login(phone, password, turnstileToken, true);
+    await login(phone, password, turnstileToken);
   };
 
   const sendOtp = async (phone: string, turnstileToken?: string): Promise<OtpSendResponse> => {

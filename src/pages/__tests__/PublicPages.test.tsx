@@ -35,7 +35,7 @@ describe('Public Pages', () => {
 
     const h1Elements = screen.getAllByRole('heading', { level: 1 });
     expect(h1Elements.length).toBe(1);
-    expect(screen.getByPlaceholderText('name@example.com')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('09123456789')).toBeInTheDocument();
   });
 
   it('renders ContactPage with single H1 and contact details', () => {

@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   loginApi,
-  resendVerificationApi,
   fetchMeApi,
   fetchKPISummary,
   fetchRevenueTrend,
@@ -42,7 +41,7 @@ describe('API Services', () => {
       }),
     });
 
-    const res = await loginApi({ email: 'test@shopeek.ir', password: 'Password123!' });
+    const res = await loginApi({ phone: '09123456789', password: 'Password123!' });
     expect(res.access_token).toBe('tok-123');
   });
 
@@ -53,25 +52,8 @@ describe('API Services', () => {
     });
 
     await expect(
-      loginApi({ email: 'test@shopeek.ir', password: 'wrong' })
+      loginApi({ phone: '09123456789', password: 'wrong' })
     ).rejects.toThrow('Invalid credentials');
-  });
-
-  it('resendVerificationApi POSTs the email to resend-verification', async () => {
-    window.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ message: 'ایمیل تأیید مجدداً ارسال شد.' }),
-    });
-
-    const res = await resendVerificationApi('new@shopeek.ir');
-    expect(res.message).toContain('ارسال');
-    expect(window.fetch).toHaveBeenCalledWith(
-      '/api/v1/auth/resend-verification',
-      expect.objectContaining({
-        method: 'POST',
-        body: JSON.stringify({ email: 'new@shopeek.ir' }),
-      })
-    );
   });
 
   it('fetchMeApi includes Bearer token header', async () => {

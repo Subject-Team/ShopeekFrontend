@@ -135,32 +135,13 @@ describe('LoginPage Comprehensive Tests', () => {
       JSON.stringify({ id: 'u-1', email: 'stale@shopeek.ir', full_name: 'کاربر', role: 'User' })
     );
     // fetchMeApi rejects conclusively -> authFetch clears storage + fires event.
-    (api.fetchMeApi as any).mockRejectedValueOnce(() => {
-      localStorage.removeItem('shopeek_token');
-      return Promise.reject(new Error('Session invalid'));
-    });
+    localStorage.removeItem('shopeek_token');
+    (api.fetchMeApi as any).mockRejectedValueOnce(new Error('Session invalid'));
 
     renderLogin();
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText('name@example.com')).toBeInTheDocument();
-    });
-  });
-
-  it('shows a resend-verification link when login fails due to unverified email', async () => {
-    (api.loginApi as any).mockRejectedValue(new Error('ایمیل شما هنوز تأیید نشده است.'));
-    (api.fetchMeApi as any).mockResolvedValue({ id: 'u-1', email: 'test@shopeek.ir', full_name: '', role: 'User' });
-
-    renderLogin();
-
-    fireEvent.change(screen.getByPlaceholderText('name@example.com'), { target: { value: 'test@shopeek.ir' } });
-    const passwordInput = screen.getByPlaceholderText('••••••••');
-    fireEvent.change(passwordInput, { target: { value: 'SomePass123!' } });
-    fireEvent.click(screen.getByText('ورود به داشبورد'));
-
-    await waitFor(() => {
-      expect(screen.getByText('ارسال مجدد لینک تأیید')).toBeInTheDocument();
-      expect(screen.getByText('ایمیل خود را تأیید نکرده‌اید؟')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('09123456789')).toBeInTheDocument();
     });
   });
 
@@ -175,13 +156,8 @@ describe('LoginPage Comprehensive Tests', () => {
 
     renderLogin();
 
-    // Login mode attributes
-    const loginEmail = screen.getByPlaceholderText('name@example.com');
+    // Login mode attributes — phone+password form is default
     const loginPassword = screen.getByPlaceholderText('••••••••');
-
-    expect(loginEmail).toHaveAttribute('autocomplete', 'username');
-    expect(loginEmail).toHaveAttribute('name', 'email');
-    expect(loginEmail).toHaveAttribute('id', 'auth-email');
 
     expect(loginPassword).toHaveAttribute('autocomplete', 'current-password');
     expect(loginPassword).toHaveAttribute('name', 'password');
@@ -476,7 +452,6 @@ describe('LoginPage Comprehensive Tests', () => {
       expect(api.loginApi).toHaveBeenCalledWith(
         expect.objectContaining({
           phone: '09123456789',
-          email: undefined,
           password: 'SomePass123!',
         })
       );

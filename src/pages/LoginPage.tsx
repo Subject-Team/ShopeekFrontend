@@ -65,7 +65,7 @@ export const LoginPage: React.FC = () => {
   const [mode, setMode] = useState<'login' | 'register'>('login');
 
   /* ─── Login sub-method (3 options) ─── */
-  const [loginMethod, setLoginMethod] = useState<'email' | 'phone-password' | 'phone-otp'>('email');
+  const [loginMethod, setLoginMethod] = useState<'phone-password' | 'phone-otp'>('phone-password');
 
   /* ─── Register sub-step: 'phone' | 'verify' | 'details' OTP wizard ─── */
   const [registerStep, setRegisterStep] = useState<'phone' | 'verify' | 'details'>('phone');
@@ -87,7 +87,6 @@ export const LoginPage: React.FC = () => {
   const turnstileRef = useRef<TurnstileInstance>(null);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [verificationError, setVerificationError] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
   /* ─── OTP cooldown ─── */
@@ -120,7 +119,6 @@ export const LoginPage: React.FC = () => {
   /* ─── Reset errors on mode change ─── */
   useEffect(() => {
     setErrorMessage(null);
-    setVerificationError(false);
     setHasSubmitted(false);
   }, [mode]);
 
@@ -134,40 +132,6 @@ export const LoginPage: React.FC = () => {
   /* ────────────────────────────────────────────────
      HANDLERS
   ──────────────────────────────────────────────── */
-
-  /* --- Email login (legacy) --- */
-  const handleEmailLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMessage(null);
-    setHasSubmitted(true);
-    if (!email.trim() || !password) {
-      showToast('لطفاً تمامی فیلدهای الزامی را وارد نمایید.', 'warning');
-      return;
-    }
-    if (!isEmailValid) {
-      showToast('لطفاً یک نشانی ایمیل معتبر وارد نمایید.', 'warning');
-      return;
-    }
-    if (!turnstileToken) {
-      showToast('لطفاً اعتبارسنجی امنیتی را تکمیل نمایید.', 'warning');
-      return;
-    }
-    setSubmitting(true);
-    try {
-      await login(email.trim(), password, turnstileToken);
-      showToast('ورود با موفقیت انجام شد. خوش آمدید!', 'success');
-      navigate('/dashboard');
-    } catch (err: any) {
-      const msg = err.message || 'خطا در برقراری ارتباط با سرور';
-      setErrorMessage(msg);
-      setVerificationError(msg.includes('ایمیل') && msg.includes('تأیید'));
-      showToast(msg, 'error');
-      setTurnstileToken(null);
-      turnstileRef.current?.reset();
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   /* --- Phone+password login --- */
   const handlePhonePasswordLogin = async (e: React.FormEvent) => {
@@ -194,7 +158,6 @@ export const LoginPage: React.FC = () => {
     } catch (err: any) {
       const msg = err.message || 'خطا در برقراری ارتباط با سرور';
       setErrorMessage(msg);
-      setVerificationError(msg.includes('ایمیل') && msg.includes('تأیید'));
       showToast(msg, 'error');
       setTurnstileToken(null);
       turnstileRef.current?.reset();
@@ -625,32 +588,15 @@ export const LoginPage: React.FC = () => {
               </div>
               <div className="pt-2 border-t border-rose-200/80 flex items-center justify-between">
                 <span className="text-[11px] text-slate-600">
-                  {verificationError
-                    ? 'ایمیل خود را تأیید نکرده‌اید؟'
-                    : 'نیاز به خرید یا تمدید اشتراک دارید؟'}
+                  نیاز به خرید یا تمدید اشتراک دارید؟
                 </span>
-                {verificationError ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTurnstileToken(null);
-                      turnstileRef.current?.reset();
-                      navigate('/verify-email', { state: { email: email.trim() } });
-                    }}
-                    className="inline-flex items-center gap-1 font-bold text-brand-600 hover:text-brand-700 underline underline-offset-4"
-                  >
-                    <Mail className="w-3.5 h-3.5" />
-                    <span>ارسال مجدد لینک تأیید</span>
-                  </button>
-                ) : (
-                  <Link
-                    to="/contact"
-                    className="inline-flex items-center gap-1 font-bold text-brand-600 hover:text-brand-700 underline underline-offset-4"
-                  >
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    <span>تماس با پشتیبانی</span>
-                  </Link>
-                )}
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center gap-1 font-bold text-brand-600 hover:text-brand-700 underline underline-offset-4"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>تماس با پشتیبانی</span>
+                </Link>
               </div>
             </div>
           )}
@@ -661,25 +607,7 @@ export const LoginPage: React.FC = () => {
           {mode === 'login' && (
             <>
               {/* Login Method Selector */}
-              <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200">
-                <button
-                  type="button"
-                  data-testid="login-method-email"
-                  onClick={() => {
-                    setLoginMethod('email');
-                    setErrorMessage(null);
-                    setHasSubmitted(false);
-                  }}
-                  className={`py-2 px-1.5 rounded-lg text-[10px] font-bold transition-all flex flex-col items-center gap-1 ${
-                    loginMethod === 'email'
-                      ? 'bg-white text-brand-700 shadow-sm border border-slate-200'
-                      : 'text-slate-500 hover:text-slate-700'
-                  }`}
-                >
-                  <Mail className="w-3.5 h-3.5" />
-                  <span>ایمیل و کلمه عبور</span>
-                  <span className="text-[8px] text-amber-600 font-medium">فقط ایمیل تأیید شده</span>
-                </button>
+              <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200">
                 <button
                   type="button"
                   data-testid="login-method-phone-password"
@@ -716,100 +644,6 @@ export const LoginPage: React.FC = () => {
                   <span>موبایل و کد پیامکی</span>
                 </button>
               </div>
-
-              {/* ── Login: Email + Password ── */}
-              {loginMethod === 'email' && (
-                <form onSubmit={handleEmailLogin} noValidate className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label htmlFor="auth-email" className="text-xs font-semibold text-slate-700 block">
-                      نشانی ایمیل
-                    </label>
-                    <div className="relative">
-                      <Mail
-                        className={`w-4 h-4 absolute right-3.5 top-3.5 transition-colors ${
-                          hasSubmitted && !isEmailValid ? 'text-rose-400' : 'text-slate-400'
-                        }`}
-                      />
-                      <input
-                        id="auth-email"
-                        name="email"
-                        type="email"
-                        autoComplete="username"
-                        placeholder="name@example.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className={`w-full pr-10 pl-4 py-2.5 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition-all dir-ltr text-right ${
-                          hasSubmitted && !isEmailValid
-                            ? 'border border-rose-400 focus:border-rose-500 bg-rose-50/20 ring-1 ring-rose-400/50'
-                            : 'bg-slate-50 border border-slate-200 focus:border-brand-500'
-                        }`}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label htmlFor="auth-password" className="text-xs font-semibold text-slate-700 block">
-                      کلمه عبور
-                    </label>
-                    <div className="relative">
-                      <Lock
-                        className={`w-4 h-4 absolute right-3.5 top-3.5 transition-colors ${
-                          hasSubmitted && !password ? 'text-rose-400' : 'text-slate-400'
-                        }`}
-                      />
-                      <input
-                        id="auth-password"
-                        name="password"
-                        type={showPassword ? 'text' : 'password'}
-                        autoComplete="current-password"
-                        placeholder="••••••••"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className={`w-full pr-10 pl-10 py-2.5 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition-all dir-ltr text-right ${
-                          hasSubmitted && !password
-                            ? 'border border-rose-400 focus:border-rose-500 bg-rose-50/20 ring-1 ring-rose-400/50'
-                            : 'bg-slate-50 border border-slate-200 focus:border-brand-500'
-                        }`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute left-3.5 top-3 text-slate-400 hover:text-slate-600"
-                        aria-label={showPassword ? 'مخفی‌سازی کلمه عبور' : 'نمایش کلمه عبور'}
-                      >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Turnstile */}
-                  <div className="flex justify-center items-center py-2 min-h-[65px] w-full overflow-hidden">
-                    <Turnstile
-                      ref={turnstileRef}
-                      siteKey={TURNSTILE_SITE_KEY}
-                      onSuccess={(token) => setTurnstileToken(token)}
-                      onExpire={() => setTurnstileToken(null)}
-                      onError={() => setTurnstileToken(null)}
-                      options={{ theme: 'light', language: 'fa', size: 'normal' }}
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={submitting || isLoading}
-                    className="w-full py-3 px-4 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-md shadow-brand-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 mt-2 text-sm"
-                  >
-                    {submitting ? (
-                      <span className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    ) : (
-                      <>
-                        <span>ورود به داشبورد</span>
-                        <ArrowRight className="w-4 h-4 rotate-180" />
-                      </>
-                    )}
-                  </button>
-                </form>
-              )}
 
               {/* ── Login: Phone + Password ── */}
               {loginMethod === 'phone-password' && (
