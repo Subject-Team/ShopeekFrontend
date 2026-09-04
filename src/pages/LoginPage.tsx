@@ -111,11 +111,11 @@ export const LoginPage: React.FC = () => {
       : password.length > 0;
   const isConfirmPasswordValid = Boolean(confirmPassword) && confirmPassword === password;
 
-  /* ─── Reset turnstile on mode / step / sub-method changes ─── */
+  /* ─── Reset turnstile on mode / sub-method changes ─── */
   useEffect(() => {
     setTurnstileToken(null);
     turnstileRef.current?.reset();
-  }, [mode, registerStep, loginMethod, loginOtpStep]);
+  }, [mode, loginMethod]);
 
   /* ─── Reset errors on mode change ─── */
   useEffect(() => {
@@ -244,13 +244,9 @@ export const LoginPage: React.FC = () => {
       showToast('لطفاً کد ۶ رقمی را به درستی وارد کنید.', 'warning');
       return;
     }
-    if (!turnstileToken) {
-      showToast('لطفاً اعتبارسنجی امنیتی را تکمیل نمایید.', 'warning');
-      return;
-    }
     setSubmitting(true);
     try {
-      const res = await verifyOtp(phone.trim(), otpCode, turnstileToken);
+      const res = await verifyOtp(phone.trim(), otpCode, turnstileToken ?? undefined);
       if (!res.registered) {
         setMode('register');
         setRegisterStep('phone');
@@ -317,13 +313,9 @@ export const LoginPage: React.FC = () => {
       showToast('لطفاً کد ۶ رقمی را به درستی وارد کنید.', 'warning');
       return;
     }
-    if (!turnstileToken) {
-      showToast('لطفاً اعتبارسنجی امنیتی را تکمیل نمایید.', 'warning');
-      return;
-    }
     setSubmitting(true);
     try {
-      const res = await verifyOtp(phone.trim(), otpCode, turnstileToken);
+      const res = await verifyOtp(phone.trim(), otpCode, turnstileToken ?? undefined);
       if (res.registered) {
         setMode('login');
         setLoginMethod('phone-password');
@@ -388,15 +380,11 @@ export const LoginPage: React.FC = () => {
       showToast('لطفاً جهت ایجاد حساب، سیاست حفظ حریم خصوصی را بپذیرید.', 'warning');
       return;
     }
-    if (!turnstileToken) {
-      showToast('لطفاً اعتبارسنجی امنیتی را تکمیل نمایید.', 'warning');
-      return;
-    }
     setSubmitting(true);
     try {
       await registerWithPhone(
         { phone: phone.trim(), code: otpCode, email: email.trim(), password, full_name: fullName.trim() },
-        turnstileToken,
+        turnstileToken ?? undefined,
       );
       showToast('حساب کاربری شما با موفقیت ایجاد شد.', 'success');
       navigate('/dashboard');
