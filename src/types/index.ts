@@ -51,6 +51,8 @@ export interface OtpVerifyPayload {
   phone: string;
   code: string;
   turnstile_token?: string;
+  device_id?: string;
+  device_label?: string;
 }
 
 export interface OtpVerifyResponse {
@@ -58,6 +60,10 @@ export interface OtpVerifyResponse {
   verified: boolean;
   message: string;
   registered: boolean;
+  access_token?: string | null;
+  refresh_token?: string | null;
+  user?: User;
+  web_session_id?: string | null;
 }
 
 export interface RegisterWithPhonePayload {

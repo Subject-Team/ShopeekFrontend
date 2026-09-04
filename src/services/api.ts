@@ -201,7 +201,9 @@ export const verifyOtpApi = async (payload: OtpVerifyPayload): Promise<OtpVerify
     }));
     throw new Error(err.detail || 'خطا در تأیید کد پیامکی');
   }
-  return res.json();
+  const data: OtpVerifyResponse = await res.json();
+  if (data.web_session_id) setWebSessionId(data.web_session_id);
+  return data;
 };
 
 export const registerWithPhoneApi = async (

@@ -254,6 +254,11 @@ export const LoginPage: React.FC = () => {
         showToast('این شماره ثبت‌نام نشده است. لطفاً حساب خود را بسازید.', 'info');
         return;
       }
+      if (res.access_token) {
+        showToast('ورود با موفقیت انجام شد. خوش آمدید!', 'success');
+        navigate('/dashboard');
+        return;
+      }
       showToast('شماره شما تأیید شد؛ برای ورود کلمه عبور را وارد کنید.', 'info');
       setLoginMethod('phone-password');
       setOtpCode('');
@@ -317,6 +322,11 @@ export const LoginPage: React.FC = () => {
     try {
       const res = await verifyOtp(phone.trim(), otpCode);
       if (res.registered) {
+        if (res.access_token) {
+          showToast('این شماره قبلاً ثبت‌نام شده است; وارد شدید. خوش آمدید!', 'success');
+          navigate('/dashboard');
+          return;
+        }
         setMode('login');
         setLoginMethod('phone-password');
         showToast('این شماره قبلاً ثبت‌نام شده است. لطفاً وارد شوید.', 'info');

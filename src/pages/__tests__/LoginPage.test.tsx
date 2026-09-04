@@ -263,7 +263,7 @@ describe('LoginPage Comprehensive Tests', () => {
     expect(screen.getByTestId('otp-code')).toBeInTheDocument();
   });
 
-  it('verifies a phone OTP and switches to password entry for login', async () => {
+  it('falls back to password entry when no session is issued on OTP verify', async () => {
     (api.sendOtpApi as any).mockResolvedValue({ sent: true, message_id: 42, registered: true });
     (api.verifyOtpApi as any).mockResolvedValue({
       phone: '09123456789',
@@ -292,6 +292,56 @@ describe('LoginPage Comprehensive Tests', () => {
     });
 
     expect(screen.getByPlaceholderText('••••••••')).toBeInTheDocument();
+  });
+
+  it('logs in passwordlessly and redirects to the dashboard when the OTP verify returns a session', async () => {
+    (api.sendOtpApi as any).mockResolvedValue({ sent: true, message_id: 42, registered: true });
+    (api.fetchMeApi as any).mockResolvedValue({
+      id: 'u-otp-login',
+      email: 'otp@shopeek.ir',
+      full_name: 'کاربر موبایل',
+      role: 'User',
+    });
+    (api.verifyOtpApi as any).mockResolvedValue({
+      phone: '09123456789',
+      verified: true,
+      message: 'کد تأیید صحیح است.',
+      registered: true,
+      access_token: 'access-otp',
+      refresh_token: 'refresh-otp',
+      user: { id: 'u-otp-login', email: 'otp@shopeek.ir', full_name: 'کاربر موبایل', role: 'User' },
+      web_session_id: 'ses-otp',
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/login']}>
+        <AuthProvider>
+          <ToastProvider>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/dashboard" element={<div>داشبورد کاربر</div>} />
+            </Routes>
+          </ToastProvider>
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByTestId('login-method-phone-otp'));
+    fireEvent.change(screen.getByTestId('otp-phone'), { target: { value: '09123456789' } });
+    fireEvent.click(screen.getByTestId('otp-send-btn'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('otp-code')).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByTestId('otp-code'), { target: { value: '123456' } });
+    fireEvent.click(screen.getByTestId('otp-verify-btn'));
+
+    await waitFor(() => {
+      expect(screen.getByText('داشبورد کاربر')).toBeInTheDocument();
+    });
+    expect(JSON.parse(localStorage.getItem('shopeek_user') || '{}').id).toBe('u-otp-login');
+    expect(localStorage.getItem('shopeek_token')).toBe('access-otp');
   });
 
   it('switches an unregistered phone from login to register mode', async () => {

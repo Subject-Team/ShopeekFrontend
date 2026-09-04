@@ -113,7 +113,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const verifyOtp = async (phone: string, code: string, turnstileToken?: string): Promise<OtpVerifyResponse> => {
-    return verifyOtpApi({ phone, code, turnstile_token: turnstileToken });
+    const response = await verifyOtpApi({
+      phone,
+      code,
+      turnstile_token: turnstileToken,
+      device_id: getDeviceId(),
+      device_label: getDeviceLabel(),
+    });
+    if (response.registered && response.access_token && response.user) {
+      setToken(response.access_token);
+      setUser(response.user);
+      localStorage.setItem('shopeek_token', response.access_token);
+      if (response.refresh_token) {
+        localStorage.setItem('shopeek_refresh_token', response.refresh_token);
+      }
+      localStorage.setItem('shopeek_user', JSON.stringify(response.user));
+    }
+    return response;
   };
 
   const registerWithPhone = async (
