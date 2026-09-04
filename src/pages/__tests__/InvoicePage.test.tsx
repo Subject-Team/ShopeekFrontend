@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { InvoicePage } from '../InvoicePage';
+import { InvoiceModal } from '../InvoicePage';
 import { AuthProvider } from '../../context/AuthContext';
 import { GuideProvider } from '../../context/GuideContext';
 import { PageContextProvider } from '../../context/PageContext';
@@ -41,7 +41,7 @@ const suggestionsFixture = {
   },
 };
 
-describe('InvoicePage (ثبت فاکتور)', () => {
+describe('InvoiceModal (ثبت فاکتور)', () => {
   beforeEach(() => {
     localStorage.clear();
     localStorage.setItem('shopeek_token', 'mock-valid-token');
@@ -70,7 +70,7 @@ describe('InvoicePage (ثبت فاکتور)', () => {
 
   const renderPage = (ui: React.ReactElement) => {
     return render(
-      <MemoryRouter initialEntries={['/dashboard/invoice']}>
+      <MemoryRouter>
         <AuthProvider>
           <GuideProvider>
             <PageContextProvider>
@@ -82,8 +82,8 @@ describe('InvoicePage (ثبت فاکتور)', () => {
     );
   };
 
-  it('renders the invoice page with product/customer/amount/date fields', async () => {
-    renderPage(<InvoicePage />);
+  it('renders the invoice modal with product/customer/amount/date fields when isOpen', async () => {
+    renderPage(<InvoiceModal isOpen={true} onClose={vi.fn()} />);
 
     await waitFor(() => {
       expect(screen.getAllByText(/ثبت فاکتور مستقیم/i).length).toBeGreaterThan(0);
@@ -94,8 +94,13 @@ describe('InvoicePage (ثبت فاکتور)', () => {
     expect(screen.getByText(/تاریخ فاکتور/i)).toBeInTheDocument();
   });
 
+  it('returns null when isOpen is false', () => {
+    renderPage(<InvoiceModal isOpen={false} onClose={vi.fn()} />);
+    expect(screen.queryByText(/ثبت فاکتور مستقیم/i)).not.toBeInTheDocument();
+  });
+
   it('shows the realtime grouped value and Persian words as the amount is typed', async () => {
-    renderPage(<InvoicePage />);
+    renderPage(<InvoiceModal isOpen={true} onClose={vi.fn()} />);
     await waitFor(() => {
       expect(screen.getAllByText(/ثبت فاکتور مستقیم/i).length).toBeGreaterThan(0);
     });
@@ -110,7 +115,7 @@ describe('InvoicePage (ثبت فاکتور)', () => {
   });
 
   it('submits an invoice with expected payload via product/customer chips', async () => {
-    renderPage(<InvoicePage />);
+    renderPage(<InvoiceModal isOpen={true} onClose={vi.fn()} />);
     await waitFor(() => {
       expect(screen.getAllByText(/ثبت فاکتور مستقیم/i).length).toBeGreaterThan(0);
       expect(screen.getByText(/آخرین: چای/i)).toBeInTheDocument();

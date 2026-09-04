@@ -71,8 +71,8 @@ export const GUIDE_CONFIGS: Record<string, PageGuideConfig> = {
       {
         id: 'dashboard-ingestion-cta',
         targetSelector: '[data-guide="dashboard-ingestion-cta"]',
-        title: 'ورود سریع فاکتورهای جدید',
-        description: 'جهت دقیق‌تر شدن تحلیل‌ها و بروزرسانی آمار، از این بخش می‌توانید فاکتورهای فروش روزانه یا ماهانه خود را وارد کنید.',
+        title: 'ورود سریع فاکتورها',
+        description: 'از این بخش می‌توانید فاکتور فروش را به صورت مستقیم ثبت کنید یا با آپلود فایل اکسل/CSV داده‌ها را وارد سامانه نمایید.',
         placement: 'top',
       },
       {
@@ -215,49 +215,6 @@ export const GUIDE_CONFIGS: Record<string, PageGuideConfig> = {
         targetSelector: '[data-guide="settings-telegram"]',
         title: 'اتصال ربات تلگرام (@Shopeek_Bot)',
         description: 'اگر حساب خود را به ربات تلگرام متصل کرده باشید، شناسه چت و تاریخ اتصال در اینجا نمایش داده می‌شود و می‌توانید ارتباط آن را قطع کنید.',
-        placement: 'top',
-      },
-    ],
-  },
-
-  invoice: {
-    pageKey: 'invoice',
-    title: 'راهنمای ثبت فاکتور مستقیم',
-    steps: [
-      {
-        id: 'invoice-product',
-        targetSelector: '[data-guide="invoice-product"]',
-        title: 'انتخاب محصول',
-        description: 'محصول این فاکتور را انتخاب کنید. می‌توانید از «آخرین» محصول فروخته‌شده یا محصولات «پرکاربرد» استفاده کنید، یا نام جدیدی جستجو و ایجاد نمایید.',
-        placement: 'bottom',
-      },
-      {
-        id: 'invoice-customer',
-        targetSelector: '[data-guide="invoice-customer"]',
-        title: 'انتخاب مشتری',
-        description: 'مشتری خریدار را مشخص کنید. از «آخرین» و «پرکاربرد»ترین مشتریان انتخاب کنید یا مشتری جدیدی بسازید؛ برای مشتری جدید می‌توانید ایمیل اختیاری وارد کنید.',
-        placement: 'bottom',
-      },
-      {
-        id: 'invoice-amount',
-        targetSelector: '[data-guide="invoice-amount"]',
-        title: 'مبلغ به هزار تومان',
-        description: 'مبلغ را به «هزار تومان» وارد کنید؛ مثلاً ۲٬۰۰۰ یعنی ۲ میلیون تومان. معادل دقیق مبلغ به صورت زنده زیر کادر نمایش داده می‌شود.',
-        tips: ['برای ۲ میلیون تومان عدد ۲۰۰۰ را وارد کنید و معادل «۲ میلیون تومان» را زیر کادر مشاهده خواهید کرد.'],
-        placement: 'bottom',
-      },
-      {
-        id: 'invoice-date',
-        targetSelector: '[data-guide="invoice-date"]',
-        title: 'تاریخ فاکتور',
-        description: 'تاریخ امروز و دیروز با یک کلیک قابل انتخاب است؛ برای تاریخ دلخواه، آن را به صورت سال-ماه-روز (مثلاً ۱۴۰۵-۰۵-۱۱) وارد کنید.',
-        placement: 'bottom',
-      },
-      {
-        id: 'invoice-submit',
-        targetSelector: '[data-guide="invoice-submit"]',
-        title: 'ثبت فاکتور',
-        description: 'پس از تکمیل اطلاعات، با کلیک روی دکمه «ثبت فاکتور» تراکنش ثبت شده و آمار فروش شما به‌روزرسانی می‌شود.',
         placement: 'top',
       },
     ],

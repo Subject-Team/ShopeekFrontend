@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { DashboardPage } from '../DashboardPage';
 import { AnalyticsPage } from '../AnalyticsPage';
@@ -24,6 +24,8 @@ vi.mock('../../services/api', () => ({
   previewSalesFile: vi.fn(),
   getSampleCSV: vi.fn(),
   fetchMeApi: vi.fn(),
+  fetchSalesSuggestions: vi.fn(),
+  createInvoice: vi.fn(),
 }));
 
 describe('Dashboard Pages', () => {
@@ -68,6 +70,11 @@ describe('Dashboard Pages', () => {
     (api.fetchCustomers as any).mockResolvedValue([
       { id: 'c-1', name: 'علی محمدی', email: 'ali@example.com', total_lifetime_value: 5000000, interactions_count: 1, transactions_count: 2 },
     ]);
+    (api.fetchSalesSuggestions as any).mockResolvedValue({
+      products: { last: 'چای', top3: ['چای', 'قهوه'], names: ['چای', 'قهوه'] },
+      customers: { last: 'علی', top3: ['علی'], items: [{ id: 'c-1', name: 'علی', email: 'ali@example.com' }] },
+    });
+    (api.createInvoice as any).mockResolvedValue({ transaction_reference: 'INV-10001' });
   });
 
   const renderPage = (ui: React.ReactElement, initialPath = '/dashboard') => {
@@ -116,6 +123,32 @@ describe('Dashboard Pages', () => {
     await waitFor(() => {
       expect(screen.getByText(/بارگذاری و ورودی فایل فاکتورها/i)).toBeInTheDocument();
       expect(screen.getByText(/بارگیری داده‌های نمونه فروش/i)).toBeInTheDocument();
+    });
+  });
+
+  it('renders the "ورود فاکتورهای جدید" card on dashboard', async () => {
+    renderPage(<DashboardPage />, '/dashboard');
+
+    await waitFor(() => {
+      expect(screen.getByText(/ورود فاکتورهای جدید/i)).toBeInTheDocument();
+      expect(screen.getByText(/ثبت فاکتور مستقیم/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/ورود داده‌ها/i).length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  it('opens InvoiceModal when clicking "ثبت فاکتور مستقیم"', async () => {
+    renderPage(<DashboardPage />, '/dashboard');
+
+    await waitFor(() => {
+      expect(screen.getByText(/ورود فاکتورهای جدید/i)).toBeInTheDocument();
+    });
+
+    const openButton = screen.getByText('ثبت فاکتور مستقیم');
+    fireEvent.click(openButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(/یک تراکنش فروش را سریع و بدون نیاز به فایل ثبت کنید/i)).toBeInTheDocument();
+      expect(screen.getByText(/محصول/i)).toBeInTheDocument();
     });
   });
 });

@@ -69,7 +69,6 @@ export const GuideProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const getActivePageKey = useCallback((): string => {
     const path = location.pathname;
     if (path === '/dashboard/ingestion') return 'ingestion';
-    if (path === '/dashboard/invoice') return 'invoice';
     if (path === '/dashboard/customers') return 'customers';
     if (path === '/dashboard/analytics') return 'analytics';
     if (path === '/dashboard/settings') return 'settings';

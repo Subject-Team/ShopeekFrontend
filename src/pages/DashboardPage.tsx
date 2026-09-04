@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DollarSign, ShoppingBag, CreditCard, Users, UploadCloud } from 'lucide-react';
+import { DollarSign, ShoppingBag, CreditCard, Users, UploadCloud, ReceiptText } from 'lucide-react';
 import { KpiCard } from '../components/dashboard/KpiCard';
 import { RevenueChart } from '../components/dashboard/RevenueChart';
 import { AdvisoryCard } from '../components/dashboard/AdvisoryCard';
@@ -13,6 +13,7 @@ import { KPISummary, RevenuePoint, AIAdvisory, Customer } from '../types';
 import { formatPersianNumber } from '../utils';
 import { formatJalaliRangeLabel } from '../utils/jalali';
 import { SEO } from '../components/common/SEO';
+import { InvoiceModal } from './InvoicePage';
 
 
 
@@ -25,6 +26,7 @@ export const DashboardPage: React.FC = () => {
   const [advisory, setAdvisory] = useState<AIAdvisory | null>(null);
   const [advisoryHistory, setAdvisoryHistory] = useState<AIAdvisory[]>([]);
   const [topCustomers, setTopCustomers] = useState<Customer[]>([]);
+  const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
 
   const loadDashboardData = async () => {
     try {
@@ -140,6 +142,36 @@ export const DashboardPage: React.FC = () => {
         {/* Side Widget: Top Customers Summary, Data Import CTA, & Subscription Card */}
 
         <div className="space-y-6">
+          {/* Quick Import & Invoice CTA */}
+          <div
+            data-guide="dashboard-ingestion-cta"
+            className="glass-card p-5 rounded-2xl bg-gradient-to-br from-brand-50 to-indigo-50/40 dark:from-brand-950/40 dark:to-slate-900 border border-brand-200 dark:border-brand-900/50 space-y-3"
+          >
+            <div className="flex items-center gap-3 text-brand-700 dark:text-brand-300">
+              <ReceiptText className="w-6 h-6" />
+              <h4 className="font-extrabold text-sm">ورود فاکتورهای جدید</h4>
+            </div>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              ثبت سریع فاکتور فروش به صورت مستقیم یا ورود داده‌ها از طریق فایل اکسل و CSV.
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setInvoiceModalOpen(true)}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition-all flex items-center justify-center gap-2"
+              >
+                <ReceiptText className="w-4 h-4" />
+                ثبت فاکتور مستقیم
+              </button>
+              <button
+                onClick={() => navigate('/dashboard/ingestion')}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs shadow-sm border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-center gap-2"
+              >
+                <UploadCloud className="w-4 h-4" />
+                ورود داده‌ها
+              </button>
+            </div>
+          </div>
+
           <div className="glass-card p-5 rounded-2xl shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">مشتریان برتر (LTV)</h4>
@@ -174,32 +206,14 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Import CTA */}
-          <div
-            data-guide="dashboard-ingestion-cta"
-            className="glass-card p-5 rounded-2xl bg-gradient-to-br from-brand-50 to-emerald-50/40 dark:from-brand-950/40 dark:to-slate-900 border border-brand-200 dark:border-brand-900/50 space-y-3"
-          >
-            <div className="flex items-center gap-3 text-brand-700 dark:text-brand-300">
-              <UploadCloud className="w-6 h-6" />
-              <h4 className="font-extrabold text-sm">ورود فاکتورهای جدید</h4>
-            </div>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              افزایش دقت تحلیل‌ها با افزودن فایل فاکتورهای اخیر فروش کسب‌وکار.
-            </p>
-            <button
-              onClick={() => navigate('/dashboard/ingestion')}
-              className="w-full py-2.5 px-4 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition-all"
-            >
-              وارد کردن داده‌ها
-            </button>
-          </div>
-
           {/* Remaining Subscription Status Card (Under Data Entry Section) */}
           <div data-guide="dashboard-subscription">
             <SubscriptionStatusCard user={user} />
           </div>
         </div>
       </div>
+
+      <InvoiceModal isOpen={invoiceModalOpen} onClose={() => setInvoiceModalOpen(false)} />
     </div>
   );
 };
