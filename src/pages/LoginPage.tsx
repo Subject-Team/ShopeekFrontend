@@ -246,7 +246,7 @@ export const LoginPage: React.FC = () => {
     }
     setSubmitting(true);
     try {
-      const res = await verifyOtp(phone.trim(), otpCode, turnstileToken ?? undefined);
+      const res = await verifyOtp(phone.trim(), otpCode);
       if (!res.registered) {
         setMode('register');
         setRegisterStep('phone');
@@ -998,17 +998,6 @@ export const LoginPage: React.FC = () => {
                             className="w-full pr-10 pl-4 py-2.5 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition-all bg-slate-50 border border-slate-200 focus:border-brand-500 dir-ltr text-left tracking-widest text-center"
                           />
                         </div>
-                      </div>
-
-                      <div className="flex justify-center items-center py-2 min-h-[65px] w-full overflow-hidden">
-                        <Turnstile
-                          ref={turnstileRef}
-                          siteKey={TURNSTILE_SITE_KEY}
-                          onSuccess={(token) => setTurnstileToken(token)}
-                          onExpire={() => setTurnstileToken(null)}
-                          onError={() => setTurnstileToken(null)}
-                          options={{ theme: 'light', language: 'fa', size: 'normal' }}
-                        />
                       </div>
 
                       <button
