@@ -315,7 +315,7 @@ export const LoginPage: React.FC = () => {
     }
     setSubmitting(true);
     try {
-      const res = await verifyOtp(phone.trim(), otpCode, turnstileToken ?? undefined);
+      const res = await verifyOtp(phone.trim(), otpCode);
       if (res.registered) {
         setMode('login');
         setLoginMethod('phone-password');
@@ -323,6 +323,7 @@ export const LoginPage: React.FC = () => {
         return;
       }
       showToast('کد تأیید تأیید شد. اکنون اطلاعات حساب خود را تکمیل کنید.', 'success');
+      setHasSubmitted(false);
       setRegisterStep('details');
     } catch (err: any) {
       const msg = err.message || 'خطا در تأیید کد';
@@ -382,10 +383,13 @@ export const LoginPage: React.FC = () => {
     }
     setSubmitting(true);
     try {
-      await registerWithPhone(
-        { phone: phone.trim(), code: otpCode, email: email.trim(), password, full_name: fullName.trim() },
-        turnstileToken ?? undefined,
-      );
+      await registerWithPhone({
+        phone: phone.trim(),
+        code: otpCode,
+        email: email.trim(),
+        password,
+        full_name: fullName.trim(),
+      });
       showToast('حساب کاربری شما با موفقیت ایجاد شد.', 'success');
       navigate('/dashboard');
     } catch (err: any) {
@@ -1196,17 +1200,6 @@ export const LoginPage: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="flex justify-center items-center py-2 min-h-[65px] w-full overflow-hidden">
-                        <Turnstile
-                          ref={turnstileRef}
-                          siteKey={TURNSTILE_SITE_KEY}
-                          onSuccess={(token) => setTurnstileToken(token)}
-                          onExpire={() => setTurnstileToken(null)}
-                          onError={() => setTurnstileToken(null)}
-                          options={{ theme: 'light', language: 'fa', size: 'normal' }}
-                        />
-                      </div>
-
                       <button
                         type="button"
                         data-testid="otp-verify-btn"
@@ -1451,17 +1444,6 @@ export const LoginPage: React.FC = () => {
                             </p>
                           )}
                         </div>
-                      </div>
-
-                      <div className="flex justify-center items-center py-2 min-h-[65px] w-full overflow-hidden">
-                        <Turnstile
-                          ref={turnstileRef}
-                          siteKey={TURNSTILE_SITE_KEY}
-                          onSuccess={(token) => setTurnstileToken(token)}
-                          onExpire={() => setTurnstileToken(null)}
-                          onError={() => setTurnstileToken(null)}
-                          options={{ theme: 'light', language: 'fa', size: 'normal' }}
-                        />
                       </div>
 
                       <button
