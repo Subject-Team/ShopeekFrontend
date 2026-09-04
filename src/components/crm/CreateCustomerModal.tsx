@@ -51,7 +51,7 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
     <>
       {/* Overlay - fixed with no margin/padding interference */}
       <div
-        className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm !mt-0"
+        className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm h-full"
         onClick={onClose}
       />
 
