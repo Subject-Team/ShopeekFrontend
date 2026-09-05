@@ -1,4 +1,3 @@
-import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
@@ -6,15 +5,6 @@ import { LoginPage } from '../LoginPage';
 import { AuthProvider } from '../../context/AuthContext';
 import { ToastProvider } from '../../context/ToastContext';
 import * as api from '../../services/api';
-
-vi.mock('@marsidev/react-turnstile', () => ({
-  Turnstile: ({ onSuccess }: any) => {
-    React.useEffect(() => {
-      onSuccess?.('mock-turnstile-token');
-    }, [onSuccess]);
-    return <div data-testid="mock-turnstile" />;
-  },
-}));
 
 vi.mock('../../services/api', () => ({
   loginApi: vi.fn(),

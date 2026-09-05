@@ -10,6 +10,7 @@ import {
 } from 'recharts';
 import { RevenuePoint } from '../../types';
 import { formatPersianDate, formatCompressedToman, formatPersianNumber } from '../../utils';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 interface RevenueChartProps {
   data: RevenuePoint[];
@@ -24,15 +25,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
 }) => {
 
   const [formattedData, setFormattedData] = useState<RevenuePoint[]>([]);
-  const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 640);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const isMobile = useIsMobile(640);
 
   useEffect(() => {
     const translated = data.map(item => ({

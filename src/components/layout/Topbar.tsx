@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   Menu,
@@ -13,6 +13,8 @@ import {
 import { useTheme } from '../../context/ThemeContext';
 import { usePageContext } from '../../context/PageContext';
 import { useAuth } from '../../context/AuthContext';
+import { useIsMobile } from '../../hooks/useIsMobile';
+import { getPageTitle } from '../../utils/routes';
 import { JalaliDateRangeModal } from '../common/JalaliDateRangeModal';
 import { formatJalaliRangeLabel } from '../../utils/jalali';
 
@@ -32,34 +34,8 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   } = usePageContext();
   const { user, logout } = useAuth();
   const location = useLocation();
-  const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 1024);
+  const isMobile = useIsMobile(1024);
   const [isDateModalOpen, setIsDateModalOpen] = useState<boolean>(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const getPageTitle = () => {
-    switch (location.pathname) {
-      case '/dashboard':
-      case '/dashboard/':
-        return 'داشبورد اصلی';
-      case '/dashboard/analytics':
-        return 'تحلیل و آمار فروش';
-      case '/dashboard/customers':
-        return 'مدیریت مشتریان (CRM)';
-      case '/dashboard/ingestion':
-        return 'ورود داده‌ها';
-      case '/dashboard/settings':
-        return 'تنظیمات';
-      default:
-        return 'داشبورد';
-    }
-  };
 
   const showDateFilter =
     location.pathname === '/dashboard' ||
@@ -83,7 +59,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
         </button>
         <div>
           <span className="hidden sm:block font-bold text-slate-900 dark:text-white text-sm md:text-base lg:text-lg truncate max-w-[150px] md:max-w-[250px]">
-            {getPageTitle()}
+            {getPageTitle(location.pathname)}
           </span>
         </div>
       </div>

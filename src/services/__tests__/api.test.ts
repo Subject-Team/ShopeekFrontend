@@ -10,7 +10,6 @@ import {
   fetchLatestAdvisory,
   fetchAdvisoryHistory,
   triggerManualAdvisory,
-  triggerBatchForecast,
   uploadSalesFile,
   previewSalesFile,
   getSampleCSV,
@@ -129,7 +128,6 @@ describe('API Services', () => {
     await fetchLatestAdvisory();
     await fetchAdvisoryHistory();
     await triggerManualAdvisory();
-    await triggerBatchForecast();
   });
 
   it('file upload and preview functions build form data', async () => {

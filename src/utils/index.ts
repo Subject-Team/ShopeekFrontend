@@ -66,22 +66,6 @@ export const formatPersianTimeAsUTC = (timeStr: string): string => {
   return formatPersianTime(timeStr.endsWith('Z') ? timeStr : timeStr + 'Z');
 };
 
-/**
- * Returns a human-readable Persian remaining subscription text.
- */
-export const formatSubscriptionRemainingDays = (
-  remainingDays: number | null | undefined,
-  isInfinite?: boolean
-): string => {
-  if (isInfinite) {
-    return 'نامحدود (کاربر دمو)';
-  }
-  if (remainingDays === null || remainingDays === undefined || remainingDays <= 0) {
-    return 'اشتراک منقضی شده (بدون اعتبار)';
-  }
-  return `${formatPersianNumber(remainingDays)} روز باقی مانده`;
-};
-
 export const formatCompressedToman = (val: number) => {
   if (val === undefined || val === null || isNaN(val)) return '';
 

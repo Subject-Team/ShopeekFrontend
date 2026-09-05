@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import { sendChatMessage, fetchChatHistory, clearChatHistory } from '../../services/api';
 import { ChatMessage } from '../../types';
 import { formatPersianNumber } from '../../utils';
+import { formatJalaliRangeLabel } from '../../utils/jalali';
 
 const assistantMarkdownComponents: Components = {
   p: ({ node: _node, ...props }) => <p {...props} className="my-1 first:mt-0 last:mb-0" />,
@@ -70,8 +71,6 @@ const assistantMarkdownComponents: Components = {
   hr: () => <hr className="my-2 border-slate-200 dark:border-slate-700" />,
   img: ({ node: _node, ...props }) => <img {...props} className="max-w-full rounded-lg my-1" alt="" />,
 };
-
-import { formatJalaliRangeLabel } from '../../utils/jalali';
 
 export const ChatDrawer: React.FC = () => {
   const { isChatOpen, setIsChatOpen, activePage, dateRangeDays, startDate, endDate, isHistorical } = usePageContext();

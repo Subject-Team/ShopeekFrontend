@@ -4,6 +4,7 @@ import { Customer } from '../../types';
 import { addCustomerInteraction } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { formatPersianDateAsUTC, formatPersianNumber } from '../../utils';
+import { ModalOverlay } from '../common/ModalOverlay';
 
 interface CustomerModalProps {
   customer: Customer | null;
@@ -38,13 +39,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
   };
 
   return (
-    <>
-      {/* Overlay - fixed with no margin/padding interference */}
-      <div
-        className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm h-full"
-        onClick={onClose}
-      />
-
+    <ModalOverlay onClick={onClose}>
       {/* Modal container - centered with proper spacing */}
       <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
         <div className="w-full max-w-2xl max-h-[90vh] mx-4 pointer-events-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col">
@@ -175,6 +170,6 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
           </div>
         </div>
       </div>
-    </>
+    </ModalOverlay>
   );
 };

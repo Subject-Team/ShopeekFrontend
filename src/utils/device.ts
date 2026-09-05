@@ -1,3 +1,5 @@
+import { Laptop, Monitor, Smartphone, type LucideIcon } from 'lucide-react';
+
 /**
  * Device fingerprint helpers.
  *
@@ -53,4 +55,15 @@ export const getDeviceLabel = (): string => {
   const browser = detectBrowser(ua);
   const os = detectOs(ua);
   return `${browser} / ${os}`;
+};
+
+/**
+ * Picks the Lucide icon component matching a device label (e.g. "Android Mobile").
+ * Returns the component so callers render it with their own className.
+ */
+export const deviceIcon = (label: string): LucideIcon => {
+  const l = (label || '').toLowerCase();
+  if (l.includes('android') || l.includes('ios')) return Smartphone;
+  if (l.includes('mac') || l.includes('windows') || l.includes('linux')) return Monitor;
+  return Laptop;
 };

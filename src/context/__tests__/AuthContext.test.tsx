@@ -80,6 +80,7 @@ describe('AuthContext', () => {
     localStorage.setItem('shopeek_user', JSON.stringify({ id: 'u-1', email: 'test@shopeek.ir' }));
 
     const { result } = renderHook(() => useAuth(), { wrapper });
+    await act(async () => {});
 
     act(() => {
       result.current.logout();
@@ -95,6 +96,7 @@ describe('AuthContext', () => {
     localStorage.setItem('shopeek_token', 'initial-token');
 
     const { result } = renderHook(() => useAuth(), { wrapper });
+    await act(async () => {});
 
     act(() => {
       window.dispatchEvent(new Event('shopeek_unauthorized'));
@@ -120,6 +122,7 @@ describe('AuthContext', () => {
   });
 
   it('logs out during validation only when the session was conclusively rejected', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     localStorage.setItem('shopeek_token', 'token-1');
     localStorage.setItem('shopeek_user', JSON.stringify({ id: 'u-1', email: 'test@shopeek.ir' }));
     (api.fetchMeApi as any).mockImplementation(async () => {
@@ -135,5 +138,6 @@ describe('AuthContext', () => {
     expect(result.current.isAuthenticated).toBe(false);
     expect(result.current.token).toBeNull();
     expect(result.current.user).toBeNull();
+    errorSpy.mockRestore();
   });
 });

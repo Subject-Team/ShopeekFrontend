@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { ChatDrawer } from '../ChatDrawer';
 import { PageContextProvider, usePageContext } from '../../../context/PageContext';
 import { AuthProvider } from '../../../context/AuthContext';
@@ -41,6 +41,7 @@ const openChat = async () => {
     </AuthProvider>
   );
   fireEvent.click(screen.getByText('Open Chat'));
+  await act(async () => {});
 };
 
 describe('ChatDrawer Component', () => {

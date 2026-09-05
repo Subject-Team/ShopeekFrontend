@@ -1,10 +1,9 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { screen, fireEvent, act } from '@testing-library/react';
 import { GuideSpotlight } from '../GuideSpotlight';
 import { GuideProvider, useGuide } from '../../../context/GuideContext';
-import { AuthProvider } from '../../../context/AuthContext';
+import { renderWithProviders } from '../../../test/testUtils';
 
 const { MOCK_USER } = vi.hoisted(() => ({
   MOCK_USER: { id: 'u-1', email: 'test@shopeek.ir', full_name: 'Test User' },
@@ -41,15 +40,7 @@ describe('GuideSpotlight Component', () => {
   });
 
   it('renders spotlight and tooltip card when guide is opened', async () => {
-    render(
-      <MemoryRouter initialEntries={['/dashboard']}>
-        <AuthProvider>
-          <GuideProvider>
-            <TestApp />
-          </GuideProvider>
-        </AuthProvider>
-      </MemoryRouter>
-    );
+    await renderWithProviders(<TestApp />);
 
     act(() => {
       screen.getByText('Launch Guide').click();
@@ -60,15 +51,7 @@ describe('GuideSpotlight Component', () => {
   });
 
   it('advances through steps on clicking next button', async () => {
-    render(
-      <MemoryRouter initialEntries={['/dashboard']}>
-        <AuthProvider>
-          <GuideProvider>
-            <TestApp />
-          </GuideProvider>
-        </AuthProvider>
-      </MemoryRouter>
-    );
+    await renderWithProviders(<TestApp />);
 
     act(() => {
       screen.getByText('Launch Guide').click();
@@ -84,15 +67,7 @@ describe('GuideSpotlight Component', () => {
   });
 
   it('closes guide when clicking close button', async () => {
-    render(
-      <MemoryRouter initialEntries={['/dashboard']}>
-        <AuthProvider>
-          <GuideProvider>
-            <TestApp />
-          </GuideProvider>
-        </AuthProvider>
-      </MemoryRouter>
-    );
+    await renderWithProviders(<TestApp />);
 
     act(() => {
       screen.getByText('Launch Guide').click();
@@ -107,15 +82,7 @@ describe('GuideSpotlight Component', () => {
   });
 
   it('renders tip boxes when a step provides tips', async () => {
-    render(
-      <MemoryRouter initialEntries={['/dashboard']}>
-        <AuthProvider>
-          <GuideProvider>
-            <TestApp />
-          </GuideProvider>
-        </AuthProvider>
-      </MemoryRouter>
-    );
+    await renderWithProviders(<TestApp />);
 
     act(() => {
       screen.getByText('Launch Guide').click();
@@ -125,15 +92,7 @@ describe('GuideSpotlight Component', () => {
   });
 
   it('hides the previous button on the first step', async () => {
-    render(
-      <MemoryRouter initialEntries={['/dashboard']}>
-        <AuthProvider>
-          <GuideProvider>
-            <TestApp />
-          </GuideProvider>
-        </AuthProvider>
-      </MemoryRouter>
-    );
+    await renderWithProviders(<TestApp />);
 
     act(() => {
       screen.getByText('Launch Guide').click();
@@ -145,15 +104,7 @@ describe('GuideSpotlight Component', () => {
   });
 
   it('navigates via progress dots and shows the back button afterwards', async () => {
-    render(
-      <MemoryRouter initialEntries={['/dashboard']}>
-        <AuthProvider>
-          <GuideProvider>
-            <TestApp />
-          </GuideProvider>
-        </AuthProvider>
-      </MemoryRouter>
-    );
+    await renderWithProviders(<TestApp />);
 
     act(() => {
       screen.getByText('Launch Guide').click();
@@ -169,15 +120,7 @@ describe('GuideSpotlight Component', () => {
   });
 
   it('shows the finish label on the last step', async () => {
-    render(
-      <MemoryRouter initialEntries={['/dashboard']}>
-        <AuthProvider>
-          <GuideProvider>
-            <TestApp />
-          </GuideProvider>
-        </AuthProvider>
-      </MemoryRouter>
-    );
+    await renderWithProviders(<TestApp />);
 
     act(() => {
       screen.getByText('Launch Guide').click();
@@ -200,15 +143,7 @@ describe('GuideSpotlight Component', () => {
   });
 
   it('closes the guide from the cancel button', async () => {
-    render(
-      <MemoryRouter initialEntries={['/dashboard']}>
-        <AuthProvider>
-          <GuideProvider>
-            <TestApp />
-          </GuideProvider>
-        </AuthProvider>
-      </MemoryRouter>
-    );
+    await renderWithProviders(<TestApp />);
 
     act(() => {
       screen.getByText('Launch Guide').click();

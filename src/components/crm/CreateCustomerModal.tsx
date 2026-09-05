@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, User, Mail, Phone, MapPin } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 import { createCustomer } from '../../services/api';
+import { ModalOverlay } from '../common/ModalOverlay';
 
 interface CreateCustomerModalProps {
   isOpen: boolean;
@@ -48,13 +49,7 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
   };
 
   return (
-    <>
-      {/* Overlay - fixed with no margin/padding interference */}
-      <div
-        className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm h-full"
-        onClick={onClose}
-      />
-
+    <ModalOverlay onClick={onClose}>
       {/* Modal container - centered with proper spacing */}
       <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
         <div className="w-full max-w-md mx-4 pointer-events-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
@@ -144,6 +139,6 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
           </form>
         </div>
       </div>
-    </>
+    </ModalOverlay>
   );
 };

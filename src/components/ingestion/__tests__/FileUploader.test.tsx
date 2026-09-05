@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { FileUploader } from '../FileUploader';
 import { ToastProvider } from '../../../context/ToastContext';
 import * as api from '../../../services/api';
@@ -64,7 +64,9 @@ describe('FileUploader Component', () => {
     container.querySelector('[data-guide="ingestion-upload-zone"]') as HTMLElement;
 
   const pickFile = async (container: HTMLElement, file: File) => {
-    fireEvent.change(getFileInput(container), { target: { files: [file] } });
+    await act(async () => {
+      fireEvent.change(getFileInput(container), { target: { files: [file] } });
+    });
   };
 
   it('renders upload zone and sample download button', () => {

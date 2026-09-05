@@ -3,6 +3,8 @@
  * Pure mathematical algorithms with zero external dependencies.
  */
 
+import { formatPersianNumber } from './index';
+
 export interface JalaliDate {
   jy: number; // Jalali year (e.g. 1405)
   jm: number; // Jalali month (1 to 12)
@@ -199,8 +201,6 @@ export function getDayDifference(startIso: string, endIso: string): number {
   const diffTime = e.getTime() - s.getTime();
   return Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
 }
-
-import { formatPersianNumber } from './index';
 
 /**
  * Formats date range according to user preference:

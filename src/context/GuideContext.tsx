@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { GUIDE_CONFIGS, PageGuideConfig, GuideStep } from '../config/guideSteps';
+import { getActivePageKey as getActivePageKeyFromPath } from '../utils/routes';
 
 interface GuideState {
   pageSteps: Record<string, number>;
@@ -67,13 +68,7 @@ export const GuideProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Determine active page key from pathname
   const getActivePageKey = useCallback((): string => {
-    const path = location.pathname;
-    if (path === '/dashboard/ingestion') return 'ingestion';
-    if (path === '/dashboard/customers') return 'customers';
-    if (path === '/dashboard/analytics') return 'analytics';
-    if (path === '/dashboard/settings') return 'settings';
-    if (path === '/dashboard' || path === '/dashboard/') return 'dashboard';
-    return '';
+    return getActivePageKeyFromPath(location.pathname);
   }, [location.pathname]);
 
   const activePageKey = getActivePageKey();

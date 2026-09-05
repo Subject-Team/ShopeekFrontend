@@ -11,15 +11,13 @@ import {
 import {
   toJalali,
   jalaliToGregorian,
-  getJalaliMonthDays,
   toIsoDate,
   PERSIAN_MONTH_NAMES,
-  PERSIAN_WEEKDAY_NAMES,
   getDayDifference,
   formatJalaliRangeLabel,
-  getPersianDayOfWeek,
 } from '../../utils/jalali';
 import { formatPersianNumber } from '../../utils';
+import { JalaliCalendar } from './JalaliCalendar';
 
 interface JalaliDateRangeModalProps {
   isOpen: boolean;
@@ -87,12 +85,6 @@ export const JalaliDateRangeModal: React.FC<JalaliDateRangeModalProps> = ({
     }
   };
 
-  // Build calendar matrix for current viewMonth
-  const daysInMonth = getJalaliMonthDays(viewYear, viewMonth);
-  const { gy: firstGy, gm: firstGm, gd: firstGd } = jalaliToGregorian(viewYear, viewMonth, 1);
-  const firstDayDate = new Date(firstGy, firstGm - 1, firstGd);
-  const startDayOfWeek = getPersianDayOfWeek(firstDayDate); // 0 (Shanbeh) to 6 (Jomeh)
-
   // Handle day click
   const handleDayClick = (dayNumber: number) => {
     const { gy, gm, gd } = jalaliToGregorian(viewYear, viewMonth, dayNumber);
@@ -140,6 +132,38 @@ export const JalaliDateRangeModal: React.FC<JalaliDateRangeModalProps> = ({
       setTempEnd(clickedIso);
       setErrorMessage(null);
     }
+  };
+
+  const renderDay = (day: number, currentIso: string) => {
+    const isFuture = currentIso > todayIso;
+    const isOlderThanLimit = currentIso < minDateIso;
+    const isDisabled = isFuture || isOlderThanLimit;
+
+    const isStart = tempStart === currentIso;
+    const isEnd = tempEnd === currentIso;
+    const isInRange =
+      tempStart && tempEnd && currentIso > tempStart && currentIso < tempEnd;
+    const isToday = currentIso === todayIso;
+
+    return (
+      <button
+        key={day}
+        type="button"
+        disabled={isDisabled}
+        onClick={() => handleDayClick(day)}
+        className={`h-8 w-8 sm:h-9 sm:w-9 mx-auto rounded-lg text-xs font-semibold flex items-center justify-center transition-all relative ${
+          isDisabled
+            ? 'text-slate-300 dark:text-slate-600 cursor-not-allowed opacity-40'
+            : isStart || isEnd
+            ? 'bg-brand-600 text-white shadow-md shadow-brand-500/30 scale-105 z-10'
+            : isInRange
+            ? 'bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-brand-300 rounded-none'
+            : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'
+        } ${isToday && !isStart && !isEnd ? 'border border-brand-500/50' : ''}`}
+      >
+        {formatPersianNumber(day)}
+      </button>
+    );
   };
 
   // Quick preset options
@@ -278,62 +302,13 @@ export const JalaliDateRangeModal: React.FC<JalaliDateRangeModalProps> = ({
 
         {/* Calendar Grid */}
         <div className="px-5 py-2">
-          {/* Weekday headers */}
-          <div className="grid grid-cols-7 gap-1 text-center mb-1">
-            {PERSIAN_WEEKDAY_NAMES.map((wd, i) => (
-              <span
-                key={i}
-                className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 py-1"
-              >
-                {wd}
-              </span>
-            ))}
-          </div>
-
-          {/* Days */}
-          <div className="grid grid-cols-7 gap-1 text-center">
-            {/* Empty slots before first day */}
-            {Array.from({ length: startDayOfWeek }).map((_, i) => (
-              <div key={`empty-${i}`} className="h-8 w-8" />
-            ))}
-
-            {/* Month days */}
-            {Array.from({ length: daysInMonth }).map((_, i) => {
-              const day = i + 1;
-              const { gy, gm, gd } = jalaliToGregorian(viewYear, viewMonth, day);
-              const currentIso = toIsoDate(new Date(gy, gm - 1, gd));
-
-              const isFuture = currentIso > todayIso;
-              const isOlderThanLimit = currentIso < minDateIso;
-              const isDisabled = isFuture || isOlderThanLimit;
-
-              const isStart = tempStart === currentIso;
-              const isEnd = tempEnd === currentIso;
-              const isInRange =
-                tempStart && tempEnd && currentIso > tempStart && currentIso < tempEnd;
-              const isToday = currentIso === todayIso;
-
-              return (
-                <button
-                  key={day}
-                  type="button"
-                  disabled={isDisabled}
-                  onClick={() => handleDayClick(day)}
-                  className={`h-8 w-8 sm:h-9 sm:w-9 mx-auto rounded-lg text-xs font-semibold flex items-center justify-center transition-all relative ${
-                    isDisabled
-                      ? 'text-slate-300 dark:text-slate-600 cursor-not-allowed opacity-40'
-                      : isStart || isEnd
-                      ? 'bg-brand-600 text-white shadow-md shadow-brand-500/30 scale-105 z-10'
-                      : isInRange
-                      ? 'bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-brand-300 rounded-none'
-                      : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'
-                  } ${isToday && !isStart && !isEnd ? 'border border-brand-500/50' : ''}`}
-                >
-                  {formatPersianNumber(day)}
-                </button>
-              );
-            })}
-          </div>
+          <JalaliCalendar
+            viewYear={viewYear}
+            viewMonth={viewMonth}
+            weekdayClassName="text-[10px] font-semibold text-slate-400 dark:text-slate-500 py-1"
+            gridClassName="grid grid-cols-7 gap-1 text-center"
+            renderDay={renderDay}
+          />
         </div>
 
         {/* Quick Presets (Last 7 / 14 / 30 days) */}

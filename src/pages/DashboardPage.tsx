@@ -13,7 +13,7 @@ import { KPISummary, RevenuePoint, AIAdvisory, Customer } from '../types';
 import { formatPersianNumber } from '../utils';
 import { formatJalaliRangeLabel } from '../utils/jalali';
 import { SEO } from '../components/common/SEO';
-import { InvoiceModal } from './InvoicePage';
+import { InvoiceModal } from '../components/invoice/InvoiceModal';
 
 export const DashboardPage: React.FC = () => {
   const { dateRangeDays, startDate, endDate, isHistorical } = usePageContext();

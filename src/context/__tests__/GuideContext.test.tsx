@@ -43,24 +43,27 @@ describe('GuideContext', () => {
     expect(() => renderHook(() => useGuide())).toThrow('useGuide must be used within a GuideProvider');
   });
 
-  it('identifies active page key correctly from path', () => {
+  it('identifies active page key correctly from path', async () => {
     const { result } = renderHook(() => useGuide(), {
       wrapper: createWrapper('/dashboard/ingestion'),
     });
+    await act(async () => {});
     expect(result.current.activePageKey).toBe('ingestion');
     expect(result.current.currentConfig?.pageKey).toBe('ingestion');
 
     const { result: settingsResult } = renderHook(() => useGuide(), {
       wrapper: createWrapper('/dashboard/settings'),
     });
+    await act(async () => {});
     expect(settingsResult.current.activePageKey).toBe('settings');
     expect(settingsResult.current.currentConfig?.pageKey).toBe('settings');
   });
 
-  it('allows manual starting and step progression', () => {
+  it('allows manual starting and step progression', async () => {
     const { result } = renderHook(() => useGuide(), {
       wrapper: createWrapper('/dashboard'),
     });
+    await act(async () => {});
 
     act(() => {
       result.current.startGuide();
@@ -94,10 +97,11 @@ describe('GuideContext', () => {
     expect(result.current.isGuideOpen).toBe(false);
   });
 
-  it('resetAllGuides resets state and re-opens guide', () => {
+  it('resetAllGuides resets state and re-opens guide', async () => {
     const { result } = renderHook(() => useGuide(), {
       wrapper: createWrapper('/dashboard'),
     });
+    await act(async () => {});
 
     act(() => {
       result.current.resetAllGuides();

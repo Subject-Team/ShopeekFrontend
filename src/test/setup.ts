@@ -1,3 +1,4 @@
+import React from 'react';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
@@ -63,3 +64,25 @@ if (typeof Blob !== 'undefined' && typeof Blob.prototype.arrayBuffer !== 'functi
   remove: vi.fn(),
   getResponse: vi.fn().mockReturnValue('mock-turnstile-token'),
 };
+
+// Mock the Turnstile widget component so the real @marsidev/react-turnstile
+// script-polling component never runs in jsdom (it would warn
+// "Turnstile has not been loaded" and escape act via its setState-on-poll
+// effect). Same shape as the local mock in LoginPage.test.tsx.
+vi.mock('@marsidev/react-turnstile', () => ({
+  Turnstile: ({ onSuccess }: any) => {
+    React.useEffect(() => {
+      onSuccess?.('mock-turnstile-token');
+    }, [onSuccess]);
+    return React.createElement('div', { 'data-testid': 'mock-turnstile' });
+  },
+}));
+
+// ResponsiveContainer measures its parent in jsdom and logs a 0x0
+// width/height warning; replace it with a fixed-size div so charts render
+// without the warning. All other recharts components stay real.
+vi.mock('recharts', async () => ({
+  ...(await vi.importActual('recharts')),
+  ResponsiveContainer: (props: any) =>
+    React.createElement('div', { style: { width: 800, height: 400 } }, props.children),
+}));

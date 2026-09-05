@@ -5,7 +5,6 @@ import {
   formatPersianDateAsUTC,
   formatPersianTime,
   formatPersianTimeAsUTC,
-  formatSubscriptionRemainingDays,
   formatCompressedToman,
 } from '../index';
 
@@ -66,25 +65,6 @@ describe('utils/index.ts Persian formatting functions', () => {
     it('formatPersianTimeAsUTC appends Z if missing', () => {
       const timeStr = formatPersianTimeAsUTC('2026-03-21T14:30:00');
       expect(timeStr).toBeTruthy();
-    });
-  });
-
-  describe('formatSubscriptionRemainingDays', () => {
-    it('returns unlimited text for isInfinite', () => {
-      expect(formatSubscriptionRemainingDays(null, true)).toBe('نامحدود (کاربر دمو)');
-      expect(formatSubscriptionRemainingDays(10, true)).toBe('نامحدود (کاربر دمو)');
-    });
-
-    it('returns expired text for null, undefined, or <= 0', () => {
-      expect(formatSubscriptionRemainingDays(null)).toBe('اشتراک منقضی شده (بدون اعتبار)');
-      expect(formatSubscriptionRemainingDays(undefined)).toBe('اشتراک منقضی شده (بدون اعتبار)');
-      expect(formatSubscriptionRemainingDays(0)).toBe('اشتراک منقضی شده (بدون اعتبار)');
-      expect(formatSubscriptionRemainingDays(-5)).toBe('اشتراک منقضی شده (بدون اعتبار)');
-    });
-
-    it('returns formatted remaining days for positive values', () => {
-      const res = formatSubscriptionRemainingDays(15);
-      expect(res).toContain('روز باقی مانده');
     });
   });
 

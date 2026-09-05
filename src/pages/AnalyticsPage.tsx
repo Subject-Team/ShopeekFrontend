@@ -20,6 +20,8 @@ export const AnalyticsPage: React.FC = () => {
     ]).then(([trendData, kpiData]) => {
       setTrend(trendData);
       setKpi(kpiData);
+    }).catch((err: any) => {
+      console.error(err);
     });
   }, [startDate, endDate, dateRangeDays]);
 
