@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User } from '../types';
+import { User, OtpSendResponse, OtpVerifyResponse } from '../types';
 import {
   loginApi,
   fetchMeApi,
@@ -8,7 +8,6 @@ import {
   verifyOtpApi,
   registerWithPhoneApi,
 } from '../services/api';
-import { OtpSendResponse, OtpVerifyResponse } from '../types';
 import { getDeviceId, getDeviceLabel } from '../utils/device';
 
 interface AuthContextType {

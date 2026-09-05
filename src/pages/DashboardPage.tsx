@@ -15,8 +15,6 @@ import { formatJalaliRangeLabel } from '../utils/jalali';
 import { SEO } from '../components/common/SEO';
 import { InvoiceModal } from './InvoicePage';
 
-
-
 export const DashboardPage: React.FC = () => {
   const { dateRangeDays, startDate, endDate, isHistorical } = usePageContext();
   const { user } = useAuth();
@@ -26,7 +24,7 @@ export const DashboardPage: React.FC = () => {
   const [advisory, setAdvisory] = useState<AIAdvisory | null>(null);
   const [advisoryHistory, setAdvisoryHistory] = useState<AIAdvisory[]>([]);
   const [topCustomers, setTopCustomers] = useState<Customer[]>([]);
-  const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
+  const [invoiceModalOpen, setInvoiceModalOpen] = useState<boolean>(false);
 
   const loadDashboardData = async () => {
     try {

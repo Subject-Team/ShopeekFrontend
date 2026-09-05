@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AlertOctagon, MessageSquare } from 'lucide-react';
 import { User } from '../../types';
+import { formatPersianNumber } from '../../utils';
 
 interface RestrictionBannerProps {
   user: User | null;
@@ -23,8 +24,6 @@ export const RestrictionBanner: React.FC<RestrictionBannerProps> = ({ user }) =>
   }
   lines.push('در این حالت امکان ثبت تراکنش، ایجاد مشتری، ثبت یادداشت، تولید پیشنهادات هوشمند و پیش‌بینی و ارسال پیام به دستیار وجود ندارد.');
 
-  const fa = (s: number) => new Intl.NumberFormat('fa-IR').format(s);
-
   return (
     <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 dark:bg-rose-950/30 text-rose-900 dark:text-rose-200 p-4 mb-6 space-y-3">
       <div className="flex items-start gap-3">
@@ -35,7 +34,7 @@ export const RestrictionBanner: React.FC<RestrictionBannerProps> = ({ user }) =>
           <div className="flex items-center gap-2 font-extrabold text-sm text-rose-800 dark:text-rose-300">
             <span>دسترسی «فقط‌-خواندنی»</span>
             <span className="text-xs px-2 py-0.5 rounded-full bg-rose-200 dark:bg-rose-900/60 font-bold">
-              {fa(reasons.length)}
+              {formatPersianNumber(reasons.length)}
             </span>
           </div>
           <ul className="text-xs leading-relaxed mt-2 space-y-1 list-disc pr-4">

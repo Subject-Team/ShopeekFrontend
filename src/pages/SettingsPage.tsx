@@ -41,7 +41,7 @@ export const SettingsPage: React.FC = () => {
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'account' | 'security'>('account');
   const [data, setData] = useState<SettingsData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [revokingId, setRevokingId] = useState<string | null>(null);
   const [targetId, setTargetId] = useState<string | null>(null);
 
@@ -64,14 +64,14 @@ export const SettingsPage: React.FC = () => {
   }, [isGuideOpen, currentStep]);
 
   // Password change form state
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  const [showCurrent, setShowCurrent] = useState(false);
-  const [showNew, setShowNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState<string>('');
+  const [newPassword, setNewPassword] = useState<string>('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState<string>('');
+  const [showCurrent, setShowCurrent] = useState<boolean>(false);
+  const [showNew, setShowNew] = useState<boolean>(false);
+  const [showConfirm, setShowConfirm] = useState<boolean>(false);
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
 
   const load = useCallback(async () => {
     try {

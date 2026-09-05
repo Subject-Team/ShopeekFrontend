@@ -34,7 +34,7 @@ const TURNSTILE_SITE_KEY =
 const PHONE_REGEX = /^09\d{9}$/;
 
 const useCountdown = (active: boolean, seconds: number) => {
-  const [remaining, setRemaining] = useState(0);
+  const [remaining, setRemaining] = useState<number>(0);
 
   useEffect(() => {
     if (active) {
@@ -70,23 +70,23 @@ export const LoginPage: React.FC = () => {
   const [loginOtpStep, setLoginOtpStep] = useState<'phone' | 'verify'>('phone');
 
   /* ─── Form fields ─── */
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [otpCode, setOtpCode] = useState('');
-  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [fullName, setFullName] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+  const [otpCode, setOtpCode] = useState<string>('');
+  const [acceptedPrivacy, setAcceptedPrivacy] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const turnstileRef = useRef<TurnstileInstance>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
 
   /* ─── OTP cooldown ─── */
-  const [otpResendTriggered, setOtpResendTriggered] = useState(false);
+  const [otpResendTriggered, setOtpResendTriggered] = useState<boolean>(false);
   const otpCooldown = useCountdown(otpResendTriggered, 120);
 
   /* ─── Password evaluation ─── */

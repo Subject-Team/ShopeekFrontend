@@ -55,7 +55,7 @@ const SuggestionDropdown: React.FC<DropdownProps> = ({
   emptyMessage,
   disabled,
 }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -148,12 +148,12 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose }) =
   const readOnly = Boolean(user?.is_read_only);
 
   const [suggestions, setSuggestions] = useState<SalesSuggestions | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const [product, setProduct] = useState('');
-  const [customer, setCustomer] = useState('');
-  const [customerEmail, setCustomerEmail] = useState('');
-  const [amount, setAmount] = useState('');
+  const [product, setProduct] = useState<string>('');
+  const [customer, setCustomer] = useState<string>('');
+  const [customerEmail, setCustomerEmail] = useState<string>('');
+  const [amount, setAmount] = useState<string>('');
 
   const today = new Date();
   const todayIso = toIsoDate(today);
@@ -161,10 +161,10 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose }) =
   yesterday.setDate(today.getDate() - 1);
   const yesterdayIso = toIsoDate(yesterday);
 
-  const [selectedIso, setSelectedIso] = useState(todayIso);
-  const [viewYear, setViewYear] = useState(() => toJalali(todayIso).jy);
-  const [viewMonth, setViewMonth] = useState(() => toJalali(todayIso).jm);
-  const [submitting, setSubmitting] = useState(false);
+  const [selectedIso, setSelectedIso] = useState<string>(todayIso);
+  const [viewYear, setViewYear] = useState<number>(() => toJalali(todayIso).jy);
+  const [viewMonth, setViewMonth] = useState<number>(() => toJalali(todayIso).jm);
+  const [submitting, setSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
     let cancelled = false;

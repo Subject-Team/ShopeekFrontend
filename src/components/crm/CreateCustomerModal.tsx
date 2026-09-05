@@ -14,11 +14,11 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+  const [address, setAddress] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const { showToast } = useToast();
 
   if (!isOpen) return null;

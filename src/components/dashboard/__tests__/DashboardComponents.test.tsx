@@ -1,13 +1,13 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { DollarSign } from 'lucide-react';
 import { AdvisoryCard } from '../AdvisoryCard';
 import { AdvisoryHistoryModal } from '../AdvisoryHistoryModal';
 import { KpiCard } from '../KpiCard';
 import { RevenueChart } from '../RevenueChart';
 import { SubscriptionStatusCard } from '../SubscriptionStatusCard';
 import { SubscriptionWarningBanner } from '../SubscriptionWarningBanner';
-import { DollarSign } from 'lucide-react';
 import { ToastProvider } from '../../../context/ToastContext';
 import * as api from '../../../services/api';
 

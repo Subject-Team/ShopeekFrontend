@@ -12,13 +12,13 @@ export const CustomersPage: React.FC = () => {
   const readOnly = Boolean(user?.is_read_only);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
 
   const loadCustomers = async () => {
     try {
       const data = await fetchCustomers();
       setCustomers(data);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     }
   };
@@ -31,7 +31,7 @@ export const CustomersPage: React.FC = () => {
     try {
       const fullDetail = await fetchCustomerDetail(cust.id);
       setSelectedCustomer(fullDetail);
-    } catch (err) {
+    } catch (err: any) {
       setSelectedCustomer(cust);
     }
   };

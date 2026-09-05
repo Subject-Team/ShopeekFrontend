@@ -16,7 +16,6 @@ import { useAuth } from '../../context/AuthContext';
 import { JalaliDateRangeModal } from '../common/JalaliDateRangeModal';
 import { formatJalaliRangeLabel } from '../../utils/jalali';
 
-
 interface TopbarProps {
   onMenuClick: () => void;
 }
