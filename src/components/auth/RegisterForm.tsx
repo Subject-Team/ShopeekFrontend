@@ -137,7 +137,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ form }) => {
                 </button>
               </div>
 
-              <OtpCodeInput value={otpCode} onChange={setOtpCode} />
+              <OtpCodeInput value={otpCode} onChange={setOtpCode} onAutoVerify={handleRegisterOtpVerify} />
 
               <SubmitButton
                 type="button"

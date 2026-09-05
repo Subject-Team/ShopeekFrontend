@@ -174,7 +174,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ form }) => {
                 <span className="font-bold text-slate-800">{formatPersianNumber(phone)}</span> ارسال شد.
               </p>
 
-              <OtpCodeInput value={otpCode} onChange={setOtpCode} />
+              <OtpCodeInput value={otpCode} onChange={setOtpCode} onAutoVerify={handleLoginOtpVerify} />
 
               <SubmitButton
                 type="button"
