@@ -9,6 +9,7 @@ import {
   Check,
 } from 'lucide-react';
 import { formatJalaliRangeLabel } from "../../utils/persian/date";
+import { isQuickPresetRange } from "../../utils/persian/date";
 import { getDayDifference } from "../../utils/persian/date";
 import { toIsoDate } from "../../utils/persian/date";
 import { toJalali } from "../../utils/persian/date";
@@ -258,9 +259,11 @@ export const JalaliDateRangeModal: React.FC<JalaliDateRangeModalProps> = ({
           </span>
           <span className="font-bold text-brand-600 dark:text-brand-400">
             {tempStart && tempEnd
-              ? `${formatJalaliRangeLabel(tempStart, tempEnd)} (${toPersianDigits(
-                  getDayDifference(tempStart, tempEnd)
-                )} روز)`
+              ? isQuickPresetRange(tempStart, tempEnd) || tempStart === tempEnd
+                ? formatJalaliRangeLabel(tempStart, tempEnd)
+                : `${formatJalaliRangeLabel(tempStart, tempEnd)} (${toPersianDigits(
+                    getDayDifference(tempStart, tempEnd)
+                  )} روز)`
               : tempStart
               ? 'تاریخ پایان را انتخاب کنید'
               : 'تاریخ شروع را انتخاب کنید'}

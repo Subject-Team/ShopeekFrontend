@@ -85,11 +85,12 @@ describe('Layout Components', () => {
     expect(dateBtn).toBeInTheDocument();
     fireEvent.click(dateBtn);
 
-    // Modal opens showing Jalali calendar and presets
+    // Modal opens showing Jalali calendar and presets (the Topbar button label
+    // may also show the verbatim preset label when the current range is a preset)
     expect(screen.getByText('انتخاب بازه زمانی (شمسی)')).toBeInTheDocument();
-    expect(screen.getByText('۷ روز اخیر')).toBeInTheDocument();
-    expect(screen.getByText('۱۴ روز اخیر')).toBeInTheDocument();
-    expect(screen.getByText('۳۰ روز اخیر')).toBeInTheDocument();
+    expect(screen.getAllByText('۷ روز اخیر').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('۱۴ روز اخیر').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('۳۰ روز اخیر').length).toBeGreaterThan(0);
 
     // Click 14-day preset and apply
     fireEvent.click(screen.getByText('۱۴ روز اخیر'));

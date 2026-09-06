@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   formatJalaliRangeLabel,
+  isQuickPresetRange,
   getDayDifference,
   jalaliToDate,
   toIsoDate,
@@ -77,6 +78,29 @@ describe('utils/persian/date jalali calendar math', () => {
     // 1405-06-10 is 2026-09-01
     const interMonth = formatJalaliRangeLabel('2026-08-11', '2026-09-01');
     expect(interMonth).toBe('۲۰ مرداد تا ۱۰ شهریور');
+  });
+
+  it('formats single-day ranges as a bare Jalali date', () => {
+    // 2026-09-03 is 1405-06-12 (12 Shahrivar)
+    expect(formatJalaliRangeLabel('2026-09-03', '2026-09-03')).toBe('۱۲ شهریور');
+  });
+
+  it('formats quick preset ranges (7/14/30 days ending today) with their verbatim label', () => {
+    const today = toIsoDate(new Date());
+
+    const start7 = toIsoDate(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000));
+    expect(formatJalaliRangeLabel(start7, today)).toBe('۷ روز اخیر');
+
+    const start14 = toIsoDate(new Date(Date.now() - 13 * 24 * 60 * 60 * 1000));
+    expect(formatJalaliRangeLabel(start14, today)).toBe('۱۴ روز اخیر');
+
+    const start30 = toIsoDate(new Date(Date.now() - 29 * 24 * 60 * 60 * 1000));
+    expect(formatJalaliRangeLabel(start30, today)).toBe('۳۰ روز اخیر');
+  });
+
+  it('does not apply preset label when the same span does not end today', () => {
+    expect(formatJalaliRangeLabel('2026-08-25', '2026-08-31')).toBe('۳ تا ۹ شهریور');
+    expect(isQuickPresetRange('2026-08-25', '2026-08-31')).toBe(false);
   });
 });
 

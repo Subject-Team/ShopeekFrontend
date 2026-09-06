@@ -203,12 +203,41 @@ export function getDayDifference(startIso: string, endIso: string): number {
   return Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
 };
 
+/** Quick presets shown verbatim when the range ends today and spans exactly that many days. */
+const RANGE_PRESET_LABELS: ReadonlyArray<{ days: number; label: string }> = [
+  { days: 7, label: '۷ روز اخیر' },
+  { days: 14, label: '۱۴ روز اخیر' },
+  { days: 30, label: '۳۰ روز اخیر' },
+];
+
+/**
+ * True when the range ends today and matches a quick preset span (7/14/30 days).
+ */
+export function isQuickPresetRange(startIso: string, endIso: string): boolean {
+  if (endIso !== toIsoDate(new Date())) return false;
+  const daysCount = getDayDifference(startIso, endIso);
+  return RANGE_PRESET_LABELS.some((p) => p.days === daysCount);
+};
+
 /**
  * Formats date range according to user preference:
+ * - Single day: "۱۲ شهریور"
+ * - Quick preset ending today (7/14/30 days): shown as-is, e.g. "۷ روز اخیر"
  * - If same month: "۲ تا ۹ شهریور"
  * - If intermonth: "۲۰ مرداد تا ۱۰ شهریور"
  */
 export function formatJalaliRangeLabel(startIso: string, endIso: string): string {
+  if (startIso === endIso) {
+    const j = toJalali(startIso);
+    return `${toPersianDigits(j.jd)} ${PERSIAN_MONTH_NAMES[j.jm - 1]}`;
+  }
+
+  if (isQuickPresetRange(startIso, endIso)) {
+    const daysCount = getDayDifference(startIso, endIso);
+    const preset = RANGE_PRESET_LABELS.find((p) => p.days === daysCount);
+    if (preset) return preset.label;
+  }
+
   const jStart = toJalali(startIso);
   const jEnd = toJalali(endIso);
 
