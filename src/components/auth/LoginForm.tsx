@@ -6,7 +6,7 @@ import { OtpCodeInput } from './OtpCodeInput';
 import { PasswordInput } from './PasswordInput';
 import { TurnstileWidget } from './TurnstileWidget';
 import { SubmitButton } from './SubmitButton';
-import { formatPersianNumber } from '../../utils';
+import { toPersianDigits } from "../../utils/persian";
 
 interface LoginFormProps {
   form: LoginPageForm;
@@ -171,7 +171,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ form }) => {
             <div className="space-y-4">
               <p className="text-xs text-slate-600 text-center">
                 کد تأیید به شماره{' '}
-                <span className="font-bold text-slate-800">{formatPersianNumber(phone)}</span> ارسال شد.
+                <span className="font-bold text-slate-800">{toPersianDigits(phone)}</span> ارسال شد.
               </p>
 
               <OtpCodeInput value={otpCode} onChange={setOtpCode} onAutoVerify={handleLoginOtpVerify} />
@@ -200,7 +200,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ form }) => {
                       : 'text-brand-600 hover:text-brand-700'
                   }`}
                 >
-                  {otpCooldown > 0 ? `ارسال مجدد کد (${formatPersianNumber(otpCooldown)}ثانیه)` : 'ارسال مجدد کد'}
+                  {otpCooldown > 0 ? `ارسال مجدد کد (${toPersianDigits(otpCooldown)}ثانیه)` : 'ارسال مجدد کد'}
                 </button>
                 <span className="text-slate-300">|</span>
                 <button

@@ -6,8 +6,8 @@ import { usePageContext } from '../../context/PageContext';
 import { useAuth } from '../../context/AuthContext';
 import { sendChatMessage, fetchChatHistory, clearChatHistory } from '../../services/api';
 import { ChatMessage } from '../../types';
-import { formatPersianNumber } from '../../utils';
-import { formatJalaliRangeLabel } from '../../utils/jalali';
+import { toGroupedPersianDigits } from "../../utils/persian";
+import { formatJalaliRangeLabel } from "../../utils/persian/date";
 
 const assistantMarkdownComponents: Components = {
   p: ({ node: _node, ...props }) => <p {...props} className="my-1 first:mt-0 last:mb-0" />,
@@ -185,7 +185,7 @@ export const ChatDrawer: React.FC = () => {
                   <Layers className="w-3 h-3 text-indigo-500" />
                   <span>
                     زمینه فعال: {activePage} (
-                    {isHistorical ? formatJalaliRangeLabel(startDate, endDate) : `${formatPersianNumber(dateRangeDays)} روز`}
+                    {isHistorical ? formatJalaliRangeLabel(startDate, endDate) : `${toGroupedPersianDigits(dateRangeDays)} روز`}
                     )
                   </span>
                 </div>

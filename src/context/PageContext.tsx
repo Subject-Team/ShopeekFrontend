@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 
-import { toIsoDate, getDayDifference } from '../utils/jalali';
+import { getDayDifference } from "../utils/persian/date";
+import { toIsoDate } from "../utils/persian/date";
 
 interface PageContextType {
   activePage: string;
@@ -19,7 +20,7 @@ const PageContext = createContext<PageContextType | undefined>(undefined);
 
 export const PageContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activePage, setActivePage] = useState<string>('dashboard');
-  
+
   // Default is last 7 days ending today
   const getInitialDates = () => {
     const today = new Date();

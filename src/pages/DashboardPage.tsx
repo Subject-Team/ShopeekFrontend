@@ -10,8 +10,8 @@ import { usePageContext } from '../context/PageContext';
 import { useAuth } from '../context/AuthContext';
 import { fetchKPISummary, fetchRevenueTrend, fetchLatestAdvisory, fetchAdvisoryHistory, fetchCustomers } from '../services/api';
 import { KPISummary, RevenuePoint, AIAdvisory, Customer } from '../types';
-import { formatPersianNumber } from '../utils';
-import { formatJalaliRangeLabel } from '../utils/jalali';
+import { toGroupedPersianDigits } from "../utils/persian";
+import { formatJalaliRangeLabel } from "../utils/persian/date";
 import { SEO } from '../components/common/SEO';
 import { InvoiceModal } from '../components/invoice/InvoiceModal';
 
@@ -85,12 +85,12 @@ export const DashboardPage: React.FC = () => {
       <div data-guide="dashboard-kpis" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard
           title="فروش کل (تومان)"
-          value={kpi ? formatPersianNumber(kpi.total_revenue) : '۰'}
+          value={kpi ? toGroupedPersianDigits(kpi.total_revenue) : '۰'}
           changePercentage={kpi?.revenue_change_percentage}
           subtitle={
             isHistorical
               ? formatJalaliRangeLabel(startDate, endDate)
-              : `در ${formatPersianNumber(dateRangeDays)} روز گذشته`
+              : `در ${toGroupedPersianDigits(dateRangeDays)} روز گذشته`
           }
           icon={DollarSign}
           color="emerald"
@@ -99,12 +99,12 @@ export const DashboardPage: React.FC = () => {
         />
         <KpiCard
           title="تعداد کل سفارشات"
-          value={kpi ? formatPersianNumber(kpi.order_count) : '۰'}
+          value={kpi ? toGroupedPersianDigits(kpi.order_count) : '۰'}
           changePercentage={kpi?.order_count_change_percentage}
           subtitle={
             isHistorical
               ? formatJalaliRangeLabel(startDate, endDate)
-              : `در ${formatPersianNumber(dateRangeDays)} روز گذشته`
+              : `در ${toGroupedPersianDigits(dateRangeDays)} روز گذشته`
           }
           icon={ShoppingBag}
           color="indigo"
@@ -112,7 +112,7 @@ export const DashboardPage: React.FC = () => {
         />
         <KpiCard
           title="میانگین ارزش فاکتور (AOV)"
-          value={kpi ? formatPersianNumber(kpi.average_order_value.toFixed(0)) : '۰'}
+          value={kpi ? toGroupedPersianDigits(kpi.average_order_value.toFixed(0)) : '۰'}
           changePercentage={kpi?.aov_change_percentage}
           subtitle="تومان"
           icon={CreditCard}
@@ -122,7 +122,7 @@ export const DashboardPage: React.FC = () => {
         />
         <KpiCard
           title="تعداد مشتریان فعال"
-          value={kpi ? formatPersianNumber(kpi.total_customers) : '۰'}
+          value={kpi ? toGroupedPersianDigits(kpi.total_customers) : '۰'}
           changePercentage={kpi?.customer_count_change_percentage}
           subtitle="مشتری ثبت‌شده"
           icon={Users}
@@ -196,7 +196,7 @@ export const DashboardPage: React.FC = () => {
                       <span className="font-bold text-slate-800 dark:text-slate-200">{c.name}</span>
                     </div>
                     <span className="font-extrabold text-emerald-600 dark:text-emerald-400">
-                      {formatPersianNumber(c.total_lifetime_value)} ت
+                      {toGroupedPersianDigits(c.total_lifetime_value)} ت
                     </span>
                   </div>
                 ))

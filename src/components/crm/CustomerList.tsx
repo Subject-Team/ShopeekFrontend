@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Phone, Mail, ChevronLeft, Plus, Lock } from 'lucide-react';
 import { Customer } from '../../types';
-import { formatPersianNumber } from '../../utils';
+import { toGroupedPersianDigits } from "../../utils/persian";
 
 interface CustomerListProps {
   customers: Customer[];
@@ -93,12 +93,12 @@ export const CustomerList: React.FC<CustomerListProps> = ({
                   </div>
                 </div>
                 <span className="text-xs px-2 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 font-bold shrink-0 whitespace-nowrap">
-                  {formatPersianNumber(c.total_lifetime_value || 0)} ت
+                  {toGroupedPersianDigits(c.total_lifetime_value || 0)} ت
                 </span>
               </div>
 
               <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <span>{formatPersianNumber(c.transactions_count)} فاکتور</span>
+                <span>{toGroupedPersianDigits(c.transactions_count)} فاکتور</span>
                 <button className="text-brand-600 dark:text-brand-400 font-semibold flex items-center gap-1">
                   <span>مشاهده</span>
                   <ChevronLeft className="w-3.5 h-3.5" />
@@ -161,10 +161,10 @@ export const CustomerList: React.FC<CustomerListProps> = ({
                     </div>
                   </td>
                   <td className="p-3.5 font-bold text-slate-700 dark:text-slate-300">
-                    {formatPersianNumber(c.transactions_count)} فاکتور
+                    {toGroupedPersianDigits(c.transactions_count)} فاکتور
                   </td>
                   <td className="p-3.5 font-extrabold text-emerald-600 dark:text-emerald-400">
-                    {formatPersianNumber(c.total_lifetime_value || 0)} تومان
+                    {toGroupedPersianDigits(c.total_lifetime_value || 0)} تومان
                   </td>
                   <td data-guide={idx === 0 ? 'customers-row-action' : undefined} className="p-3.5">
                     <button className="flex items-center gap-1 text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline">

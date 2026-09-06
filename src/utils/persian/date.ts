@@ -3,14 +3,16 @@
  * Pure mathematical algorithms with zero external dependencies.
  */
 
-import { formatPersianNumber } from './index';
+import { toPersianDigits } from ".";
 
+/** Jalali calendar date parts: year, month 1-12, day 1-31. */
 export interface JalaliDate {
   jy: number; // Jalali year (e.g. 1405)
   jm: number; // Jalali month (1 to 12)
   jd: number; // Jalali day of month (1 to 31)
-}
+};
 
+/** Persian month names, indexed by Jalali month minus 1 (فروردین = index 0). */
 export const PERSIAN_MONTH_NAMES = [
   'فروردین',
   'اردیبهشت',
@@ -26,6 +28,7 @@ export const PERSIAN_MONTH_NAMES = [
   'اسفند',
 ];
 
+/** Single-letter Persian weekday abbreviations, Saturday-first (ش = شنبه). */
 export const PERSIAN_WEEKDAY_NAMES = [
   'ش', // شنبه (Saturday = 0)
   'ی', // یکشنبه (Sunday = 1)
@@ -42,7 +45,7 @@ export const PERSIAN_WEEKDAY_NAMES = [
 export function isJalaliLeapYear(jy: number): boolean {
   const mod = jy % 33;
   return [1, 5, 9, 13, 17, 22, 26, 30].includes(mod);
-}
+};
 
 /**
  * Returns the number of days in a given Jalali month.
@@ -51,7 +54,7 @@ export function getJalaliMonthDays(jy: number, jm: number): number {
   if (jm <= 6) return 31;
   if (jm <= 11) return 30;
   return isJalaliLeapYear(jy) ? 30 : 29;
-}
+};
 
 /**
  * Converts Gregorian date (year, month 1-12, day 1-31) to Jalali.
@@ -59,8 +62,7 @@ export function getJalaliMonthDays(jy: number, jm: number): number {
 export function gregorianToJalali(gy: number, gm: number, gd: number): JalaliDate {
   const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
   const gy2 = gm > 2 ? gy + 1 : gy;
-  let days =
-    355666 +
+  let days = 355666 +
     365 * gy +
     Math.floor((gy2 + 3) / 4) -
     Math.floor((gy2 + 99) / 100) +
@@ -89,15 +91,14 @@ export function gregorianToJalali(gy: number, gm: number, gd: number): JalaliDat
   }
 
   return { jy, jm, jd };
-}
+};
 
 /**
  * Converts Jalali date (year, month 1-12, day 1-31) to Gregorian date { gy, gm, gd }.
  */
-export function jalaliToGregorian(jy: number, jm: number, jd: number): { gy: number; gm: number; gd: number } {
+export function jalaliToGregorian(jy: number, jm: number, jd: number): { gy: number; gm: number; gd: number; } {
   const jy_adj = jy + 1595;
-  let days =
-    -355668 +
+  let days = -355668 +
     365 * jy_adj +
     Math.floor(jy_adj / 33) * 8 +
     Math.floor(((jy_adj % 33) + 3) / 4) +
@@ -139,7 +140,7 @@ export function jalaliToGregorian(jy: number, jm: number, jd: number): { gy: num
   }
 
   return { gy, gm, gd: running_day };
-}
+};
 
 /**
  * Helper to convert Date object or 'YYYY-MM-DD' ISO string into JalaliDate.
@@ -153,7 +154,7 @@ export function toJalali(date: Date | string): JalaliDate {
     d = date;
   }
   return gregorianToJalali(d.getFullYear(), d.getMonth() + 1, d.getDate());
-}
+};
 
 /**
  * Formats a Date or 'YYYY-MM-DD' string to a Jalali date string (e.g. '1405/06/09').
@@ -163,7 +164,7 @@ export function formatJalaliNumeric(date: Date | string): string {
   const mm = String(j.jm).padStart(2, '0');
   const dd = String(j.jd).padStart(2, '0');
   return `${j.jy}/${mm}/${dd}`;
-}
+};
 
 /**
  * Returns Gregorian date as 'YYYY-MM-DD' string.
@@ -173,7 +174,7 @@ export function toIsoDate(d: Date): string {
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
-}
+};
 
 /**
  * Converts JalaliDate to Gregorian Date object.
@@ -181,7 +182,7 @@ export function toIsoDate(d: Date): string {
 export function jalaliToDate(j: JalaliDate): Date {
   const { gy, gm, gd } = jalaliToGregorian(j.jy, j.jm, j.jd);
   return new Date(gy, gm - 1, gd);
-}
+};
 
 /**
  * Returns weekday index in Persian week:
@@ -190,7 +191,7 @@ export function jalaliToDate(j: JalaliDate): Date {
 export function getPersianDayOfWeek(date: Date): number {
   const jsDay = date.getDay(); // 0 is Sunday, 6 is Saturday
   return (jsDay + 1) % 7;
-}
+};
 
 /**
  * Calculates absolute day difference between two 'YYYY-MM-DD' strings (inclusive: dayCount = diff + 1).
@@ -200,7 +201,7 @@ export function getDayDifference(startIso: string, endIso: string): number {
   const e = new Date(endIso + 'T00:00:00');
   const diffTime = e.getTime() - s.getTime();
   return Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
-}
+};
 
 /**
  * Formats date range according to user preference:
@@ -214,13 +215,85 @@ export function formatJalaliRangeLabel(startIso: string, endIso: string): string
   const startMonth = PERSIAN_MONTH_NAMES[jStart.jm - 1];
   const endMonth = PERSIAN_MONTH_NAMES[jEnd.jm - 1];
 
-  const startDay = formatPersianNumber(jStart.jd);
-  const endDay = formatPersianNumber(jEnd.jd);
+  const startDay = toPersianDigits(jStart.jd);
+  const endDay = toPersianDigits(jEnd.jd);
 
   if (jStart.jm === jEnd.jm && jStart.jy === jEnd.jy) {
     return `${startDay} تا ${endDay} ${endMonth}`;
   }
 
   return `${startDay} ${startMonth} تا ${endDay} ${endMonth}`;
-}
+};
 
+/**
+ * Formats a date input (ISO string or `Date`) as a Persian (Jalali) calendar
+ * date via `Intl` with Persian digits.
+ *
+ * - `namedMonths` uses month names (مرداد) instead of numeric (۸).
+ * - `showTime` appends the clock time (`hour12: false`).
+ *
+ * Returns `'نامشخص'` for empty input and the raw string when unparseable.
+ * Note: for backend timestamps stored without a `Z` suffix, prefer
+ * `utcStringToPersianDate` so they are interpreted as UTC.
+ */
+export const toPersianDate = (
+  dateInput: string | Date | null | undefined,
+  namedMonths: boolean = false,
+  showTime: boolean = false
+): string => {
+  if (!dateInput) return 'نامشخص';
+  try {
+    const d = new Date(dateInput);
+    if (isNaN(d.getTime())) return String(dateInput);
+
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: namedMonths ? 'long' : 'numeric',
+      day: 'numeric',
+    };
+
+    if (showTime) {
+      options.hour = 'numeric';
+      options.minute = 'numeric';
+      options.second = 'numeric';
+      options.hour12 = false;
+    }
+
+    return new Intl.DateTimeFormat('fa-IR-u-ca-persian', options).format(d);
+  } catch {
+    return String(dateInput);
+  }
+};
+
+/**
+ * Formats a UTC-naive or ISO datetime string as a Persian (Jalali) calendar
+ * date via `Intl` — e.g. `'2026-03-21T10:00:00'` → `'۱ فروردین ۱۴۰۵'` when
+ * `namedMonths` is true, otherwise numeric Persian digits with `/` separators.
+ *
+ * Appends `Z` when missing so legacy timestamp strings (stored without a
+ * timezone suffix) are interpreted as UTC, matching backend persistence.
+ * Returns `'نامشخص'` for empty input and the raw string when unparseable.
+ */
+export const utcStringToPersianDate = (
+  dateStr: string,
+  namedMonths: boolean = false,
+  showTime: boolean = false
+): string => {
+  return toPersianDate(dateStr.endsWith('Z') ? dateStr : dateStr + 'Z', namedMonths, showTime);
+};
+
+/**
+ * Formats a time-of-day string (datetime or `HH:mm[:ss]`) as a localized
+ * Persian-digit clock time via `toLocaleTimeString('fa-IR')`.
+ */
+export const toPersianTime = (timeStr: string): string => {
+  return new Date(timeStr).toLocaleTimeString('fa-IR');
+};
+
+/**
+ * Like `toPersianTime`, but appends `Z` when missing so legacy timestamp
+ * strings without a timezone suffix are interpreted as UTC.
+ */
+export const utcStringToPersianTime = (timeStr: string): string => {
+  return toPersianTime(timeStr.endsWith('Z') ? timeStr : timeStr + 'Z');
+};

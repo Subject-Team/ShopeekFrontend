@@ -3,7 +3,7 @@ import { Sparkles, RefreshCw, CheckCircle2, History, Bot } from 'lucide-react';
 import { AIAdvisory } from '../../types';
 import { triggerManualAdvisory } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
-import { formatPersianTimeAsUTC } from '../../utils';
+import { utcStringToPersianTime } from "../../utils/persian/date";
 import { AdvisoryHistoryModal } from './AdvisoryHistoryModal';
 
 interface AdvisoryCardProps {
@@ -99,7 +99,7 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = 
 
           {advisory?.generated_at && (
             <span suppressHydrationWarning className="shrink-0 text-slate-400 dark:text-slate-500">
-              بروزرسانی: {formatPersianTimeAsUTC(advisory.generated_at)}
+              بروزرسانی: {utcStringToPersianTime(advisory.generated_at)}
             </span>
           )}
         </div>

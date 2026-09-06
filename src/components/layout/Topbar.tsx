@@ -16,7 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { getPageTitle } from '../../utils/routes';
 import { JalaliDateRangeModal } from '../common/JalaliDateRangeModal';
-import { formatJalaliRangeLabel } from '../../utils/jalali';
+import { formatJalaliRangeLabel } from "../../utils/persian/date";
 
 interface TopbarProps {
   onMenuClick: () => void;

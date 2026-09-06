@@ -8,7 +8,7 @@ import {
   Lightbulb,
 } from 'lucide-react';
 import { useGuide } from '../../context/GuideContext';
-import { formatPersianNumber } from '../../utils';
+import { toPersianDigits } from "../../utils/persian";
 
 interface TargetRect {
   top: number;
@@ -273,7 +273,7 @@ export const GuideSpotlight: React.FC = () => {
 
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300">
-                گام {formatPersianNumber(currentStepIndex + 1)} از {formatPersianNumber(totalSteps)}
+                گام {toPersianDigits(currentStepIndex + 1)} از {toPersianDigits(totalSteps)}
               </span>
               <button
                 onClick={closeGuide}
@@ -321,8 +321,8 @@ export const GuideSpotlight: React.FC = () => {
                     ? 'w-2.5 bg-brand-300 dark:bg-brand-700'
                     : 'w-1.5 bg-slate-200 dark:bg-slate-700'
                 }`}
-                title={`گام ${formatPersianNumber(idx + 1)}`}
-                aria-label={`رفتن به گام ${formatPersianNumber(idx + 1)}`}
+                title={`گام ${toPersianDigits(idx + 1)}`}
+                aria-label={`رفتن به گام ${toPersianDigits(idx + 1)}`}
               />
             ))}
           </div>

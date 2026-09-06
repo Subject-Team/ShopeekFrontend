@@ -1,6 +1,6 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, Sparkles, LucideIcon } from 'lucide-react';
-import { formatPersianNumber } from '../../utils';
+import { toPersianDigits, toGroupedPersianDigits } from "../../utils/persian";
 
 interface KpiCardProps {
   title: string;
@@ -56,7 +56,7 @@ export const KpiCard: React.FC<KpiCardProps> = ({
       {forecastValue != null && forecastValue > 0 && (
         <div className={`flex items-center gap-1.5 text-xs font-semibold mb-2 ${forecastColorStyles[color]}`}>
           <Sparkles className="w-3.5 h-3.5" />
-          <span>پیش‌بینی فردا: {formatPersianNumber(Math.round(forecastValue))}</span>
+          <span>پیش‌بینی فردا: {toGroupedPersianDigits(Math.round(forecastValue))}</span>
           {forecastLabel && <span className="text-slate-400 dark:text-slate-500 font-normal">{forecastLabel}</span>}
         </div>
       )}
@@ -65,7 +65,7 @@ export const KpiCard: React.FC<KpiCardProps> = ({
         <div className="flex items-center justify-between text-xs pt-3 border-t border-slate-100 dark:border-slate-800/80">
           <div className={`flex items-center gap-1 font-bold ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
             {isPositive ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
-            <span>{formatPersianNumber(changePercentage)}%{isPositive ? '+' : ''}</span>
+            <span>{toPersianDigits(changePercentage)}%{isPositive ? '+' : ''}</span>
           </div>
           <span className="text-slate-400 dark:text-slate-500">{subtitle || 'نسبت به دوره قبل'}</span>
         </div>

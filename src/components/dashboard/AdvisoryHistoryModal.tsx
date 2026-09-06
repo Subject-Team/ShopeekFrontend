@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Sparkles, ChevronDown, Lightbulb, Clock, History } from 'lucide-react';
 import { AIAdvisory } from '../../types';
-import { formatPersianDateAsUTC } from '../../utils';
+import { utcStringToPersianDate } from "../../utils/persian/date";
 
 interface AdvisoryHistoryModalProps {
   isOpen: boolean;
@@ -112,7 +112,7 @@ export const AdvisoryHistoryModal: React.FC<AdvisoryHistoryModalProps> = ({
                         <span className="hidden xs:flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
                           <Clock className="w-3 h-3" />
                           <span suppressHydrationWarning>
-                            {formatPersianDateAsUTC(item.generated_at, false, true)}
+                            {utcStringToPersianDate(item.generated_at, false, true)}
                           </span>
                         </span>
                       )}
@@ -152,7 +152,7 @@ export const AdvisoryHistoryModal: React.FC<AdvisoryHistoryModalProps> = ({
                         {item.generated_at && (
                           <div className="pt-2 border-t border-indigo-100/80 dark:border-indigo-900/40 flex items-center justify-end text-[10px] sm:text-[11px]">
                             <span suppressHydrationWarning className="font-medium text-slate-400 dark:text-slate-500">
-                              زمان تولید: {formatPersianDateAsUTC(item.generated_at, true, true)}
+                              زمان تولید: {utcStringToPersianDate(item.generated_at, true, true)}
                             </span>
                           </div>
                         )}

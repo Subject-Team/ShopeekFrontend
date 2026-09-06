@@ -14,13 +14,13 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { fetchSalesSuggestions, createInvoice } from '../../services/api';
 import type { SalesSuggestions } from '../../types';
-import { formatGroupedRealValue, formatPersianNumber, formatTomanWords } from '../../utils';
-import {
-  toJalali,
-  toIsoDate,
-  formatJalaliNumeric,
-  PERSIAN_MONTH_NAMES,
-} from '../../utils/jalali';
+import { toGroupedPersianDigits } from "../../utils/persian";
+import { formatTomaan } from "../../utils/persian";
+import { toPersianDigits } from "../../utils/persian";
+import { toIsoDate } from "../../utils/persian/date";
+import { formatJalaliNumeric } from "../../utils/persian/date";
+import { toJalali } from "../../utils/persian/date";
+import { PERSIAN_MONTH_NAMES } from "../../utils/persian/date";
 import { SuggestionDropdown } from '../common/SuggestionDropdown';
 import { JalaliCalendar } from '../common/JalaliCalendar';
 import { ModalOverlay } from '../common/ModalOverlay';
@@ -190,7 +190,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose }) =
                 : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
         }`}
       >
-        {formatPersianNumber(day)}
+        {toPersianDigits(day)}
       </button>
     );
   };
@@ -310,11 +310,11 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose }) =
               {realValue > 0 && (
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 rounded-2xl bg-white dark:bg-slate-800/80 border border-emerald-100 dark:border-emerald-900/40 text-sm">
                   <span className="text-emerald-600 dark:text-emerald-400 font-bold" dir="ltr">
-                    {formatGroupedRealValue(realValue)}
+                    {toGroupedPersianDigits(realValue)}
                   </span>
                   <span className="text-slate-500 dark:text-slate-400">معادل</span>
                   <span className="font-bold text-slate-900 dark:text-white">
-                    {formatTomanWords(realValue)}
+                    {formatTomaan(realValue)}
                   </span>
                 </div>
               )}
@@ -366,7 +366,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose }) =
                     <ChevronRight className="w-5 h-5" />
                   </button>
                   <span className="font-bold text-sm text-slate-800 dark:text-slate-100">
-                    {PERSIAN_MONTH_NAMES[viewMonth - 1]} {formatPersianNumber(viewYear)}
+                    {PERSIAN_MONTH_NAMES[viewMonth - 1]} {toPersianDigits(viewYear)}
                   </span>
                   <button
                     type="button"

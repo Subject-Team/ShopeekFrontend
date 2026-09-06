@@ -1,7 +1,7 @@
 import React from 'react';
 import { Loader2, MessageSquare, XCircle } from 'lucide-react';
 import type { TelegramSession } from '../../types';
-import { formatPersianDateAsUTC } from '../../utils';
+import { utcStringToPersianDate } from "../../utils/persian/date";
 
 const cardClass =
   'glass-card p-6 rounded-3xl shadow-xs bg-gradient-to-br from-indigo-50/70 via-white to-blue-50/50 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60';
@@ -51,7 +51,7 @@ export const TelegramSessionsCard: React.FC<TelegramSessionsCardProps> = ({
                 {t.telegram_chat_id}
               </p>
               <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
-                متصل از {formatPersianDateAsUTC(t.created_at, true)}
+                متصل از {utcStringToPersianDate(t.created_at, true)}
               </p>
             </div>
             {!readOnly && (

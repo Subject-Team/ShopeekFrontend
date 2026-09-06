@@ -9,7 +9,9 @@ import {
   CartesianGrid
 } from 'recharts';
 import { RevenuePoint } from '../../types';
-import { formatPersianDate, formatCompressedToman, formatPersianNumber } from '../../utils';
+import { shortTomaanWithUnit } from "../../utils/persian";
+import { toPersianDate } from "../../utils/persian/date";
+import { toPersianDigits, toGroupedPersianDigits } from "../../utils/persian";
 import { useIsMobile } from '../../hooks/useIsMobile';
 
 interface RevenueChartProps {
@@ -30,7 +32,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
   useEffect(() => {
     const translated = data.map(item => ({
       ...item,
-      date: formatPersianDate(item.date)
+      date: toPersianDate(item.date)
     }));
     setFormattedData(translated);
   }, [data]);
@@ -47,7 +49,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
 
       if (filteredPayload.length === 0) return null;
 
-      const persianLabel = formatPersianDate(label);
+      const persianLabel = toPersianDate(label);
 
       return (
         <div className="glass-card p-3 rounded-xl shadow-xl text-xs space-y-1.5 border border-slate-200 dark:border-slate-700">
@@ -59,7 +61,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
                 <span>{entry.name}:</span>
               </span>
               <span className="font-extrabold text-slate-900 dark:text-white">
-                {formatPersianNumber(Number(entry.value))} تومان
+                {toGroupedPersianDigits(Number(entry.value))} تومان
               </span>
             </div>
           ))}
@@ -142,7 +144,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
                 textAnchor: 'start',
                 direction: 'rtl'
               }}
-              tickFormatter={formatCompressedToman}
+              tickFormatter={shortTomaanWithUnit}
               tickLine={false}
               axisLine={{ stroke: '#cbd5e1' }}
               tickMargin={3}

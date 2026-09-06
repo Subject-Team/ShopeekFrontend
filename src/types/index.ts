@@ -176,7 +176,11 @@ export interface ChangePasswordResponse {
 
 export interface SalesSuggestions {
   products: { last: string | null; top3: string[]; names: string[] };
-  customers: { last: string | null; top3: string[]; items: { id: string; name: string; email?: string | null }[] };
+  customers: {
+    last: string | null;
+    top3: string[];
+    items: { id: string; name: string; email?: string | null }[]
+  };
 }
 
 export interface CreateInvoicePayload {

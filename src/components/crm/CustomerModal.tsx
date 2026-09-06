@@ -3,7 +3,8 @@ import { X, Phone, Mail, MessageSquare, Send, Clock, Lock } from 'lucide-react';
 import { Customer } from '../../types';
 import { addCustomerInteraction } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
-import { formatPersianDateAsUTC, formatPersianNumber } from '../../utils';
+import { utcStringToPersianDate } from "../../utils/persian/date";
+import { toGroupedPersianDigits } from "../../utils/persian";
 import { ModalOverlay } from '../common/ModalOverlay';
 
 interface CustomerModalProps {
@@ -52,7 +53,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
               <div className="min-w-0">
                 <h3 className="font-extrabold text-slate-900 dark:text-white text-lg truncate">{customer.name}</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-                  ارزش کل طول عمر (LTV): {formatPersianNumber(customer.total_lifetime_value || 0)} تومان
+                  ارزش کل طول عمر (LTV): {toGroupedPersianDigits(customer.total_lifetime_value || 0)} تومان
                 </p>
               </div>
             </div>
@@ -157,7 +158,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
                         </p>
                         <span className="text-[10px] text-slate-400 flex items-center gap-1">
                           <Clock className="w-3 h-3 shrink-0" />
-                          <span className="truncate">{formatPersianDateAsUTC(item.timestamp, false, true)}</span>
+                          <span className="truncate">{utcStringToPersianDate(item.timestamp, false, true)}</span>
                         </span>
                       </div>
                     </div>

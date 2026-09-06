@@ -1,7 +1,8 @@
 import React from 'react';
 import { Calendar, ShieldCheck, Clock, AlertTriangle } from 'lucide-react';
 import { User } from '../../types';
-import { formatPersianDate, formatPersianNumber } from '../../utils';
+import { toPersianDate } from "../../utils/persian/date";
+import { toGroupedPersianDigits } from "../../utils/persian";
 
 interface SubscriptionStatusCardProps {
   user: User | null;
@@ -47,7 +48,7 @@ export const SubscriptionStatusCard: React.FC<SubscriptionStatusCardProps> = ({ 
             <span className="text-emerald-600 dark:text-emerald-400">اشتراک نامحدود</span>
           ) : isActive ? (
             <span className="text-brand-600 dark:text-brand-400">
-              {formatPersianNumber(remainingDays)} روز باقی مانده
+              {toGroupedPersianDigits(remainingDays)} روز باقی مانده
             </span>
           ) : (
             <span className="text-rose-600 dark:text-rose-400">بدون اعتبار (۰ روز)</span>
@@ -59,7 +60,7 @@ export const SubscriptionStatusCard: React.FC<SubscriptionStatusCardProps> = ({ 
         <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-0.5">
           <span>تاریخ انقضای اشتراک:</span>
           <span className="font-bold text-slate-700 dark:text-slate-300">
-            {expiresAt ? formatPersianDate(expiresAt, true) : 'تعریف‌نشده (صفر)'}
+            {expiresAt ? toPersianDate(expiresAt, true) : 'تعریف‌نشده (صفر)'}
           </span>
         </div>
       )}

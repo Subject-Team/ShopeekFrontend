@@ -36,7 +36,7 @@ De-facto conventions for `frontend/`. No formatter or linter is enforced — typ
 
 - Tailwind classes in template literals, conditional classes via ternaries. No clsx/cn helpers — do not add dependencies.
 - RTL Persian UI: page-level `dir-rtl font-vazir`; UI strings are Persian inline in JSX, identifiers stay English.
-- Numbers/dates: use `formatPersianNumber` / `formatPersianDate` from `src/utils` — do not hand-roll `Intl.NumberFormat` locally.
+- Numbers/dates: import from `src/utils/persian`. Magnitude numbers (Toman amounts, counts, day windows, sizes) use `toGroupedPersianDigits` (`formatTomaan` for full monetary display); exemptions stay on `toPersianDigits` — phone numbers, OTP codes, calendar/Jalali date digits, guide step counters, and percentages. Do not hand-roll `Intl.NumberFormat` locally. Tests are colocated in `src/utils/persian/__tests__/` (`persian.test.ts`, `date.test.ts`).
 
 ## Tests
 

@@ -1,11 +1,9 @@
 import React from 'react';
-import {
-  getJalaliMonthDays,
-  jalaliToGregorian,
-  toIsoDate,
-  getPersianDayOfWeek,
-  PERSIAN_WEEKDAY_NAMES,
-} from '../../utils/jalali';
+import { getPersianDayOfWeek } from "../../utils/persian/date";
+import { toIsoDate } from "../../utils/persian/date";
+import { jalaliToGregorian } from "../../utils/persian/date";
+import { getJalaliMonthDays } from "../../utils/persian/date";
+import { PERSIAN_WEEKDAY_NAMES } from "../../utils/persian/date";
 
 interface JalaliCalendarProps {
   viewYear: number;

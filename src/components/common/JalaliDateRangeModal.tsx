@@ -8,15 +8,13 @@ import {
   AlertCircle,
   Check,
 } from 'lucide-react';
-import {
-  toJalali,
-  jalaliToGregorian,
-  toIsoDate,
-  PERSIAN_MONTH_NAMES,
-  getDayDifference,
-  formatJalaliRangeLabel,
-} from '../../utils/jalali';
-import { formatPersianNumber } from '../../utils';
+import { formatJalaliRangeLabel } from "../../utils/persian/date";
+import { getDayDifference } from "../../utils/persian/date";
+import { toIsoDate } from "../../utils/persian/date";
+import { toJalali } from "../../utils/persian/date";
+import { jalaliToGregorian } from "../../utils/persian/date";
+import { PERSIAN_MONTH_NAMES } from "../../utils/persian/date";
+import { toPersianDigits } from "../../utils/persian";
 import { JalaliCalendar } from './JalaliCalendar';
 
 interface JalaliDateRangeModalProps {
@@ -161,7 +159,7 @@ export const JalaliDateRangeModal: React.FC<JalaliDateRangeModalProps> = ({
             : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'
         } ${isToday && !isStart && !isEnd ? 'border border-brand-500/50' : ''}`}
       >
-        {formatPersianNumber(day)}
+        {toPersianDigits(day)}
       </button>
     );
   };
@@ -260,7 +258,7 @@ export const JalaliDateRangeModal: React.FC<JalaliDateRangeModalProps> = ({
           </span>
           <span className="font-bold text-brand-600 dark:text-brand-400">
             {tempStart && tempEnd
-              ? `${formatJalaliRangeLabel(tempStart, tempEnd)} (${formatPersianNumber(
+              ? `${formatJalaliRangeLabel(tempStart, tempEnd)} (${toPersianDigits(
                   getDayDifference(tempStart, tempEnd)
                 )} روز)`
               : tempStart
@@ -288,7 +286,7 @@ export const JalaliDateRangeModal: React.FC<JalaliDateRangeModalProps> = ({
             <ChevronRight className="w-4 h-4" />
           </button>
           <span className="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-200">
-            {PERSIAN_MONTH_NAMES[viewMonth - 1]} {formatPersianNumber(viewYear)}
+            {PERSIAN_MONTH_NAMES[viewMonth - 1]} {toPersianDigits(viewYear)}
           </span>
           <button
             type="button"

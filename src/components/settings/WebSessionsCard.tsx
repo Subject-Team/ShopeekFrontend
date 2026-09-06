@@ -2,7 +2,8 @@ import React from 'react';
 import { Loader2, LogOut, RefreshCcw } from 'lucide-react';
 import { deviceIcon } from '../../utils/device';
 import type { WebSession } from '../../types';
-import { formatPersianDateAsUTC, formatPersianTimeAsUTC } from '../../utils';
+import { utcStringToPersianTime } from "../../utils/persian/date";
+import { utcStringToPersianDate } from "../../utils/persian/date";
 
 const cardClass =
   'glass-card p-6 rounded-3xl shadow-xs bg-gradient-to-br from-indigo-50/70 via-white to-blue-50/50 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60';
@@ -70,7 +71,7 @@ export const WebSessionsCard: React.FC<WebSessionsCardProps> = ({
                   <p className="font-bold text-slate-800 dark:text-slate-100 text-sm truncate">{s.device_label}</p>
                 </div>
                 <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
-                  آخرین فعالیت: {formatPersianDateAsUTC(s.last_seen_at, true)} ساعت {formatPersianTimeAsUTC(s.last_seen_at)}
+                  آخرین فعالیت: {utcStringToPersianDate(s.last_seen_at, true)} ساعت {utcStringToPersianTime(s.last_seen_at)}
                 </p>
               </div>
               {!isCurrent && !readOnly && (

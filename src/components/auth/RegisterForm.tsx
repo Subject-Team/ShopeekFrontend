@@ -8,7 +8,7 @@ import { PasswordInput } from './PasswordInput';
 import { PasswordStrengthMeter } from '../common/PasswordStrengthMeter';
 import { TurnstileWidget } from './TurnstileWidget';
 import { SubmitButton } from './SubmitButton';
-import { formatPersianNumber } from '../../utils';
+import { toPersianDigits } from "../../utils/persian";
 
 interface RegisterFormProps {
   form: LoginPageForm;
@@ -122,7 +122,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ form }) => {
               <div className="flex items-center justify-between">
                 <p className="text-xs text-slate-600">
                   کد تأیید به{' '}
-                  <span className="font-bold text-slate-800">{formatPersianNumber(phone)}</span> ارسال شد.
+                  <span className="font-bold text-slate-800">{toPersianDigits(phone)}</span> ارسال شد.
                 </p>
                 <button
                   type="button"
@@ -162,7 +162,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ form }) => {
                   }`}
                 >
                   {otpCooldown > 0
-                    ? `ارسال مجدد کد (${formatPersianNumber(otpCooldown)}ثانیه)`
+                    ? `ارسال مجدد کد (${toPersianDigits(otpCooldown)}ثانیه)`
                     : 'ارسال مجدد کد'}
                 </button>
               </div>
@@ -173,7 +173,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ form }) => {
           {registerStep === 'details' && (
             <form onSubmit={handleRegisterDetails} noValidate className="space-y-4">
               <p className="text-xs text-emerald-700 text-center font-medium bg-emerald-50 rounded-xl py-2 border border-emerald-200">
-                شماره {formatPersianNumber(phone)} تأیید شد. اکنون اطلاعات حساب خود را تکمیل کنید.
+                شماره {toPersianDigits(phone)} تأیید شد. اکنون اطلاعات حساب خود را تکمیل کنید.
               </p>
               <button
                 type="button"
