@@ -299,7 +299,7 @@ export const BusinessProfileForm: React.FC<BusinessProfileFormProps> = ({
                 value={monthlyRevenue}
                 onChange={(e) => setMonthlyRevenue(e.target.value)}
                 placeholder="مثال: ۲۰۰۰۰۰۰۰"
-                className="w-full pl-12 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs focus:outline-hidden focus:ring-2 focus:ring-indigo-500 font-mono"
+                className="w-full pl-12 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
               />
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 font-bold">
                 تومان
