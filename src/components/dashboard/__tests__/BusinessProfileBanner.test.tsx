@@ -110,10 +110,10 @@ describe('BusinessProfileBanner Component', () => {
     expect(Number(stored)).toBeGreaterThan(0);
   });
 
-  it('does NOT render if dismissed within the 7-day cooldown', () => {
-    // 3 days ago
-    const threeDaysAgo = Date.now() - 3 * 24 * 60 * 60 * 1000;
-    localStorage.setItem('shopeek_dismiss_business_profile_banner_time', String(threeDaysAgo));
+  it('does NOT render if dismissed within the 3-day cooldown', () => {
+    // 2 days ago
+    const twoDaysAgo = Date.now() - 2 * 24 * 60 * 60 * 1000;
+    localStorage.setItem('shopeek_dismiss_business_profile_banner_time', String(twoDaysAgo));
 
     const { container } = render(
       <MemoryRouter>
@@ -124,10 +124,10 @@ describe('BusinessProfileBanner Component', () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it('reappears if 7 days have passed since dismissal', () => {
-    // 8 days ago
-    const eightDaysAgo = Date.now() - 8 * 24 * 60 * 60 * 1000;
-    localStorage.setItem('shopeek_dismiss_business_profile_banner_time', String(eightDaysAgo));
+  it('reappears if 3 days have passed since dismissal', () => {
+    // 4 days ago
+    const fourDaysAgo = Date.now() - 4 * 24 * 60 * 60 * 1000;
+    localStorage.setItem('shopeek_dismiss_business_profile_banner_time', String(fourDaysAgo));
 
     render(
       <MemoryRouter>

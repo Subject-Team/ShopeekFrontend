@@ -4,7 +4,7 @@ import { ArrowLeft, Sparkles, X } from 'lucide-react';
 import type { BusinessProfile } from '../../types';
 
 const DISMISS_KEY = 'shopeek_dismiss_business_profile_banner_time';
-const DISMISS_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days cooldown
+const DISMISS_DURATION_MS = 3 * 24 * 60 * 60 * 1000; // 3 days cooldown
 
 interface BusinessProfileBannerProps {
   businessProfile?: BusinessProfile | null;
@@ -48,7 +48,7 @@ export const BusinessProfileBanner: React.FC<BusinessProfileBannerProps> = ({
       window.removeEventListener('shopeek_business_profile_updated' as any, handleUpdate);
   }, []);
 
-  // Check 7-day dismissal window
+  // Check 3-day dismissal window
   useEffect(() => {
     const checkDismissal = () => {
       const dismissedTimeStr = localStorage.getItem(DISMISS_KEY);
@@ -63,7 +63,7 @@ export const BusinessProfileBanner: React.FC<BusinessProfileBannerProps> = ({
       }
       const elapsed = Date.now() - dismissedTime;
       if (elapsed > DISMISS_DURATION_MS) {
-        // 7 days have passed -> restore banner
+        // 3 days have passed -> restore banner
         localStorage.removeItem(DISMISS_KEY);
         setIsDismissed(false);
       } else {
@@ -83,7 +83,7 @@ export const BusinessProfileBanner: React.FC<BusinessProfileBannerProps> = ({
     navigate('/dashboard/settings?tab=business_profile');
   };
 
-  // If completed or dismissed within the 7-day period, hide banner
+  // If completed or dismissed within the 3-day period, hide banner
   const completed = isProfileCompleted(profile);
   if (completed || isDismissed) {
     return null;
