@@ -6,10 +6,18 @@ import { RevenueChart } from '../components/dashboard/RevenueChart';
 import { AdvisoryCard } from '../components/dashboard/AdvisoryCard';
 import { SubscriptionWarningBanner } from '../components/dashboard/SubscriptionWarningBanner';
 import { SubscriptionStatusCard } from '../components/dashboard/SubscriptionStatusCard';
+import { BusinessProfileBanner } from '../components/dashboard/BusinessProfileBanner';
 import { usePageContext } from '../context/PageContext';
 import { useAuth } from '../context/AuthContext';
-import { fetchKPISummary, fetchRevenueTrend, fetchLatestAdvisory, fetchAdvisoryHistory, fetchCustomers } from '../services/api';
-import { KPISummary, RevenuePoint, AIAdvisory, Customer } from '../types';
+import {
+  fetchKPISummary,
+  fetchRevenueTrend,
+  fetchLatestAdvisory,
+  fetchAdvisoryHistory,
+  fetchCustomers,
+  fetchBusinessProfile,
+} from '../services/api';
+import { KPISummary, RevenuePoint, AIAdvisory, Customer, BusinessProfile } from '../types';
 import { toGroupedPersianDigits } from "../utils/persian";
 import { formatJalaliRangeLabel } from "../utils/persian/date";
 import { SEO } from '../components/common/SEO';
@@ -24,22 +32,25 @@ export const DashboardPage: React.FC = () => {
   const [advisory, setAdvisory] = useState<AIAdvisory | null>(null);
   const [advisoryHistory, setAdvisoryHistory] = useState<AIAdvisory[]>([]);
   const [topCustomers, setTopCustomers] = useState<Customer[]>([]);
+  const [businessProfile, setBusinessProfile] = useState<BusinessProfile | null>(null);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState<boolean>(false);
 
   const loadDashboardData = async () => {
     try {
-      const [kpiRes, trendRes, advRes, custRes, historyRes] = await Promise.all([
+      const [kpiRes, trendRes, advRes, custRes, historyRes, bizRes] = await Promise.all([
         fetchKPISummary(dateRangeDays, startDate, endDate),
         fetchRevenueTrend(dateRangeDays, startDate, endDate),
         fetchLatestAdvisory(),
         fetchCustomers(),
-        fetchAdvisoryHistory()
+        fetchAdvisoryHistory(),
+        fetchBusinessProfile().catch(() => null),
       ]);
       setKpi(kpiRes);
       setTrend(trendRes);
       setAdvisory(advRes);
       setAdvisoryHistory(historyRes);
       setTopCustomers(custRes.slice(0, 5));
+      if (bizRes) setBusinessProfile(bizRes);
     } catch (err) {
       console.error(err);
     }
@@ -75,6 +86,9 @@ export const DashboardPage: React.FC = () => {
 
       {/* 7-Day Expiration Warning Banner (if applicable) */}
       <SubscriptionWarningBanner user={user} />
+
+      {/* Secondary Business Profile Supplementary Reminder Banner */}
+      <BusinessProfileBanner businessProfile={businessProfile} />
 
       {/* 3-Hour AI Advisory Widget */}
       <div data-guide="dashboard-advisory">

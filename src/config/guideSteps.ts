@@ -69,6 +69,16 @@ export const GUIDE_CONFIGS: Record<string, PageGuideConfig> = {
         placement: 'top',
       },
       {
+        id: 'dashboard-business-profile',
+        targetSelector: '[data-guide="dashboard-business-profile-banner"]',
+        title: 'تکمیل اطلاعات تکمیلی کسب‌وکار',
+        description: 'تکمیل این فرم به ما کمک می‌کند خدمات، هوش مصنوعی و گزارش‌های سامانه را متناسب با نیازهای اختصاصی شما بهبود دهیم. شما می‌توانید این اطلاعات را در هر زمان ویرایش کنید.',
+        tips: [
+          'در صورت تمایل می‌توانید با کلیک روی بنر، اطلاعات صنف و ابعاد فروش خود را در بخش تنظیمات تکمیل فرمایید.',
+        ],
+        placement: 'bottom',
+      },
+      {
         id: 'dashboard-ingestion-cta',
         targetSelector: '[data-guide="dashboard-ingestion-cta"]',
         title: 'ورود سریع فاکتورها',
@@ -192,6 +202,16 @@ export const GUIDE_CONFIGS: Record<string, PageGuideConfig> = {
         targetSelector: '[data-guide="settings-profile"]',
         title: 'اطلاعات حساب کاربری',
         description: 'مشخصات فردی، ایمیل ثبت‌شده و وضعیت دسترسی یا اشتراک حساب در این کارت قابل مشاهده است.',
+        placement: 'bottom',
+      },
+      {
+        id: 'settings-business-profile',
+        targetSelector: '[data-guide="settings-tab-business-profile"]',
+        title: 'اطلاعات تکمیلی کسب‌وکار',
+        description: 'تکمیل این فرم به ما کمک می‌کند تا خدمات و امکانات سامانه را متناسب با نیازهای اختصاصی صنف شما بهبود دهیم. شما می‌توانید این اطلاعات را در هر زمان ویرایش کنید.',
+        tips: [
+          'حوزه کاری، ابعاد سفارشات و مبالغ ماهانه و لینک‌های ارتباطی در این فرم قرار دارند.',
+        ],
         placement: 'bottom',
       },
       {

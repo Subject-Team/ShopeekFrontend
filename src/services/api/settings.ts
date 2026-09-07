@@ -1,4 +1,4 @@
-import type { SettingsData } from '../../types';
+import type { SettingsData, BusinessProfile, BusinessProfileUpdatePayload } from '../../types';
 import { authFetch, getWebSessionId } from './client';
 
 const API_BASE = '/api/v1';
@@ -47,3 +47,25 @@ export const unlinkTelegramSession = async (sessionId: string): Promise<void> =>
     throw new Error(err.detail || 'خطا در قطع اتصال ربات تلگرام');
   }
 };
+
+export const fetchBusinessProfile = async (): Promise<BusinessProfile> => {
+  const res = await authFetch(`${API_BASE}/settings/business-profile`);
+  if (!res.ok) throw new Error('خطا در دریافت اطلاعات تکمیلی کسب‌وکار');
+  return res.json();
+};
+
+export const updateBusinessProfile = async (
+  payload: BusinessProfileUpdatePayload
+): Promise<BusinessProfile> => {
+  const res = await authFetch(`${API_BASE}/settings/business-profile`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در ذخیره اطلاعات تکمیلی' }));
+    throw new Error(err.detail || 'خطا در ذخیره اطلاعات تکمیلی');
+  }
+  return res.json();
+};
+

@@ -156,10 +156,42 @@ export interface TelegramSession {
   created_at: string;
 }
 
+export interface BusinessLinkItem {
+  id?: string;
+  type: 'website' | 'telegram' | 'instagram' | 'other';
+  url: string;
+}
+
+export interface BusinessProfile {
+  id?: string | null;
+  user_id?: string | null;
+  category: string | null;
+  category_other: string | null;
+  monthly_orders: number | null;
+  monthly_revenue: number | null;
+  business_type: 'goods' | 'services' | null;
+  is_b2b: boolean;
+  links: BusinessLinkItem[];
+  is_completed: boolean;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
+export interface BusinessProfileUpdatePayload {
+  category: string | null;
+  category_other: string | null;
+  monthly_orders: number | null;
+  monthly_revenue: number | null;
+  business_type: 'goods' | 'services' | null;
+  is_b2b: boolean;
+  links: BusinessLinkItem[];
+}
+
 export interface SettingsData {
   profile: User;
   web_sessions: WebSession[];
   telegram_sessions: TelegramSession[];
+  business_profile?: BusinessProfile | null;
 }
 
 export interface ChangePasswordPayload {

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ShieldCheck, User as UserIcon } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { Briefcase, ShieldCheck, User as UserIcon } from 'lucide-react';
 import {
   fetchSettings,
   revokeWebSession,
@@ -15,6 +16,7 @@ import { SEO } from '../components/common/SEO';
 import { PasswordForm } from '../components/settings/PasswordForm';
 import { WebSessionsCard } from '../components/settings/WebSessionsCard';
 import { TelegramSessionsCard } from '../components/settings/TelegramSessionsCard';
+import { BusinessProfileForm } from '../components/settings/BusinessProfileForm';
 
 const cardClass =
   'glass-card p-6 rounded-3xl shadow-xs bg-gradient-to-br from-indigo-50/70 via-white to-blue-50/50 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60';
@@ -30,7 +32,12 @@ export const SettingsPage: React.FC = () => {
   const { user } = useAuth();
   const readOnly = Boolean(user?.is_read_only);
   const { showToast } = useToast();
-  const [activeTab, setActiveTab] = useState<'account' | 'security'>('account');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<'account' | 'security' | 'business_profile'>(() => {
+    const tab = searchParams.get('tab');
+    if (tab === 'business_profile' || tab === 'security') return tab;
+    return 'account';
+  });
   const [data, setData] = useState<SettingsData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [revokingId, setRevokingId] = useState<string | null>(null);
@@ -40,7 +47,15 @@ export const SettingsPage: React.FC = () => {
   const currentStep = guide?.currentStep;
   const isGuideOpen = guide?.isGuideOpen;
 
-  // Auto-switch active tab when guide navigates between account and security sections
+  // Sync tab with URL search params if changed externally
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab === 'business_profile' || tab === 'security' || tab === 'account') {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  // Auto-switch active tab when guide navigates between sections
   useEffect(() => {
     if (!isGuideOpen || !currentStep) return;
     if (
@@ -51,6 +66,8 @@ export const SettingsPage: React.FC = () => {
       setActiveTab('security');
     } else if (currentStep.id === 'settings-profile') {
       setActiveTab('account');
+    } else if (currentStep.id === 'settings-business-profile') {
+      setActiveTab('business_profile');
     }
   }, [isGuideOpen, currentStep]);
 
@@ -125,6 +142,13 @@ export const SettingsPage: React.FC = () => {
         <button onClick={() => setActiveTab('account')} className={tabItemClass(activeTab === 'account')}>
           <UserIcon className="w-4 h-4" /> حساب کاربری
         </button>
+        <button
+          data-guide="settings-tab-business-profile"
+          onClick={() => setActiveTab('business_profile')}
+          className={tabItemClass(activeTab === 'business_profile')}
+        >
+          <Briefcase className="w-4 h-4" /> اطلاعات تکمیلی
+        </button>
         <button onClick={() => setActiveTab('security')} className={tabItemClass(activeTab === 'security')}>
           <ShieldCheck className="w-4 h-4" /> امنیت
         </button>
@@ -151,6 +175,16 @@ export const SettingsPage: React.FC = () => {
             )}
           </div>
         </div>
+      )}
+
+      {activeTab === 'business_profile' && (
+        <BusinessProfileForm
+          initialProfile={data?.business_profile}
+          readOnly={readOnly}
+          onSaved={(updated) => {
+            setData((prev) => (prev ? { ...prev, business_profile: updated } : prev));
+          }}
+        />
       )}
 
       {activeTab === 'security' && (

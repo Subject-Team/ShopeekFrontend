@@ -30,4 +30,6 @@ export {
   revokeWebSession,
   revokeAllOtherSessions,
   unlinkTelegramSession,
+  fetchBusinessProfile,
+  updateBusinessProfile,
 } from './api/settings';

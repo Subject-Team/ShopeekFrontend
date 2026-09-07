@@ -16,6 +16,8 @@ vi.mock('../../services/api', () => ({
   changePassword: vi.fn(),
   getWebSessionId: vi.fn(() => 'sess-current'),
   fetchMeApi: vi.fn(),
+  fetchBusinessProfile: vi.fn(),
+  updateBusinessProfile: vi.fn(),
 }));
 
 const mockSettingsData = {
@@ -24,6 +26,17 @@ const mockSettingsData = {
     email: 'user@shopeek.ir',
     full_name: 'محمد شاپیکی',
     is_subscription_active: true,
+  },
+  business_profile: {
+    id: 'bp-1',
+    category: 'apparel',
+    category_other: null,
+    monthly_orders: 50,
+    monthly_revenue: 15000000,
+    business_type: 'goods',
+    is_b2b: false,
+    links: [],
+    is_completed: true,
   },
   web_sessions: [
     {
@@ -109,14 +122,37 @@ describe('SettingsPage Component & Guide Integration', () => {
     expect(container.querySelector('[data-guide="settings-telegram"]')).toBeInTheDocument();
   });
 
-  it('automatically switches tab to security when guide advances to security steps', async () => {
+  it('renders business profile tab when clicked or opened via ?tab=business_profile', async () => {
+    const { container } = render(
+      <MemoryRouter initialEntries={['/dashboard/settings?tab=business_profile']}>
+        <AuthProvider>
+          <GuideProvider>
+            <ToastProvider>
+              <SettingsPage />
+            </ToastProvider>
+          </GuideProvider>
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('دسته‌بندی و حوزه کاری کسب‌وکار')).toBeInTheDocument();
+      expect(screen.getByText('تعداد سفارش حدودی در ماه')).toBeInTheDocument();
+      expect(screen.getByText('مجموع مبالغ سفارشات حدودی در ماه')).toBeInTheDocument();
+    });
+
+    expect(container.querySelector('[data-guide="settings-business-profile"]')).toBeInTheDocument();
+  });
+
+  it('automatically switches tab when guide advances between sections', async () => {
     // Helper component to trigger guide step changes
     const TestDriver: React.FC = () => {
       const { startGuide, goToStep } = useGuide();
       return (
         <div>
           <button onClick={() => startGuide('settings')}>Start Settings Guide</button>
-          <button onClick={() => goToStep(2)}>Jump to Password</button>
+          <button onClick={() => goToStep(2)}>Jump to Business Profile</button>
+          <button onClick={() => goToStep(3)}>Jump to Password</button>
           <button onClick={() => goToStep(1)}>Jump to Profile</button>
           <SettingsPage />
         </div>
@@ -142,7 +178,15 @@ describe('SettingsPage Component & Guide Integration', () => {
     // Start settings guide
     fireEvent.click(screen.getByText('Start Settings Guide'));
 
-    // Jump to step 2 (settings-password) -> should auto-switch tab to security
+    // Jump to step 2 (settings-business-profile) -> should auto-switch tab to business_profile
+    fireEvent.click(screen.getByText('Jump to Business Profile'));
+
+    await waitFor(() => {
+      expect(container.querySelector('[data-guide="settings-business-profile"]')).toBeInTheDocument();
+      expect(screen.getByText('دسته‌بندی و حوزه کاری کسب‌وکار')).toBeInTheDocument();
+    });
+
+    // Jump to step 3 (settings-password) -> should auto-switch tab to security
     fireEvent.click(screen.getByText('Jump to Password'));
 
     await waitFor(() => {
