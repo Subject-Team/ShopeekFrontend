@@ -795,7 +795,7 @@ const ErrorsTab: React.FC = () => {
                           <div>
                             <span className="text-slate-500 dark:text-slate-400">جزئیات: </span>
                             <pre className="mt-1 p-2 rounded bg-slate-100 dark:bg-slate-900 text-[11px] text-slate-700 dark:text-slate-300 overflow-x-auto whitespace-pre-wrap">
-                              {err.detail}
+                              {typeof err.detail === 'string' ? err.detail : JSON.stringify(err.detail, null, 2)}
                             </pre>
                           </div>
                         )}
