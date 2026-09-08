@@ -59,6 +59,9 @@ export interface LoginPageForm {
   isConfirmPasswordValid: boolean;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isPreviousAccountDeleted: boolean;
+  setIsPreviousAccountDeleted: React.Dispatch<React.SetStateAction<boolean>>;
+  handleSwitchToRegisterWithPhone: () => void;
   resetLoginFields: () => void;
   handlePhonePasswordLogin: (e: React.FormEvent) => Promise<void>;
   handleLoginOtpSend: () => Promise<void>;
@@ -101,6 +104,7 @@ export const useLoginPage = (): LoginPageForm => {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
+  const [isPreviousAccountDeleted, setIsPreviousAccountDeleted] = useState<boolean>(false);
 
   /* ─── OTP cooldown ─── */
   const [otpResendTriggered, setOtpResendTriggered] = useState<boolean>(false);
@@ -140,6 +144,14 @@ export const useLoginPage = (): LoginPageForm => {
     setPhone('');
     setOtpCode('');
     setOtpResendTriggered(false);
+    setIsPreviousAccountDeleted(false);
+  }, []);
+
+  const handleSwitchToRegisterWithPhone = useCallback(() => {
+    setMode('register');
+    setRegisterStep('phone');
+    setErrorMessage(null);
+    setIsPreviousAccountDeleted(true);
   }, []);
 
   /* ────────────────────────────────────────────────
@@ -170,6 +182,9 @@ export const useLoginPage = (): LoginPageForm => {
       navigate('/dashboard');
     } catch (err: any) {
       const msg = err.message || 'خطا در برقراری ارتباط با سرور';
+      if (msg.includes('حذف شده است')) {
+        setIsPreviousAccountDeleted(true);
+      }
       setErrorMessage(msg);
       showToast(msg, 'error');
       setTurnstileToken(null);
@@ -193,6 +208,12 @@ export const useLoginPage = (): LoginPageForm => {
     setSubmitting(true);
     try {
       const res = await sendOtp(phone.trim(), turnstileToken);
+      if (res.is_deleted) {
+        setIsPreviousAccountDeleted(true);
+        setErrorMessage('این حساب کاربری حذف شده است. برای بازیابی با پشتیبانی تماس بگیرید یا می‌توانید یک حساب کاربری کاملاً جدید با این شماره ایجاد کنید.');
+        showToast('این حساب کاربری حذف شده است.', 'error');
+        return;
+      }
       if (!res.registered) {
         setMode('register');
         setRegisterStep('phone');
@@ -224,6 +245,12 @@ export const useLoginPage = (): LoginPageForm => {
     setSubmitting(true);
     try {
       const res = await verifyOtp(phone.trim(), otpCode);
+      if (res.is_deleted) {
+        setIsPreviousAccountDeleted(true);
+        setErrorMessage('این حساب کاربری حذف شده است. برای بازیابی با پشتیبانی تماس بگیرید یا می‌توانید یک حساب کاربری کاملاً جدید با این شماره ایجاد کنید.');
+        showToast('این حساب کاربری حذف شده است.', 'error');
+        return;
+      }
       if (!res.registered) {
         setMode('register');
         setRegisterStep('phone');
@@ -266,6 +293,9 @@ export const useLoginPage = (): LoginPageForm => {
     setSubmitting(true);
     try {
       const res = await sendOtp(phone.trim(), turnstileToken);
+      if (res.is_deleted) {
+        setIsPreviousAccountDeleted(true);
+      }
       if (res.registered) {
         setMode('login');
         setPhone(phone.trim());
@@ -298,6 +328,9 @@ export const useLoginPage = (): LoginPageForm => {
     setSubmitting(true);
     try {
       const res = await verifyOtp(phone.trim(), otpCode);
+      if (res.is_deleted) {
+        setIsPreviousAccountDeleted(true);
+      }
       if (res.registered) {
         if (res.access_token) {
           showToast('این شماره قبلاً ثبت‌نام شده است; وارد شدید. خوش آمدید!', 'success');
@@ -437,6 +470,9 @@ export const useLoginPage = (): LoginPageForm => {
     isConfirmPasswordValid,
     isAuthenticated,
     isLoading,
+    isPreviousAccountDeleted,
+    setIsPreviousAccountDeleted,
+    handleSwitchToRegisterWithPhone,
     resetLoginFields,
     handlePhonePasswordLogin,
     handleLoginOtpSend,

@@ -29,6 +29,8 @@ export interface AdminUserItem {
   created_at: string;
   customers_count: number;
   transactions_count: number;
+  deleted_at?: string | null;
+  is_deleted?: boolean;
 }
 
 export interface AdminUsersResponse {

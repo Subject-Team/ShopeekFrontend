@@ -40,6 +40,7 @@ export interface OtpSendResponse {
   sent: boolean;
   message_id?: number | null;
   registered: boolean;
+  is_deleted?: boolean;
 }
 
 export interface OtpVerifyPayload {
@@ -55,10 +56,17 @@ export interface OtpVerifyResponse {
   verified: boolean;
   message: string;
   registered: boolean;
+  is_deleted?: boolean;
   access_token?: string | null;
   refresh_token?: string | null;
   user?: User;
   web_session_id?: string | null;
+}
+
+export interface DeleteAccountResponse {
+  message: string;
+  deleted_at: string;
+  purge_at: string;
 }
 
 export interface RegisterWithPhonePayload {

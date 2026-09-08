@@ -20,6 +20,7 @@ import {
   Loader2,
   ChevronLeft,
   ChevronRight,
+  RotateCcw,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -31,6 +32,7 @@ import {
   fetchAdminUserTransactions,
   updateAdminUser,
   deleteAdminUser,
+  restoreAdminUser,
   fetchAdminErrors,
 } from '../services/api';
 import type {
@@ -172,9 +174,25 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, onClose, onUpda
   );
   const [formSubInfinite, setFormSubInfinite] = useState<boolean>(!user.subscription_expires_at);
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [restoreSubmitting, setRestoreSubmitting] = useState<boolean>(false);
   const [deleteConfirm, setDeleteConfirm] = useState<boolean>(false);
   const [deleteSubmitting, setDeleteSubmitting] = useState<boolean>(false);
   const isSelf = user.id === currentUserId;
+
+  const handleRestore = async () => {
+    setRestoreSubmitting(true);
+    try {
+      await restoreAdminUser(user.id);
+      showToast('حساب کاربر با موفقیت بازیابی شد.', 'success');
+      onUpdated();
+      onClose();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'خطا در بازیابی کاربر';
+      showToast(msg, 'error');
+    } finally {
+      setRestoreSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     const loadTx = async () => {
@@ -248,13 +266,26 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, onClose, onUpda
     }
   };
 
-  const subscriptionLabel = user.is_read_only
+  const isDeleted = Boolean(user.deleted_at);
+  const diffMs = user.deleted_at ? Date.now() - new Date(user.deleted_at).getTime() : 0;
+  const deletedDaysAgo = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const isDeleted7DaysAgo = isDeleted && deletedDaysAgo >= 7;
+
+  const subscriptionLabel = isDeleted7DaysAgo
+    ? 'حذف شده (≥ ۷ روز)'
+    : isDeleted
+    ? `در صف حذف (${toPersianDigits(deletedDaysAgo)} روز)`
+    : user.is_read_only
     ? 'فقط خواندنی'
     : user.is_subscription_active
     ? `فعال (${toPersianDigits(user.remaining_days ?? 0)} روز)`
     : 'منقضی‌شده';
 
-  const subscriptionBadgeColor = user.is_read_only
+  const subscriptionBadgeColor = isDeleted7DaysAgo
+    ? 'bg-rose-600 text-white shadow-xs'
+    : isDeleted
+    ? 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300'
+    : user.is_read_only
     ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
     : user.is_subscription_active
     ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
@@ -279,6 +310,29 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, onClose, onUpda
         </div>
 
         <div className="p-5 space-y-5">
+          {/* Deleted Account Banner */}
+          {isDeleted && (
+            <div
+              className={`p-4 rounded-2xl border ${
+                isDeleted7DaysAgo
+                  ? 'bg-rose-50 border-rose-300 text-rose-900 dark:bg-rose-950/40 dark:border-rose-800 dark:text-rose-200'
+                  : 'bg-amber-50 border-amber-300 text-amber-900 dark:bg-amber-950/40 dark:border-amber-800 dark:text-amber-200'
+              } space-y-1.5 text-xs`}
+            >
+              <div className="flex items-center gap-2 font-extrabold text-sm">
+                <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
+                <span>
+                  {isDeleted7DaysAgo
+                    ? 'این حساب بیش از ۷ روز پیش حذف شده است و آماده پاکسازی دائمی دستی می‌باشد.'
+                    : `این حساب ${toPersianDigits(deletedDaysAgo)} روز پیش توسط کاربر حذف شده است.`}
+                </span>
+              </div>
+              <p className="text-[11px] opacity-80">
+                تاریخ درخواست حذف: {utcStringToPersianDate(user.deleted_at!)}
+              </p>
+            </div>
+          )}
+
           {/* Info Grid */}
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60">
@@ -442,15 +496,31 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, onClose, onUpda
               </div>
             </div>
           ) : (
-            !isSelf && (
-              <button
-                onClick={() => setDeleteConfirm(true)}
-                className="px-4 py-2 rounded-lg border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold transition-colors flex items-center gap-1.5"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                حذف کاربر
-              </button>
-            )
+            <div className="flex items-center gap-2 flex-wrap">
+              {isDeleted && (
+                <button
+                  onClick={handleRestore}
+                  disabled={restoreSubmitting}
+                  className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors flex items-center gap-1.5 disabled:opacity-60"
+                >
+                  {restoreSubmitting ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  )}
+                  بازیابی حساب کاربری
+                </button>
+              )}
+              {!isSelf && (
+                <button
+                  onClick={() => setDeleteConfirm(true)}
+                  className="px-4 py-2 rounded-lg border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold transition-colors flex items-center gap-1.5"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  {isDeleted ? 'حذف دائمی کاربر' : 'حذف کاربر'}
+                </button>
+              )}
+            </div>
           )}
           {isSelf && (
             <p className="text-[11px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
@@ -594,22 +664,41 @@ const UsersTab: React.FC<UsersTabProps> = ({ currentUserId }) => {
                 </tr>
               ) : (
                 users.map((u) => {
-                  const statusLabel = u.is_read_only
+                  const isDeleted = Boolean(u.deleted_at);
+                  const diffMs = u.deleted_at ? Date.now() - new Date(u.deleted_at).getTime() : 0;
+                  const deletedDaysAgo = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                  const isDeleted7DaysAgo = isDeleted && deletedDaysAgo >= 7;
+
+                  const statusLabel = isDeleted7DaysAgo
+                    ? 'حذف شده (≥ ۷ روز)'
+                    : isDeleted
+                    ? `در صف حذف (${toPersianDigits(deletedDaysAgo)} روز)`
+                    : u.is_read_only
                     ? 'فقط خواندنی'
                     : u.is_subscription_active
                     ? `فعال`
                     : 'منقضی';
-                  const statusColor = u.is_read_only
+                  const statusColor = isDeleted7DaysAgo
+                    ? 'bg-rose-600 text-white font-black shadow-xs'
+                    : isDeleted
+                    ? 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300'
+                    : u.is_read_only
                     ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
                     : u.is_subscription_active
                     ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
                     : 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300';
 
+                  const rowClass = isDeleted7DaysAgo
+                    ? 'border-b border-rose-300 dark:border-rose-900 bg-rose-50/80 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-950/60 border-r-4 border-r-rose-600'
+                    : isDeleted
+                    ? 'border-b border-amber-200 dark:border-amber-900/60 bg-amber-50/40 dark:bg-amber-950/20 hover:bg-amber-100/60 dark:hover:bg-amber-950/30 border-r-4 border-r-amber-500'
+                    : 'border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/40';
+
                   return (
                     <tr
                       key={u.id}
                       onClick={() => setSelectedUser(u)}
-                      className="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/40 cursor-pointer transition-colors"
+                      className={`${rowClass} cursor-pointer transition-colors`}
                     >
                       <td className="p-3 font-bold text-slate-800 dark:text-slate-200">{u.full_name}</td>
                       <td className="p-3 text-slate-600 dark:text-slate-400">{u.email}</td>

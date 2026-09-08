@@ -55,6 +55,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ form }) => {
     handleRegisterOtpSend,
     handleRegisterOtpVerify,
     handleRegisterDetails,
+    isPreviousAccountDeleted,
   } = form;
 
   return (
@@ -172,6 +173,30 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ form }) => {
           {/* Step C: Account Details */}
           {registerStep === 'details' && (
             <form onSubmit={handleRegisterDetails} noValidate className="space-y-4">
+              {isPreviousAccountDeleted && (
+                <div
+                  data-testid="deleted-account-warning"
+                  className="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 text-xs space-y-2 leading-relaxed"
+                >
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <p className="font-semibold text-amber-950 leading-relaxed">
+                      توجه: با ایجاد حساب جدید با این شماره، تمامی اطلاعات قبلی شما برای همیشه پاک خواهد شد. در صورت تمایل به بازیابی، لطفاً با پشتیبانی تماس بگیرید.
+                    </p>
+                  </div>
+                  <div className="pt-1.5 border-t border-amber-200/80 flex items-center justify-between">
+                    <span className="text-[11px] text-amber-800">
+                      نیاز به بازیابی اطلاعات دارید؟
+                    </span>
+                    <Link
+                      to="/contact"
+                      className="inline-flex items-center gap-1 font-bold text-amber-900 hover:text-amber-950 underline underline-offset-4"
+                    >
+                      تماس با پشتیبانی
+                    </Link>
+                  </div>
+                </div>
+              )}
               <p className="text-xs text-emerald-700 text-center font-medium bg-emerald-50 rounded-xl py-2 border border-emerald-200">
                 شماره {toPersianDigits(phone)} تأیید شد. اکنون اطلاعات حساب خود را تکمیل کنید.
               </p>

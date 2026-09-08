@@ -451,4 +451,88 @@ describe('LoginPage Comprehensive Tests', () => {
       expect(screen.getByText('داشبورد کاربر')).toBeInTheDocument();
     });
   });
+
+  it('shows deleted account message and allows switching to register when login fails due to deleted account', async () => {
+    (api.loginApi as any).mockRejectedValue(
+      new Error('این حساب کاربری حذف شده است. برای بازیابی با پشتیبانی تماس بگیرید یا می‌توانید یک حساب کاربری کاملاً جدید با این شماره ایجاد کنید.')
+    );
+
+    const { container } = render(
+      <MemoryRouter initialEntries={['/login']}>
+        <AuthProvider>
+          <ToastProvider>
+            <LoginPage />
+          </ToastProvider>
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByTestId('login-method-phone-password'));
+    fireEvent.change(screen.getByTestId('otp-phone'), { target: { value: '09123456789' } });
+    const passwordInput = container.querySelector('input[id="auth-password"]') as HTMLInputElement;
+    fireEvent.change(passwordInput, { target: { value: 'SomePass123!' } });
+
+    fireEvent.click(screen.getByText('ورود به داشبورد'));
+
+    await waitFor(() => {
+      expect(api.loginApi).toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      expect(screen.getAllByText(/این حساب کاربری حذف شده است/)[0]).toBeInTheDocument();
+      expect(screen.getByText('ایجاد حساب جدید با این شماره')).toBeInTheDocument();
+      expect(screen.getByText('تماس با پشتیبانی')).toBeInTheDocument();
+    });
+
+    // Click on create new account button
+    fireEvent.click(screen.getByText('ایجاد حساب جدید با این شماره'));
+
+    // Should switch to register mode
+    expect(screen.getByText('ثبت‌نام کاربر جدید در شاپیک')).toBeInTheDocument();
+  });
+
+  it('shows deleted account warning banner in Step C when registering with a previously deleted phone', async () => {
+    (api.sendOtpApi as any).mockResolvedValue({
+      sent: true,
+      message_id: 1,
+      registered: false,
+      is_deleted: true,
+    });
+    (api.verifyOtpApi as any).mockResolvedValue({
+      phone: '09123456789',
+      verified: true,
+      message: 'کد تأیید صحیح است.',
+      registered: false,
+      is_deleted: true,
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/login']}>
+        <AuthProvider>
+          <ToastProvider>
+            <LoginPage />
+          </ToastProvider>
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    // Switch to register mode
+    fireEvent.click(screen.getByText('ثبت‌نام کاربر جدید'));
+
+    fireEvent.change(screen.getByTestId('otp-phone'), { target: { value: '09123456789' } });
+    fireEvent.click(screen.getByTestId('otp-send-btn'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('otp-code')).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByTestId('otp-code'), { target: { value: '123456' } });
+    fireEvent.click(screen.getByTestId('otp-verify-btn'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('deleted-account-warning')).toBeInTheDocument();
+      expect(screen.getByText(/توجه: با ایجاد حساب جدید با این شماره/)).toBeInTheDocument();
+    });
+  });
 });
+

@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Briefcase, ShieldCheck, User as UserIcon } from 'lucide-react';
 import {
   fetchSettings,
+  deleteAccountApi,
   revokeWebSession,
   revokeAllOtherSessions,
   unlinkTelegramSession,
@@ -17,6 +18,8 @@ import { PasswordForm } from '../components/settings/PasswordForm';
 import { WebSessionsCard } from '../components/settings/WebSessionsCard';
 import { TelegramSessionsCard } from '../components/settings/TelegramSessionsCard';
 import { BusinessProfileForm } from '../components/settings/BusinessProfileForm';
+import { DangerZoneCard } from '../components/settings/DangerZoneCard';
+import { DeleteAccountModal } from '../components/settings/DeleteAccountModal';
 
 const cardClass =
   'glass-card p-6 rounded-3xl shadow-xs bg-gradient-to-br from-indigo-50/70 via-white to-blue-50/50 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60';
@@ -29,7 +32,8 @@ const tabItemClass = (active: boolean) =>
   }`;
 
 export const SettingsPage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const readOnly = Boolean(user?.is_read_only);
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -42,6 +46,8 @@ export const SettingsPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [revokingId, setRevokingId] = useState<string | null>(null);
   const [targetId, setTargetId] = useState<string | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const guide = useOptionalGuide();
   const currentStep = guide?.currentStep;
@@ -127,6 +133,21 @@ export const SettingsPage: React.FC = () => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      const res = await deleteAccountApi();
+      showToast(res.message || 'حساب کاربری شما با موفقیت در صف حذف قرار گرفت.', 'success');
+      setIsDeleteModalOpen(false);
+      logout();
+      navigate('/login');
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'خطا در حذف حساب کاربری', 'error');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const webSessions = data?.web_sessions ?? [];
   const telegramSessions = data?.telegram_sessions ?? [];
 
@@ -155,25 +176,39 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {activeTab === 'account' && (
-        <div data-guide="settings-profile" className={cardClass}>
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-600/25 shrink-0">
-              <UserIcon className="w-7 h-7" />
+        <div className="space-y-6">
+          <div data-guide="settings-profile" className={cardClass}>
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-600/25 shrink-0">
+                <UserIcon className="w-7 h-7" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="font-extrabold text-slate-900 dark:text-white text-lg truncate">
+                  {data?.profile.full_name || user?.full_name || 'کاربر'}
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate" dir="ltr">
+                  {data?.profile.email || user?.email || ''}
+                </p>
+              </div>
+              {readOnly && (
+                <span className="ms-auto text-[10px] font-bold px-2 py-1 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 shrink-0">
+                  دسترسی فقط‌خواندنی
+                </span>
+              )}
             </div>
-            <div className="min-w-0">
-              <h2 className="font-extrabold text-slate-900 dark:text-white text-lg truncate">
-                {data?.profile.full_name || user?.full_name || 'کاربر'}
-              </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate" dir="ltr">
-                {data?.profile.email || user?.email || ''}
-              </p>
-            </div>
-            {readOnly && (
-              <span className="ms-auto text-[10px] font-bold px-2 py-1 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 shrink-0">
-                دسترسی فقط‌خواندنی
-              </span>
-            )}
           </div>
+
+          <DangerZoneCard
+            onDeleteClick={() => setIsDeleteModalOpen(true)}
+            disabled={readOnly}
+          />
+
+          <DeleteAccountModal
+            isOpen={isDeleteModalOpen}
+            onClose={() => setIsDeleteModalOpen(false)}
+            onConfirm={handleDeleteAccount}
+            isSubmitting={isDeleting}
+          />
         </div>
       )}
 

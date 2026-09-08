@@ -74,6 +74,15 @@ export const deleteAdminUser = async (id: string): Promise<{ ok: boolean }> => {
   return res.json();
 };
 
+export const restoreAdminUser = async (id: string): Promise<AdminUserItem> => {
+  const res = await authFetch(`${API_BASE}/admin/users/${id}/restore`, { method: 'POST' });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در بازیابی کاربر' }));
+    throw new Error(err.detail || 'خطا در بازیابی کاربر');
+  }
+  return res.json();
+};
+
 export const fetchAdminErrors = async (
   page: number = 1,
   pageSize: number = 20,

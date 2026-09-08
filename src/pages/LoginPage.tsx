@@ -108,18 +108,38 @@ export const LoginPage: React.FC = () => {
                 <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
                 <div className="flex-1 font-semibold">{errorMessage}</div>
               </div>
-              <div className="pt-2 border-t border-rose-200/80 flex items-center justify-between">
-                <span className="text-[11px] text-slate-600">
-                  نیاز به خرید یا تمدید اشتراک دارید؟
-                </span>
-                <Link
-                  to="/contact"
-                  className="inline-flex items-center gap-1 font-bold text-brand-600 hover:text-brand-700 underline underline-offset-4"
-                >
-                  <MessageSquare className="w-3.5 h-3.5" />
-                  <span>تماس با پشتیبانی</span>
-                </Link>
-              </div>
+              {errorMessage.includes('حذف شده است') || form.isPreviousAccountDeleted ? (
+                <div className="pt-2 border-t border-rose-200/80 flex flex-wrap items-center justify-between gap-2">
+                  <button
+                    type="button"
+                    onClick={form.handleSwitchToRegisterWithPhone}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-brand-700 hover:text-brand-800 bg-brand-50 hover:bg-brand-100/80 px-3 py-1.5 rounded-xl border border-brand-200 transition-colors"
+                  >
+                    <UserPlus className="w-3.5 h-3.5" />
+                    <span>ایجاد حساب جدید با این شماره</span>
+                  </button>
+                  <Link
+                    to="/contact"
+                    className="inline-flex items-center gap-1 font-bold text-rose-700 hover:text-rose-900 underline underline-offset-4"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>تماس با پشتیبانی</span>
+                  </Link>
+                </div>
+              ) : (
+                <div className="pt-2 border-t border-rose-200/80 flex items-center justify-between">
+                  <span className="text-[11px] text-slate-600">
+                    نیاز به خرید یا تمدید اشتراک دارید؟
+                  </span>
+                  <Link
+                    to="/contact"
+                    className="inline-flex items-center gap-1 font-bold text-brand-600 hover:text-brand-700 underline underline-offset-4"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>تماس با پشتیبانی</span>
+                  </Link>
+                </div>
+              )}
             </div>
           )}
 

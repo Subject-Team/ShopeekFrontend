@@ -27,6 +27,7 @@ export { sendChatMessage, fetchChatHistory, clearChatHistory } from './api/chat'
 export { fetchSalesSuggestions, createInvoice } from './api/sales';
 export {
   fetchSettings,
+  deleteAccountApi,
   revokeWebSession,
   revokeAllOtherSessions,
   unlinkTelegramSession,
@@ -40,5 +41,6 @@ export {
   fetchAdminUserTransactions,
   updateAdminUser,
   deleteAdminUser,
+  restoreAdminUser,
   fetchAdminErrors,
 } from './api/admin';

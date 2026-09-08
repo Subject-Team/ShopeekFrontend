@@ -1,4 +1,9 @@
-import type { SettingsData, BusinessProfile, BusinessProfileUpdatePayload } from '../../types';
+import type {
+  SettingsData,
+  BusinessProfile,
+  BusinessProfileUpdatePayload,
+  DeleteAccountResponse,
+} from '../../types';
 import { authFetch, getWebSessionId } from './client';
 
 const API_BASE = '/api/v1';
@@ -8,6 +13,17 @@ const API_BASE = '/api/v1';
 export const fetchSettings = async (): Promise<SettingsData> => {
   const res = await authFetch(`${API_BASE}/settings`);
   if (!res.ok) throw new Error('خطا در دریافت تنظیمات');
+  return res.json();
+};
+
+export const deleteAccountApi = async (): Promise<DeleteAccountResponse> => {
+  const res = await authFetch(`${API_BASE}/settings/delete-account`, {
+    method: 'POST',
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در حذف حساب کاربری' }));
+    throw new Error(err.detail || 'خطا در حذف حساب کاربری');
+  }
   return res.json();
 };
 
