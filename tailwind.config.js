@@ -14,19 +14,19 @@ export default {
         vazir: ['Vazirmatn', 'sans-serif'],
       },
       colors: {
-        // Brand green: anchor #00856F (teal-green, #00CEAB darkened 2 levels), full 50–950 scale.
+        // Brand green: anchor #00A388 (teal-green, one level darker than #00CEAB), full 50–950 scale.
         brand: {
           50: '#e7fdf9',
-          100: '#cffcf4',
-          200: '#a7fbed',
-          300: '#60fbe1',
-          400: '#00e6bf',
-          500: '#00856f',
-          600: '#006e5b',
-          700: '#025749',
-          800: '#034137',
-          900: '#04322a',
-          950: '#031e19',
+          100: '#d4fcf6',
+          200: '#b1fcef',
+          300: '#74fbe5',
+          400: '#00ffd5',
+          500: '#00a388',
+          600: '#00856f',
+          700: '#036b5a',
+          800: '#045245',
+          900: '#054036',
+          950: '#04221d',
         },
         // Brand blue: anchor #2579EF (#259DEF with yellow cast removed, hue 204→215), full 50–950 scale.
         accent: {
@@ -46,16 +46,16 @@ export default {
         // colors (emerald-*, indigo-*) onto the same brand anchors.
         emerald: {
           50: '#e7fdf9',
-          100: '#cffcf4',
-          200: '#a7fbed',
-          300: '#60fbe1',
-          400: '#00e6bf',
-          500: '#00856f',
-          600: '#006e5b',
-          700: '#025749',
-          800: '#034137',
-          900: '#04322a',
-          950: '#031e19',
+          100: '#d4fcf6',
+          200: '#b1fcef',
+          300: '#74fbe5',
+          400: '#00ffd5',
+          500: '#00a388',
+          600: '#00856f',
+          700: '#036b5a',
+          800: '#045245',
+          900: '#054036',
+          950: '#04221d',
         },
         indigo: {
           50: '#ecf3fd',
