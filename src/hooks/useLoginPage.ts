@@ -309,7 +309,7 @@ export const useLoginPage = (): LoginPageForm => {
         showToast('این شماره قبلاً ثبت‌نام شده است. لطفاً وارد شوید.', 'info');
         return;
       }
-      showToast('کد تأیید تأیید شد. اکنون اطلاعات حساب خود را تکمیل کنید.', 'success');
+      showToast('شماره تلفن شما تأیید شد. اکنون اطلاعات حساب خود را تکمیل کنید.', 'success');
       setHasSubmitted(false);
       setRegisterStep('details');
     } catch (err: any) {
