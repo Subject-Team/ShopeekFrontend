@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { analyzePassword, type PasswordAnalysis } from '../utils/passwordStrength';
 import { useCountdown } from './useCountdown';
-import { PHONE_REGEX } from '../components/auth/PhoneInput';
+import { PHONE_REGEX, normalizePhoneNumber } from '../components/auth/PhoneInput';
 
 export type LoginMode = 'login' | 'register';
 export type LoginMethod = 'phone-password' | 'phone-otp';
@@ -114,7 +114,8 @@ export const useLoginPage = (): LoginPageForm => {
   const passwordAnalysis = useMemo(() => analyzePassword(password, confirmPassword), [password, confirmPassword]);
 
   /* ─── Validation ─── */
-  const isPhoneValid = PHONE_REGEX.test(phone);
+  const normalizedPhone = normalizePhoneNumber(phone);
+  const isPhoneValid = PHONE_REGEX.test(normalizedPhone);
   const isOtpCodeValid = /^\d{6}$/.test(otpCode);
   const isFullNameValid = fullName.trim().length > 0;
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
@@ -163,7 +164,8 @@ export const useLoginPage = (): LoginPageForm => {
     e.preventDefault();
     setErrorMessage(null);
     setHasSubmitted(true);
-    if (!isPhoneValid) {
+    const cleanPhone = normalizePhoneNumber(phone);
+    if (!PHONE_REGEX.test(cleanPhone)) {
       showToast('لطفاً یک شماره موبایل معتبر وارد کنید.', 'warning');
       return;
     }
@@ -177,7 +179,7 @@ export const useLoginPage = (): LoginPageForm => {
     }
     setSubmitting(true);
     try {
-      await loginWithPhone(phone.trim(), password, turnstileToken);
+      await loginWithPhone(cleanPhone, password, turnstileToken);
       showToast('ورود با موفقیت انجام شد. خوش آمدید!', 'success');
       navigate('/dashboard');
     } catch (err: any) {
@@ -197,7 +199,8 @@ export const useLoginPage = (): LoginPageForm => {
   /* --- Phone OTP login: send code --- */
   const handleLoginOtpSend = async () => {
     setErrorMessage(null);
-    if (!isPhoneValid) {
+    const cleanPhone = normalizePhoneNumber(phone);
+    if (!PHONE_REGEX.test(cleanPhone)) {
       showToast('لطفاً یک شماره موبایل معتبر وارد کنید.', 'warning');
       return;
     }
@@ -207,7 +210,7 @@ export const useLoginPage = (): LoginPageForm => {
     }
     setSubmitting(true);
     try {
-      const res = await sendOtp(phone.trim(), turnstileToken);
+      const res = await sendOtp(cleanPhone, turnstileToken);
       if (res.is_deleted) {
         setIsPreviousAccountDeleted(true);
         setErrorMessage('این حساب کاربری حذف شده است. برای بازیابی با پشتیبانی تماس بگیرید یا می‌توانید یک حساب کاربری کاملاً جدید با این شماره ایجاد کنید.');
@@ -243,8 +246,9 @@ export const useLoginPage = (): LoginPageForm => {
       return;
     }
     setSubmitting(true);
+    const cleanPhone = normalizePhoneNumber(phone);
     try {
-      const res = await verifyOtp(phone.trim(), otpCode);
+      const res = await verifyOtp(cleanPhone, otpCode);
       if (res.is_deleted) {
         setIsPreviousAccountDeleted(true);
         setErrorMessage('این حساب کاربری حذف شده است. برای بازیابی با پشتیبانی تماس بگیرید یا می‌توانید یک حساب کاربری کاملاً جدید با این شماره ایجاد کنید.');
@@ -254,7 +258,7 @@ export const useLoginPage = (): LoginPageForm => {
       if (!res.registered) {
         setMode('register');
         setRegisterStep('phone');
-        setPhone(phone.trim());
+        setPhone(cleanPhone);
         showToast('این شماره ثبت‌نام نشده است. لطفاً حساب خود را بسازید.', 'info');
         return;
       }
@@ -282,7 +286,8 @@ export const useLoginPage = (): LoginPageForm => {
   const handleRegisterOtpSend = async () => {
     setErrorMessage(null);
     setHasSubmitted(true);
-    if (!isPhoneValid) {
+    const cleanPhone = normalizePhoneNumber(phone);
+    if (!PHONE_REGEX.test(cleanPhone)) {
       showToast('لطفاً یک شماره موبایل معتبر وارد کنید.', 'warning');
       return;
     }
@@ -292,13 +297,13 @@ export const useLoginPage = (): LoginPageForm => {
     }
     setSubmitting(true);
     try {
-      const res = await sendOtp(phone.trim(), turnstileToken);
+      const res = await sendOtp(cleanPhone, turnstileToken);
       if (res.is_deleted) {
         setIsPreviousAccountDeleted(true);
       }
       if (res.registered) {
         setMode('login');
-        setPhone(phone.trim());
+        setPhone(cleanPhone);
         setLoginMethod('phone-password');
         showToast('این شماره قبلاً ثبت‌نام شده است. لطفاً وارد شوید.', 'info');
         return;
@@ -326,8 +331,9 @@ export const useLoginPage = (): LoginPageForm => {
       return;
     }
     setSubmitting(true);
+    const cleanPhone = normalizePhoneNumber(phone);
     try {
-      const res = await verifyOtp(phone.trim(), otpCode);
+      const res = await verifyOtp(cleanPhone, otpCode);
       if (res.is_deleted) {
         setIsPreviousAccountDeleted(true);
       }
@@ -338,6 +344,7 @@ export const useLoginPage = (): LoginPageForm => {
           return;
         }
         setMode('login');
+        setPhone(cleanPhone);
         setLoginMethod('phone-password');
         showToast('این شماره قبلاً ثبت‌نام شده است. لطفاً وارد شوید.', 'info');
         return;
@@ -402,9 +409,10 @@ export const useLoginPage = (): LoginPageForm => {
       return;
     }
     setSubmitting(true);
+    const cleanPhone = normalizePhoneNumber(phone);
     try {
       await registerWithPhone({
-        phone: phone.trim(),
+        phone: cleanPhone,
         code: otpCode,
         email: email.trim(),
         password,

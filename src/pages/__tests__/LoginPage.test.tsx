@@ -534,5 +534,19 @@ describe('LoginPage Comprehensive Tests', () => {
       expect(screen.getByText(/توجه: با ایجاد حساب جدید با این شماره/)).toBeInTheDocument();
     });
   });
+
+  it('normalizes +98 phone number instantly to 09 format in phone field', () => {
+    renderLogin();
+    const phoneInput = screen.getByTestId('otp-phone') as HTMLInputElement;
+
+    fireEvent.change(phoneInput, { target: { value: '+989123456789' } });
+    expect(phoneInput.value).toBe('09123456789');
+
+    fireEvent.change(phoneInput, { target: { value: '+۹۸۹۱۲۳۴۵۶۷۸۹' } });
+    expect(phoneInput.value).toBe('09123456789');
+
+    fireEvent.change(phoneInput, { target: { value: '00989123456789' } });
+    expect(phoneInput.value).toBe('09123456789');
+  });
 });
 
