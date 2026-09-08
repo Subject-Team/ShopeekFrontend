@@ -138,7 +138,7 @@ describe('SettingsPage Component & Guide Integration', () => {
     await waitFor(() => {
       expect(screen.getByText('دسته‌بندی و حوزه کاری کسب‌وکار')).toBeInTheDocument();
       expect(screen.getByText('تعداد سفارش حدودی در ماه')).toBeInTheDocument();
-      expect(screen.getByText('مجموع مبالغ سفارشات حدودی در ماه')).toBeInTheDocument();
+      expect(screen.getByText('مجموع مبالغ سفارشات حدودی در ماه (میلیون تومان)')).toBeInTheDocument();
     });
 
     expect(container.querySelector('[data-guide="settings-business-profile"]')).toBeInTheDocument();

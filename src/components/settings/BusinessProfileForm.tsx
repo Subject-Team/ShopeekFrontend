@@ -44,9 +44,10 @@ export const BusinessProfileForm: React.FC<BusinessProfileFormProps> = ({
       ? String(initialProfile.monthly_orders)
       : ''
   );
+  // monthly_revenue is stored in tomaans but displayed in million tomaans
   const [monthlyRevenue, setMonthlyRevenue] = useState<string>(
     initialProfile?.monthly_revenue !== null && initialProfile?.monthly_revenue !== undefined
-      ? String(initialProfile.monthly_revenue)
+      ? String(initialProfile.monthly_revenue / 1_000_000)
       : ''
   );
   const [businessType, setBusinessType] = useState<'goods' | 'services' | ''>(
@@ -73,7 +74,7 @@ export const BusinessProfileForm: React.FC<BusinessProfileFormProps> = ({
     );
     setMonthlyRevenue(
       initialProfile.monthly_revenue !== null && initialProfile.monthly_revenue !== undefined
-        ? String(initialProfile.monthly_revenue)
+        ? String(initialProfile.monthly_revenue / 1_000_000)
         : ''
     );
     setBusinessType(initialProfile.business_type || '');
@@ -124,7 +125,8 @@ export const BusinessProfileForm: React.FC<BusinessProfileFormProps> = ({
     setSubmitting(true);
     try {
       const ordersNum = monthlyOrders.trim() ? Number(monthlyOrders.replace(/,/g, '')) : null;
-      const revNum = monthlyRevenue.trim() ? Number(monthlyRevenue.replace(/,/g, '')) : null;
+      const revMillions = monthlyRevenue.trim() ? Number(monthlyRevenue.replace(/,/g, '')) : null;
+      const revNum = revMillions !== null ? revMillions * 1_000_000 : null;
 
       const payload = {
         category: category || null,
@@ -273,7 +275,7 @@ export const BusinessProfileForm: React.FC<BusinessProfileFormProps> = ({
               <input
                 type="number"
                 min="0"
-                step="1"
+                step="10"
                 disabled={readOnly}
                 value={monthlyOrders}
                 onChange={(e) => setMonthlyOrders(e.target.value)}
@@ -288,26 +290,26 @@ export const BusinessProfileForm: React.FC<BusinessProfileFormProps> = ({
 
           <div className="space-y-2">
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-              مجموع مبالغ سفارشات حدودی در ماه <span className="text-rose-500">*</span>
+              مجموع مبالغ سفارشات حدودی در ماه (میلیون تومان) <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
               <input
                 type="number"
                 min="0"
-                step="10000"
+                step="1"
                 disabled={readOnly}
                 value={monthlyRevenue}
                 onChange={(e) => setMonthlyRevenue(e.target.value)}
-                placeholder="مثال: ۲۰۰۰۰۰۰۰"
-                className="w-full pl-12 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                placeholder="مثال: ۲۰"
+                className="w-full pl-20 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
               />
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 font-bold">
-                تومان
+                میلیون تومان
               </span>
             </div>
             {monthlyRevenue && Number(monthlyRevenue) > 0 && (
               <p className="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold">
-                {toGroupedPersianDigits(Number(monthlyRevenue))} تومان در ماه
+                {toGroupedPersianDigits(Number(monthlyRevenue) * 1_000_000)} تومان در ماه
               </p>
             )}
           </div>
