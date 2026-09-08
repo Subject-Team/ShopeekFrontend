@@ -26,6 +26,7 @@ vi.mock('../../services/api', () => ({
   fetchMeApi: vi.fn(),
   fetchSalesSuggestions: vi.fn(),
   createInvoice: vi.fn(),
+  fetchBusinessProfile: vi.fn(),
 }));
 
 describe('Dashboard Pages', () => {
@@ -75,6 +76,7 @@ describe('Dashboard Pages', () => {
       customers: { last: 'علی', top3: ['علی'], items: [{ id: 'c-1', name: 'علی', email: 'ali@example.com' }] },
     });
     (api.createInvoice as any).mockResolvedValue({ transaction_reference: 'INV-10001' });
+    (api.fetchBusinessProfile as any).mockResolvedValue(null);
   });
 
   const renderPage = (ui: React.ReactElement, initialPath = '/dashboard') => {

@@ -17,6 +17,7 @@ import { CustomersPage } from './pages/CustomersPage';
 import { IngestionPage } from './pages/IngestionPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { AdminGuard } from './pages/AdminPage';
 
 const ProtectedDashboardLayout: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -75,6 +76,9 @@ const AppRoutes: React.FC = () => {
 
       {/* Protected Dashboard Section with Sub-routes */}
       <Route path="/dashboard/*" element={<ProtectedDashboardLayout />} />
+
+      {/* Admin Panel (standalone layout, role-gated) */}
+      <Route path="/admin" element={<AdminGuard />} />
 
       {/* Catch-all 404 Page (Rendered in-place without redirect) */}
       <Route path="*" element={<NotFoundPage />} />

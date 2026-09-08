@@ -33,3 +33,12 @@ export {
   fetchBusinessProfile,
   updateBusinessProfile,
 } from './api/settings';
+export {
+  fetchAdminStats,
+  fetchAdminUsers,
+  fetchAdminUserDetail,
+  fetchAdminUserTransactions,
+  updateAdminUser,
+  deleteAdminUser,
+  fetchAdminErrors,
+} from './api/admin';
