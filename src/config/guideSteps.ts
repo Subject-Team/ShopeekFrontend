@@ -205,6 +205,17 @@ export const GUIDE_CONFIGS: Record<string, PageGuideConfig> = {
         placement: 'bottom',
       },
       {
+        id: 'settings-danger-zone',
+        targetSelector: '[data-guide="settings-danger-zone"]',
+        title: 'بخش حساس و حذف حساب کاربری',
+        description: 'در این بخش می‌توانید درخواست حذف حساب کاربری خود را ثبت نمایید. داده‌های شما تا ۷ روز جهت امکان بازیابی نگهداری می‌شوند و پس از آن به صورت دائمی پاکسازی خواهند شد.',
+        tips: [
+          'با حذف حساب، تمامی نشست‌های فعال وب به صورت خودکار باطل می‌شوند.',
+          'در صورت ایجاد مجدد حساب با همان شماره، تریال ۱۴ روزه مجدداً فعال نخواهد شد.',
+        ],
+        placement: 'top',
+      },
+      {
         id: 'settings-business-profile',
         targetSelector: '[data-guide="settings-tab-business-profile"]',
         title: 'اطلاعات تکمیلی کسب‌وکار',

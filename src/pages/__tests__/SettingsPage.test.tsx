@@ -151,8 +151,9 @@ describe('SettingsPage Component & Guide Integration', () => {
       return (
         <div>
           <button onClick={() => startGuide('settings')}>Start Settings Guide</button>
-          <button onClick={() => goToStep(2)}>Jump to Business Profile</button>
-          <button onClick={() => goToStep(3)}>Jump to Password</button>
+          <button onClick={() => goToStep(2)}>Jump to Danger Zone</button>
+          <button onClick={() => goToStep(3)}>Jump to Business Profile</button>
+          <button onClick={() => goToStep(4)}>Jump to Password</button>
           <button onClick={() => goToStep(1)}>Jump to Profile</button>
           <SettingsPage />
         </div>
@@ -178,7 +179,15 @@ describe('SettingsPage Component & Guide Integration', () => {
     // Start settings guide
     fireEvent.click(screen.getByText('Start Settings Guide'));
 
-    // Jump to step 2 (settings-business-profile) -> should auto-switch tab to business_profile
+    // Jump to step 2 (settings-danger-zone) -> stays on account tab
+    fireEvent.click(screen.getByText('Jump to Danger Zone'));
+
+    await waitFor(() => {
+      expect(container.querySelector('[data-guide="settings-danger-zone"]')).toBeInTheDocument();
+      expect(screen.getByText('بخش حساس (منطقه خطر)')).toBeInTheDocument();
+    });
+
+    // Jump to step 3 (settings-business-profile) -> should auto-switch tab to business_profile
     fireEvent.click(screen.getByText('Jump to Business Profile'));
 
     await waitFor(() => {
@@ -186,7 +195,7 @@ describe('SettingsPage Component & Guide Integration', () => {
       expect(screen.getByText('دسته‌بندی و حوزه کاری کسب‌وکار')).toBeInTheDocument();
     });
 
-    // Jump to step 3 (settings-password) -> should auto-switch tab to security
+    // Jump to step 4 (settings-password) -> should auto-switch tab to security
     fireEvent.click(screen.getByText('Jump to Password'));
 
     await waitFor(() => {

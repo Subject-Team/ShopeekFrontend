@@ -12,6 +12,9 @@ export interface AdminStats {
   total_forecasts: number;
   business_profiles_completed: number;
   total_error_events: number;
+  deleted_accounts?: number;
+  deletion_queue_accounts?: number;
+  deleted_over_7d_accounts?: number;
 }
 
 export interface AdminUserItem {

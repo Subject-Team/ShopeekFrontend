@@ -95,12 +95,16 @@ describe('AdminGuard', () => {
       total_forecasts: 12,
       business_profiles_completed: 6,
       total_error_events: 3,
+      deleted_accounts: 4,
+      deletion_queue_accounts: 2,
     });
 
     await renderGuard();
 
     await vi.waitFor(() => {
       expect(screen.getByText('پنل مدیریت')).toBeTruthy();
+      expect(screen.getByText('حساب‌های حذف‌شده')).toBeInTheDocument();
+      expect(screen.getByText('در صف حذف')).toBeInTheDocument();
     });
   });
 });

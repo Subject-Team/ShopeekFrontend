@@ -21,6 +21,7 @@ import {
   ChevronLeft,
   ChevronRight,
   RotateCcw,
+  Clock,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -98,6 +99,8 @@ const StatsTab: React.FC = () => {
     { title: 'پیش‌بینی‌ها', value: stats.total_forecasts, icon: BarChart3, color: 'cyan' as const },
     { title: 'پروفایل تکمیل‌شده', value: stats.business_profiles_completed, icon: UserCheck, color: 'emerald' as const },
     { title: 'رویدادهای خطا', value: stats.total_error_events, icon: AlertTriangle, color: 'amber' as const },
+    { title: 'در صف حذف', value: stats.deletion_queue_accounts ?? 0, icon: Clock, color: 'amber' as const },
+    { title: 'حساب‌های حذف‌شده', value: stats.deleted_accounts ?? 0, icon: Trash2, color: 'rose' as const },
   ];
 
   const colorStyles = {
@@ -105,6 +108,7 @@ const StatsTab: React.FC = () => {
     indigo: 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border-indigo-100 dark:border-indigo-900/50',
     amber: 'bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-900/50',
     cyan: 'bg-cyan-50 dark:bg-cyan-950/50 text-cyan-600 dark:text-cyan-400 border-cyan-100 dark:border-cyan-900/50',
+    rose: 'bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-900/50',
   };
 
   return (

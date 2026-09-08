@@ -70,7 +70,7 @@ export const SettingsPage: React.FC = () => {
       currentStep.id === 'settings-telegram'
     ) {
       setActiveTab('security');
-    } else if (currentStep.id === 'settings-profile') {
+    } else if (currentStep.id === 'settings-profile' || currentStep.id === 'settings-danger-zone') {
       setActiveTab('account');
     } else if (currentStep.id === 'settings-business-profile') {
       setActiveTab('business_profile');
