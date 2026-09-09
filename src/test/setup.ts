@@ -1,5 +1,8 @@
 import React from 'react';
-import '@testing-library/jest-dom';
+// Vitest 5 inlines `expect` and no longer reads custom matcher declarations
+// from the global jest.Matchers interface — the /vitest entry is required for
+// its type augmentation to apply.
+import '@testing-library/jest-dom/vitest';
 import { vi } from 'vitest';
 
 // Mock window.matchMedia
