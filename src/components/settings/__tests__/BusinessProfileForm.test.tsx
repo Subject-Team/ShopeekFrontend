@@ -45,8 +45,10 @@ describe('BusinessProfileForm Component', () => {
     expect(screen.getByText('دسته‌بندی و حوزه کاری کسب‌وکار')).toBeInTheDocument();
     expect(screen.getByDisplayValue('45')).toBeInTheDocument();
     expect(screen.getByDisplayValue('15')).toBeInTheDocument(); // 15 million tomaans
-    expect(screen.getByText('فروش کالا (فیزیکی یا دیجیتال)')).toBeInTheDocument();
-    expect(screen.getByText('خدماتی (ارائه خدمات و مشاوره)')).toBeInTheDocument();
+    expect(screen.getByText('فروش کالا')).toBeInTheDocument();
+    expect(screen.getByText('(فیزیکی یا دیجیتال)')).toBeInTheDocument();
+    expect(screen.getByText('ارائه خدمات')).toBeInTheDocument();
+    expect(screen.getByText('(خدماتی و مشاوره)')).toBeInTheDocument();
     expect(screen.getByDisplayValue('https://instagram.com/myshop')).toBeInTheDocument();
   });
 
@@ -74,7 +76,7 @@ describe('BusinessProfileForm Component', () => {
   it('allows switching business type between goods and services', () => {
     renderForm();
 
-    const servicesBtn = screen.getByRole('button', { name: /خدماتی \(ارائه خدمات و مشاوره\)/i });
+    const servicesBtn = screen.getByRole('button', { name: /ارائه خدمات/i });
     fireEvent.click(servicesBtn);
 
     expect(servicesBtn.className).toContain('border-indigo-600');

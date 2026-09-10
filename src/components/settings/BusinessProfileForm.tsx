@@ -320,33 +320,43 @@ export const BusinessProfileForm: React.FC<BusinessProfileFormProps> = ({
           <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
             نوع کسب‌وکار <span className="text-rose-500">*</span>
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
             <button
               type="button"
               disabled={readOnly}
               onClick={() => setBusinessType('goods')}
-              className={`flex items-center justify-center gap-2 p-3 sm:p-3.5 rounded-2xl border text-xs font-bold transition-all cursor-pointer ${
+              className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 p-2.5 sm:p-3.5 rounded-2xl border text-center transition-all cursor-pointer ${
                 businessType === 'goods'
                   ? 'border-indigo-600 bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 ring-2 ring-indigo-600/20'
                   : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-300'
               }`}
             >
-              <Package className="w-4 h-4 shrink-0" />
-              <span>فروش کالا (فیزیکی یا دیجیتال)</span>
+              <div className="flex items-center gap-1.5">
+                <Package className="w-4 h-4 shrink-0" />
+                <span className="text-xs font-bold">فروش کالا</span>
+              </div>
+              <span className="text-[10px] font-normal opacity-80">
+                (فیزیکی یا دیجیتال)
+              </span>
             </button>
 
             <button
               type="button"
               disabled={readOnly}
               onClick={() => setBusinessType('services')}
-              className={`flex items-center justify-center gap-2 p-3 sm:p-3.5 rounded-2xl border text-xs font-bold transition-all cursor-pointer ${
+              className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 p-2.5 sm:p-3.5 rounded-2xl border text-center transition-all cursor-pointer ${
                 businessType === 'services'
                   ? 'border-indigo-600 bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 ring-2 ring-indigo-600/20'
                   : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-300'
               }`}
             >
-              <Wrench className="w-4 h-4 shrink-0" />
-              <span>خدماتی (ارائه خدمات و مشاوره)</span>
+              <div className="flex items-center gap-1.5">
+                <Wrench className="w-4 h-4 shrink-0" />
+                <span className="text-xs font-bold">ارائه خدمات</span>
+              </div>
+              <span className="text-[10px] font-normal opacity-80">
+                (خدماتی و مشاوره)
+              </span>
             </button>
           </div>
         </div>
