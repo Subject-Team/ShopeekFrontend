@@ -45,3 +45,13 @@
   backdrop-filter: blur(12px);
   border: 1px solid rgba(51, 65, 85, 0.6);
 }
+
+/* Utility to hide scrollbars while preserving scrolling */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
