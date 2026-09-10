@@ -313,12 +313,12 @@ export const JalaliDateRangeModal: React.FC<JalaliDateRangeModalProps> = ({
         </div>
 
         {/* Quick Presets (Last 7 / 14 / 30 days) */}
-        <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800">
-          <div className="flex items-center justify-between gap-2">
+        <div className="px-4 sm:px-5 py-3 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-[11px] font-medium text-slate-400 shrink-0">
               انتخاب سریع:
             </span>
-            <div className="flex items-center gap-1.5 w-full justify-end">
+            <div className="flex flex-wrap items-center gap-1.5 justify-end">
               {[
                 { days: 7, label: '۷ روز اخیر' },
                 { days: 14, label: '۱۴ روز اخیر' },
@@ -350,11 +350,11 @@ export const JalaliDateRangeModal: React.FC<JalaliDateRangeModalProps> = ({
         </div>
 
         {/* Footer Actions: Accept / Discard */}
-        <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2.5">
+        <div className="px-4 sm:px-5 py-3.5 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-800 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5">
           <button
             type="button"
             onClick={handleDiscard}
-            className="px-4 py-2 text-xs font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700 transition-colors"
+            className="w-full sm:w-auto px-4 py-2.5 text-xs font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700 transition-colors text-center"
           >
             انصراف
           </button>
@@ -362,7 +362,7 @@ export const JalaliDateRangeModal: React.FC<JalaliDateRangeModalProps> = ({
             type="button"
             onClick={handleApply}
             disabled={!tempStart || !tempEnd || Boolean(errorMessage)}
-            className="px-5 py-2 text-xs font-bold rounded-xl bg-brand-600 hover:bg-brand-700 text-white shadow-md shadow-brand-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 transition-all"
+            className="w-full sm:w-auto px-5 py-2.5 text-xs font-bold rounded-xl bg-brand-600 hover:bg-brand-700 text-white shadow-md shadow-brand-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 transition-all"
           >
             <Check className="w-3.5 h-3.5" />
             <span>تأیید و اعمال بازه</span>

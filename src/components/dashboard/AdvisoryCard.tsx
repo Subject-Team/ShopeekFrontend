@@ -40,24 +40,24 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = 
     <>
       <div className="glass-card p-4 sm:p-6 rounded-2xl shadow-xs relative overflow-hidden bg-gradient-to-br from-indigo-50/60 via-white to-emerald-50/60 dark:from-indigo-950/30 dark:via-slate-900 dark:to-emerald-950/30 border border-indigo-100 dark:border-indigo-900/40">
         {/* Header */}
-        <div className="flex flex-col items-start justify-between gap-3 mb-4">
-          <div className="flex items-center gap-3 w-full flex-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div className="flex items-center gap-3 w-full sm:w-auto flex-1">
             <Bot className="w-8 h-8 indigo" color="#544cfb" />
             <div className="w-full">
               <h3 className="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base lg:text-lg flex flex-wrap items-center gap-2">
                 <span>توصیه اختصاصی از شاپیک</span>
-                <span className="px-2 py-0.5 mr-auto rounded-xl text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 shrink-0">
+                <span className="px-2 py-0.5 rounded-xl text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 shrink-0">
                   تحلیل همه جانبه
                 </span>
               </h3>
             </div>
           </div>
-          <div className="flex gap-3 w-full sm:w-min items-between">
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
             {/* History Popup Trigger Button */}
             <button
               type="button"
               onClick={() => setIsHistoryModalOpen(true)}
-              className="flex-1 sm:flex-0 w-auto flex justify-center items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/70 dark:hover:bg-indigo-900/80 text-indigo-700 dark:text-indigo-300 font-bold text-[11px] sm:text-xs transition-colors border border-indigo-200/70 dark:border-indigo-800/70 shadow-2xs whitespace-nowrap"
+              className="flex-1 sm:flex-initial flex justify-center items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/70 dark:hover:bg-indigo-900/80 text-indigo-700 dark:text-indigo-300 font-bold text-[11px] sm:text-xs transition-colors border border-indigo-200/70 dark:border-indigo-800/70 shadow-2xs whitespace-nowrap"
             >
               <History className="w-3.5 h-3.5" />
               <span>پیشنهادات قبلی</span>
@@ -68,7 +68,7 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = 
               onClick={handleManualTrigger}
               disabled={loading || readOnly}
               title={readOnly ? 'در حالت فقط-خواندنی، پیشنهاد هوشمند جدید تولید نمی‌شود.' : undefined}
-              className="flex-1 sm:flex-0 w-auto flex justify-center items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-[10px] sm:text-xs font-semibold shadow-xs transition-all disabled:opacity-60 whitespace-nowrap"
+              className="flex-1 sm:flex-initial flex justify-center items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-[10px] sm:text-xs font-semibold shadow-xs transition-all disabled:opacity-60 whitespace-nowrap"
             >
               <RefreshCw className={`w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 ${loading ? 'animate-spin' : ''}`} />
               <span className="hidden xs:inline">{loading ? 'در حال تحلیل...' : 'به‌روزرسانی دستی'}</span>

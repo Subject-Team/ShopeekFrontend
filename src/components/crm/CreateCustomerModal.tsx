@@ -52,17 +52,17 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
     <ModalOverlay onClick={onClose}>
       {/* Modal container - centered with proper spacing */}
       <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-        <div className="w-full max-w-md mx-4 pointer-events-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
+        <div className="w-full max-w-md mx-4 pointer-events-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
           {/* Header */}
-          <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <h3 className="font-extrabold text-slate-900 dark:text-white text-lg">ثبت مشتری جدید</h3>
+          <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
+            <h3 className="font-extrabold text-slate-900 dark:text-white text-base sm:text-lg">ثبت مشتری جدید</h3>
             <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 block">نام مشتری *</label>
               <div className="relative">

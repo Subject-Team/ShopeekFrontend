@@ -45,14 +45,14 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
       <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
         <div className="w-full max-w-2xl max-h-[90vh] mx-4 pointer-events-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col">
           {/* Modal Header */}
-          <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
-            <div className="flex items-center gap-4 min-w-0">
-              <div className="w-12 h-12 rounded-2xl bg-brand-500 text-white font-extrabold text-lg flex items-center justify-center shadow-lg shadow-brand-500/20 shrink-0">
+          <div className="p-4 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-brand-500 text-white font-extrabold text-base sm:text-lg flex items-center justify-center shadow-lg shadow-brand-500/20 shrink-0">
                 {customer.name.charAt(0)}
               </div>
               <div className="min-w-0">
-                <h3 className="font-extrabold text-slate-900 dark:text-white text-lg truncate">{customer.name}</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                <h3 className="font-extrabold text-slate-900 dark:text-white text-base sm:text-lg truncate">{customer.name}</h3>
+                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
                   ارزش کل طول عمر (LTV): {toGroupedPersianDigits(customer.total_lifetime_value || 0)} تومان
                 </p>
               </div>
@@ -66,7 +66,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
           </div>
 
           {/* Modal Body */}
-          <div className="p-6 overflow-y-auto space-y-6 flex-1">
+          <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1">
             {/* Add Interaction Form - fully responsive vertical stack on mobile */}
             <div className="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-4 border border-slate-200 dark:border-slate-700/60 space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -81,8 +81,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
                     } disabled:opacity-50`}
                   >
                     <MessageSquare className="w-3 h-3" />
-                    <span className="hidden xs:inline">یادداشت</span>
-                    <span className="xs:hidden">یادداشت</span>
+                    <span>یادداشت</span>
                   </button>
                   <button
                     type="button"
@@ -93,8 +92,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
                     } disabled:opacity-50`}
                   >
                     <Phone className="w-3 h-3" />
-                    <span className="hidden xs:inline">تماس</span>
-                    <span className="xs:hidden">تماس</span>
+                    <span>تماس</span>
                   </button>
                   <button
                     type="button"
@@ -105,8 +103,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
                     } disabled:opacity-50`}
                   >
                     <Mail className="w-3.5 h-3.5" />
-                    <span className="hidden xs:inline">ایمیل</span>
-                    <span className="xs:hidden">ایمیل</span>
+                    <span>ایمیل</span>
                   </button>
                 </div>
               </div>

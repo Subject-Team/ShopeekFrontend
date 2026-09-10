@@ -21,7 +21,7 @@ export const MainFooter: React.FC = () => {
             </p>
 
             {/* Social Media Handles Links */}
-            <div className="pt-2 flex items-center gap-3">
+            <div className="pt-2 flex flex-wrap items-center gap-3">
               <span className="text-xs font-bold text-slate-700">ارتباط در شبکه‌های اجتماعی:</span>
               <div className="flex items-center gap-2">
                 <a
@@ -113,9 +113,9 @@ export const MainFooter: React.FC = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 text-center sm:text-right">
           <p>© {new Date().getFullYear()} شاپیک (Shopeek). تمامی حقوق محفوظ است.</p>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-6">
             <Link to="/contact" className="hover:text-slate-900 transition-colors">تماس با ما</Link>
             <Link to="/privacy-policy" className="hover:text-slate-900 transition-colors">حریم خصوصی</Link>
             <Link to="/" className="hover:text-slate-900 transition-colors">صفحه اصلی</Link>

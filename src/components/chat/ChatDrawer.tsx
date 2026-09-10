@@ -164,14 +164,14 @@ export const ChatDrawer: React.FC = () => {
   if (!isChatOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+    <div className="fixed inset-0 h-[100dvh] z-50 overflow-hidden">
       <div
         className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity"
         onClick={() => setIsChatOpen(false)}
       />
 
-      <div className="absolute inset-y-0 left-0 max-w-full flex pl-0">
-        <div className="w-screen max-w-md bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col justify-between">
+      <div className="absolute inset-y-0 left-0 max-w-full flex pl-0 h-full">
+        <div className="w-screen max-w-md h-full max-h-[100dvh] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col justify-between">
 
           {/* Header */}
           <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/80 dark:bg-slate-800/80">

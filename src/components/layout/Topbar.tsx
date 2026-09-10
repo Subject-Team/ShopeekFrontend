@@ -13,7 +13,6 @@ import {
 import { useTheme } from '../../context/ThemeContext';
 import { usePageContext } from '../../context/PageContext';
 import { useAuth } from '../../context/AuthContext';
-import { useIsMobile } from '../../hooks/useIsMobile';
 import { getPageTitle } from '../../utils/routes';
 import { JalaliDateRangeModal } from '../common/JalaliDateRangeModal';
 import { formatJalaliRangeLabel } from "../../utils/persian/date";
@@ -25,7 +24,6 @@ interface TopbarProps {
 export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   const { theme, toggleTheme } = useTheme();
   const {
-    dateRangeDays,
     startDate,
     endDate,
     isHistorical,
@@ -34,7 +32,6 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   } = usePageContext();
   const { user, logout } = useAuth();
   const location = useLocation();
-  const isMobile = useIsMobile(1024);
   const [isDateModalOpen, setIsDateModalOpen] = useState<boolean>(false);
 
   const showDateFilter =

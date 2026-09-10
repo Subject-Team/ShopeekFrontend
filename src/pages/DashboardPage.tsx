@@ -166,7 +166,7 @@ export const DashboardPage: React.FC = () => {
             <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
               ثبت سریع فاکتور فروش به صورت مستقیم یا ورود داده‌ها از طریق فایل اکسل و CSV.
             </p>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2">
               <button
                 onClick={() => setInvoiceModalOpen(true)}
                 className="flex-1 py-2.5 px-4 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition-all flex items-center justify-center gap-2"

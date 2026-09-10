@@ -31,7 +31,7 @@ export const PublicHeader: React.FC = () => {
           scrolled ? 'py-1.5 shadow-md border-b border-slate-200/80 bg-white/40 backdrop-blur-md' : 'py-3 bg-transparent border-transparent'
         } ${
           // Hide header on mobile when scrolled, keep visible on desktop
-          scrolled ? 'md:translate-y-0 -translate-y-full' : 'translate-y-0'
+          scrolled ? 'lg:translate-y-0 -translate-y-full' : 'translate-y-0'
         }`}
       >
         <div
@@ -63,7 +63,7 @@ export const PublicHeader: React.FC = () => {
 
           {/* Center: Navigation Links */}
           <nav
-            className={`hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 transition-all duration-300 ease-in-out ${
+            className={`hidden lg:flex items-center gap-6 text-sm font-medium text-slate-600 transition-all duration-300 ease-in-out ${
               scrolled
                 ? 'right-40'
                 : 'right-1/2 translate-x-1/2'
@@ -89,7 +89,7 @@ export const PublicHeader: React.FC = () => {
           </nav>
 
           {/* Right side: Action Buttons */}
-          <div className="hidden md:flex items-center gap-3 shrink-0 transition-all duration-300">
+          <div className="hidden lg:flex items-center gap-3 shrink-0 transition-all duration-300">
             <Link
               to="/dashboard"
               className={`rounded-xl border border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-900 font-semibold text-xs transition-all bg-white shadow-2xs flex items-center gap-1.5 ${
@@ -110,10 +110,10 @@ export const PublicHeader: React.FC = () => {
             </Link>
           </div>
 
-          {/* Mobile Hamburger Button - hidden when scrolled */}
+          {/* Mobile/Tablet Hamburger Button - hidden when scrolled */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`md:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors border border-slate-200 ${
+            className={`lg:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors border border-slate-200 ${
               scrolled ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
             }`}
             aria-label="منوی سایت"
@@ -123,10 +123,10 @@ export const PublicHeader: React.FC = () => {
         </div>
       </header>
 
-      {/* Floating Mobile Hamburger Button - visible only on mobile when scrolled */}
+      {/* Floating Mobile/Tablet Hamburger Button - visible only when scrolled */}
       <button
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        className={`md:hidden fixed top-3 left-4 transform z-50 p-2.5 rounded-2xl bg-white/95 border border-slate-300 shadow-xl text-slate-900 backdrop-blur-md transition-all duration-300 ${
+        className={`lg:hidden fixed top-3 left-4 transform z-50 p-2.5 rounded-2xl bg-white/95 border border-slate-300 shadow-xl text-slate-900 backdrop-blur-md transition-all duration-300 ${
           scrolled ? 'opacity-100 translate-y-2' : 'opacity-0 -translate-y-4 pointer-events-none'
         }`}
         aria-label="منوی شناور سایت"
@@ -134,13 +134,20 @@ export const PublicHeader: React.FC = () => {
         {mobileMenuOpen ? <X className="w-6 h-6 text-slate-900" /> : <Menu className="w-6 h-6 text-slate-900" />}
       </button>
 
-
       {/* Spacer to prevent content from hiding behind fixed header */}
-      <div className={`md:block transition-all duration-300 ${scrolled ? 'h-14' : 'h-16 sm:h-20'}`} />
+      <div className={`lg:block transition-all duration-300 ${scrolled ? 'h-14' : 'h-16 sm:h-20'}`} />
+
+      {/* Mobile/Tablet Backdrop */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-30 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
 
       {/* Mobile Drawer Menu Overlay */}
       {(
-        <div className={`${mobileMenuOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"} md:hidden md:pointer-events-none fixed inset-x-0 top-0 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-2xl z-40 p-5 ${scrolled? 'pt-4' : 'pt-24 sm:pt-28'} space-y-4 duration-200`}>
+        <div className={`${mobileMenuOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"} lg:hidden fixed inset-x-0 top-0 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-2xl z-40 p-5 ${scrolled? 'pt-4' : 'pt-24 sm:pt-28'} space-y-4 duration-200`}>
           <nav className="flex flex-col space-y-2 text-sm font-medium text-slate-700 border-b border-slate-100 pb-4">
             {isLanding ? (
               <a

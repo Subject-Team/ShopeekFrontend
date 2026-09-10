@@ -8,6 +8,7 @@ import {
   Lightbulb,
 } from 'lucide-react';
 import { useGuide } from '../../context/GuideContext';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import { toPersianDigits } from "../../utils/persian";
 
 interface TargetRect {
@@ -32,6 +33,7 @@ export const GuideSpotlight: React.FC = () => {
     currentConfig,
   } = useGuide();
 
+  const isMobile = useIsMobile(640);
   const [targetRect, setTargetRect] = useState<TargetRect | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number } | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -67,7 +69,7 @@ export const GuideSpotlight: React.FC = () => {
     if (element) {
       element.scrollIntoView({
         behavior: 'smooth',
-        block: 'center',
+        block: isMobile ? 'start' : 'center',
         inline: 'nearest',
       });
     }
@@ -240,16 +242,20 @@ export const GuideSpotlight: React.FC = () => {
         />
       )}
 
-      {/* Floating Tooltip Card */}
+      {/* Tooltip Card: Fixed bottom sheet on mobile, anchored floating card on desktop */}
       <div
         ref={tooltipRef}
-        className={`pointer-events-auto absolute transition-all duration-300 ease-out ${
-          !targetRect || !tooltipPos
-            ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
-            : ''
+        className={`pointer-events-auto transition-all duration-300 ease-out ${
+          isMobile
+            ? 'fixed bottom-4 inset-x-3 max-w-md mx-auto z-50'
+            : `absolute ${
+                !targetRect || !tooltipPos
+                  ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
+                  : ''
+              }`
         }`}
         style={
-          targetRect && tooltipPos
+          !isMobile && targetRect && tooltipPos
             ? {
                 top: `${tooltipPos.top}px`,
                 left: `${tooltipPos.left}px`,
@@ -257,7 +263,7 @@ export const GuideSpotlight: React.FC = () => {
             : undefined
         }
       >
-        <div className="w-[340px] sm:w-[400px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-5 sm:p-6 space-y-4 animate-fade-in text-slate-800 dark:text-slate-100">
+        <div className="w-full sm:w-[400px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-4 sm:p-6 space-y-3.5 sm:space-y-4 animate-fade-in text-slate-800 dark:text-slate-100">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <div className="flex items-center gap-2">

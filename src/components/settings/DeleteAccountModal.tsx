@@ -63,13 +63,13 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
         </div>
 
         {/* 2 Options (No is highlighted / primary action) */}
-        <div className="pt-2 flex items-center justify-end gap-3">
+        <div className="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3">
           <button
             ref={cancelBtnRef}
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/25 transition-all focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/25 transition-all focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900 text-center"
           >
             خیر، انصراف
           </button>
@@ -78,7 +78,7 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
             type="button"
             onClick={onConfirm}
             disabled={isSubmitting}
-            className="px-4 py-2.5 rounded-xl border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold transition-all flex items-center gap-1.5 disabled:opacity-60"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold transition-all flex items-center justify-center gap-1.5 disabled:opacity-60"
           >
             {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
             <span>بله، حذف حساب</span>
