@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, BarChart3, Bot, FileText, ArrowUpLeft, MessageSquare, Send, Camera, Mail } from 'lucide-react';
+import { Shield, BarChart3, Bot, FileText, ArrowUpLeft, MessageSquare, Send, Camera, Mail, BookOpen } from 'lucide-react';
 
 export const MainFooter: React.FC = () => {
   return (
@@ -98,6 +98,13 @@ export const MainFooter: React.FC = () => {
                 <Shield className="w-3.5 h-3.5 text-emerald-600" />
                 <span>مطالعه سند کامل حریم خصوصی</span>
               </Link>
+              <Link
+                to="/blog"
+                className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-brand-600" />
+                <span>وبلاگ و راهنمای تحلیل فروش</span>
+              </Link>
             </div>
           </div>
 
@@ -116,6 +123,7 @@ export const MainFooter: React.FC = () => {
         <div className="pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 text-center sm:text-right">
           <p>© {new Date().getFullYear()} شاپیک (Shopeek). تمامی حقوق محفوظ است.</p>
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-6">
+            <Link to="/blog" className="hover:text-slate-900 transition-colors">وبلاگ</Link>
             <Link to="/contact" className="hover:text-slate-900 transition-colors">تماس با ما</Link>
             <Link to="/privacy-policy" className="hover:text-slate-900 transition-colors">حریم خصوصی</Link>
             <Link to="/" className="hover:text-slate-900 transition-colors">صفحه اصلی</Link>

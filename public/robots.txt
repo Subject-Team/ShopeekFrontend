@@ -3,6 +3,7 @@ Allow: /
 Allow: /login
 Allow: /contact
 Allow: /privacy-policy
+Allow: /blog
 Disallow: /dashboard/
 Disallow: /api/
 

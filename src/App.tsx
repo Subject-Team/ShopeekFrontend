@@ -10,6 +10,8 @@ import { Shell } from './components/layout/Shell';
 import { LandingPage } from './pages/LandingPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { ContactPage } from './pages/ContactPage';
+import { BlogPage } from './pages/BlogPage';
+import { BlogPostPage } from './pages/BlogPostPage';
 import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
@@ -69,6 +71,10 @@ const AppRoutes: React.FC = () => {
 
       {/* Contact Support Page */}
       <Route path="/contact" element={<ContactPage />} />
+
+      {/* Blog & Articles Pages */}
+      <Route path="/blog" element={<BlogPage />} />
+      <Route path="/blog/:slug" element={<BlogPostPage />} />
 
       {/* Privacy Policy Main Page & Legacy Path Redirect */}
       <Route path="/privacy-policy" element={<PrivacyPage />} />

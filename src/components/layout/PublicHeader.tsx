@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, LayoutDashboard, LogIn, MessageSquare, Shield, BarChart3 } from 'lucide-react';
+import { Menu, X, LayoutDashboard, LogIn, MessageSquare, Shield, BarChart3, BookOpen } from 'lucide-react';
 
 export const PublicHeader: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
@@ -74,6 +74,12 @@ export const PublicHeader: React.FC = () => {
             ) : (
               <Link to="/#features" className="hover:text-brand-600 transition-colors">قابلیت‌ها</Link>
             )}
+            <Link
+              to="/blog"
+              className={`transition-colors ${location.pathname.startsWith('/blog') ? 'text-brand-600 font-bold' : 'hover:text-brand-600'}`}
+            >
+              وبلاگ
+            </Link>
             <Link
               to="/contact"
               className={`transition-colors ${location.pathname === '/contact' ? 'text-brand-600 font-bold' : 'hover:text-brand-600'}`}
@@ -168,6 +174,17 @@ export const PublicHeader: React.FC = () => {
                 <span>قابلیت‌های سامانه</span>
               </Link>
             )}
+
+            <Link
+              to="/blog"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`flex items-center gap-3 p-2.5 rounded-xl transition-colors ${
+                location.pathname.startsWith('/blog') ? 'bg-brand-50 text-brand-600 font-bold' : 'hover:bg-slate-100'
+              }`}
+            >
+              <BookOpen className="w-4 h-4 text-brand-600" />
+              <span>وبلاگ و مقالات</span>
+            </Link>
 
             <Link
               to="/contact"

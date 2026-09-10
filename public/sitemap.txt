@@ -2,3 +2,8 @@ https://shopeekapp.ir/
 https://shopeekapp.ir/login
 https://shopeekapp.ir/contact
 https://shopeekapp.ir/privacy-policy
+https://shopeekapp.ir/blog
+https://shopeekapp.ir/blog/sales-analytics-guide-for-iranian-online-shops
+https://shopeekapp.ir/blog/5-common-profit-loss-mistakes-in-smbs
+https://shopeekapp.ir/blog/rfm-analysis-and-customer-retention-for-smbs
+https://shopeekapp.ir/blog/quick-sales-recording-telegram-bot-guide
