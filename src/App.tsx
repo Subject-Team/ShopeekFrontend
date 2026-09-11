@@ -18,6 +18,7 @@ import { AnalyticsPage } from './pages/AnalyticsPage';
 import { CustomersPage } from './pages/CustomersPage';
 import { IngestionPage } from './pages/IngestionPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { SubscriptionPage } from './pages/SubscriptionPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { AdminGuard } from './pages/AdminPage';
 
@@ -54,6 +55,7 @@ const ProtectedDashboardLayout: React.FC = () => {
         <Route path="customers" element={<CustomersPage />} />
         <Route path="ingestion" element={<IngestionPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="subscription" element={<SubscriptionPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Shell>

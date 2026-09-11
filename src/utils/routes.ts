@@ -15,6 +15,7 @@ export const ROUTES: RouteInfo[] = [
   { path: '/dashboard/customers', key: 'customers', title: 'مدیریت مشتریان (CRM)' },
   { path: '/dashboard/ingestion', key: 'ingestion', title: 'ورود داده‌ها' },
   { path: '/dashboard/settings', key: 'settings', title: 'تنظیمات' },
+  { path: '/dashboard/subscription', key: 'subscription', title: 'اشتراک و پرداخت' },
 ];
 
 export const getPageTitle = (pathname: string): string => {

@@ -239,3 +239,50 @@ export interface InvoiceResult {
   total_amount: number;
   transaction_date: string;
 }
+
+// --- Billing overview (Plan & Payment page) ---
+
+export interface BillingPlan {
+  key: string | null;
+  name_fa: string | null;
+  status: string;
+  is_exempt: boolean;
+  remaining_days: number | null;
+  next_payment_due: string | null;
+  current_period_started_at: string | null;
+}
+
+export interface BillingWallet {
+  monthly_balance: number;
+  purchased_balance: number;
+  pending_session_charge: number;
+  pending_account_charge: number;
+}
+
+export interface BillingUsage {
+  feature_key: string;
+  used: number;
+  limit: number | null;
+}
+
+export interface BillingCreditTransaction {
+  amount: number;
+  source: string;
+  feature_key: string | null;
+  ref: string | null;
+  created_at: string;
+}
+
+export interface BillingStats {
+  total_granted: number;
+  total_spent: number;
+  spend_by_feature: Record<string, number>;
+}
+
+export interface BillingOverview {
+  plan: BillingPlan;
+  wallet: BillingWallet | null;
+  usage: BillingUsage[];
+  ledger: BillingCreditTransaction[];
+  stats: BillingStats;
+}

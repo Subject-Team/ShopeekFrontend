@@ -34,6 +34,7 @@ export {
   fetchBusinessProfile,
   updateBusinessProfile,
 } from './api/settings';
+export { fetchBillingOverview } from './api/billing';
 export {
   fetchAdminStats,
   fetchAdminUsers,

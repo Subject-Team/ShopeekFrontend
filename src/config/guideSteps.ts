@@ -185,6 +185,41 @@ export const GUIDE_CONFIGS: Record<string, PageGuideConfig> = {
     ],
   },
 
+  subscription: {
+    pageKey: 'subscription',
+    title: 'راهنمای اشتراک و پرداخت',
+    steps: [
+      {
+        id: 'subscription-plan-card',
+        targetSelector: '[data-guide="subscription-plan-card"]',
+        title: 'وضعیت اشتراک',
+        description: 'نام طرح، روزهای باقی‌مانده و سررسید بعدی حساب شما در این کارت نمایش داده می‌شود.',
+        placement: 'bottom',
+      },
+      {
+        id: 'subscription-wallet-card',
+        targetSelector: '[data-guide="subscription-wallet-card"]',
+        title: 'کیف پول اعتبار',
+        description: 'اعتبار دوره، اعتبار خریداری‌شده و مبالغ در انتظار تسویه از این بخش قابل پیگیری است.',
+        placement: 'bottom',
+      },
+      {
+        id: 'subscription-usage-card',
+        targetSelector: '[data-guide="subscription-usage-card"]',
+        title: 'مصرف در برابر سهمیه',
+        description: 'میزان استفاده امروز و این دوره در برابر سهمیه طرح شما را نشان می‌دهد.',
+        placement: 'bottom',
+      },
+      {
+        id: 'subscription-ledger-card',
+        targetSelector: '[data-guide="subscription-ledger-card"]',
+        title: 'تاریخچه اعتبار',
+        description: 'تمام شارژها و مصرف‌های اعتبار به همراه آمار کلی در این بخش ثبت می‌شود.',
+        placement: 'top',
+      },
+    ],
+  },
+
   settings: {
     pageKey: 'settings',
     title: 'راهنمای تنظیمات حساب',
