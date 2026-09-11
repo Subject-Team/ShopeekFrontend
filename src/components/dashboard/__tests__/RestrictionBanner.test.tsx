@@ -52,7 +52,7 @@ describe('RestrictionBanner', () => {
     renderBanner(
       baseUser({
         is_read_only: true,
-        restriction_reasons: ['subscription_expired'],
+        restriction_reasons: ['plan_expired'],
       })
     );
 
