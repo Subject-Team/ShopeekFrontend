@@ -15,8 +15,6 @@ export const MinimalFooter: React.FC = () => {
         <Link to="/contact" className="hover:text-brand-500 transition-colors">تماس با ما</Link>
         <span>•</span>
         <Link to="/privacy-policy" className="hover:text-brand-500 transition-colors">سیاست حریم خصوصی</Link>
-        <span>•</span>
-        <span>نسخه ۱.۰.۰</span>
       </div>
     </footer>
   );
