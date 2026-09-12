@@ -6,6 +6,15 @@ import type {
   AdminErrorsResponse,
   AdminUserUpdatePayload,
 } from '../../types/admin';
+import type {
+  AdminUserBilling,
+  AdminPaymentPayload,
+  AdminCreditsGrantPayload,
+  AdminCreditsGrantResult,
+  AdminWalletAdjustPayload,
+  AdminWalletAdjustResult,
+  AdminPlanItem,
+} from '../../types';
 import { authFetch } from './client';
 
 const API_BASE = '/api/v1';
@@ -96,5 +105,67 @@ export const fetchAdminErrors = async (
   if (source) params.set('source', source);
   const res = await authFetch(`${API_BASE}/admin/errors?${params.toString()}`);
   if (!res.ok) throw new Error('خطا در دریافت لیست خطاها');
+  return res.json();
+};
+
+// --- ADMIN BILLING ---
+
+export const fetchAdminPlans = async (): Promise<AdminPlanItem[]> => {
+  const res = await authFetch(`${API_BASE}/plans`);
+  if (!res.ok) throw new Error('خطا در دریافت طرح‌ها');
+  return res.json();
+};
+
+export const fetchAdminUserBilling = async (id: string): Promise<AdminUserBilling> => {
+  const res = await authFetch(`${API_BASE}/admin/users/${id}/billing`);
+  if (!res.ok) throw new Error('خطا در دریافت اطلاعات مالی کاربر');
+  return res.json();
+};
+
+export const recordAdminPayment = async (
+  id: string,
+  payload: AdminPaymentPayload
+): Promise<unknown> => {
+  const res = await authFetch(`${API_BASE}/admin/users/${id}/payments`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در ثبت پرداخت' }));
+    throw new Error(err.detail || 'خطا در ثبت پرداخت');
+  }
+  return res.json();
+};
+
+export const grantAdminCredits = async (
+  id: string,
+  payload: AdminCreditsGrantPayload
+): Promise<AdminCreditsGrantResult> => {
+  const res = await authFetch(`${API_BASE}/admin/users/${id}/credits`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در اعطای اعتبار' }));
+    throw new Error(err.detail || 'خطا در اعطای اعتبار');
+  }
+  return res.json();
+};
+
+export const adjustAdminWallet = async (
+  id: string,
+  payload: AdminWalletAdjustPayload
+): Promise<AdminWalletAdjustResult> => {
+  const res = await authFetch(`${API_BASE}/admin/users/${id}/wallet`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در تنظیم کیف پول' }));
+    throw new Error(err.detail || 'خطا در تنظیم کیف پول');
+  }
   return res.json();
 };

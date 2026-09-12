@@ -26,6 +26,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { NotFoundPage } from './NotFoundPage';
+import { UserBillingPanel } from '../components/admin/UserBillingPanel';
 import {
   fetchAdminStats,
   fetchAdminUsers,
@@ -532,6 +533,9 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, onClose, onUpda
               حساب خودتان — حذف و تغییر نقش غیرفعال است
             </p>
           )}
+
+          {/* Billing Panel (subscription, wallets, payments) */}
+          <UserBillingPanel userId={user.id} onChanged={onUpdated} />
 
           {/* Transactions */}
           <div>

@@ -287,6 +287,58 @@ export interface BillingOverview {
   stats: BillingStats;
 }
 
+// --- Admin per-user billing panel ---
+
+export interface AdminPayment {
+  id: number;
+  user_id: string;
+  plan_key: string;
+  duration_months: number;
+  amount_toman: number;
+  recorded_by: string;
+  note: string | null;
+  created_at: string;
+}
+
+export interface AdminUserBilling {
+  billing: BillingOverview;
+  payments: AdminPayment[];
+}
+
+export interface AdminPaymentPayload {
+  plan_key: string;
+  duration_months: number;
+  amount_toman: number;
+  note?: string | null;
+}
+
+export interface AdminCreditsGrantPayload {
+  amount: number;
+  note?: string | null;
+}
+
+export interface AdminWalletAdjustPayload {
+  monthly_balance: number;
+  purchased_balance: number;
+}
+
+export interface AdminCreditsGrantResult {
+  amount: number;
+  monthly_balance: number;
+  purchased_balance: number;
+}
+
+export interface AdminWalletAdjustResult {
+  monthly_balance: number;
+  purchased_balance: number;
+}
+
+export interface AdminPlanItem {
+  key: string;
+  name_fa: string;
+  is_active: boolean;
+}
+
 // --- Public plans comparison page ---
 
 export interface PublicPlanPrice {

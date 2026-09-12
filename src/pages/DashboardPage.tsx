@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DollarSign, ShoppingBag, CreditCard, Users, UploadCloud, ReceiptText } from 'lucide-react';
+import { DollarSign, ShoppingBag, CreditCard, Users, UploadCloud, ReceiptText, Sparkles } from 'lucide-react';
 import { KpiCard } from '../components/dashboard/KpiCard';
 import { RevenueChart } from '../components/dashboard/RevenueChart';
 import { AdvisoryCard } from '../components/dashboard/AdvisoryCard';
 import { SubscriptionWarningBanner } from '../components/dashboard/SubscriptionWarningBanner';
-import { SubscriptionStatusCard } from '../components/dashboard/SubscriptionStatusCard';
+import { PlanCreditOverviewCard } from '../components/dashboard/PlanCreditOverviewCard';
 import { BusinessProfileBanner } from '../components/dashboard/BusinessProfileBanner';
 import { usePageContext } from '../context/PageContext';
 import { useAuth } from '../context/AuthContext';
@@ -16,8 +16,10 @@ import {
   fetchAdvisoryHistory,
   fetchCustomers,
   fetchBusinessProfile,
+  fetchBillingOverview,
 } from '../services/api';
-import { KPISummary, RevenuePoint, AIAdvisory, Customer, BusinessProfile } from '../types';
+import { KPISummary, RevenuePoint, AIAdvisory, Customer, BusinessProfile, BillingOverview } from '../types';
+import { USAGE_LABELS } from '../config/plansDisplay';
 import { toGroupedPersianDigits } from "../utils/persian";
 import { formatJalaliRangeLabel } from "../utils/persian/date";
 import { SEO } from '../components/common/SEO';
@@ -33,17 +35,21 @@ export const DashboardPage: React.FC = () => {
   const [advisoryHistory, setAdvisoryHistory] = useState<AIAdvisory[]>([]);
   const [topCustomers, setTopCustomers] = useState<Customer[]>([]);
   const [businessProfile, setBusinessProfile] = useState<BusinessProfile | null>(null);
+  const [billing, setBilling] = useState<BillingOverview | null>(null);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState<boolean>(false);
+
+  const aiUsage = billing?.usage.find((u) => u.feature_key === 'daily_ai_run_limit');
 
   const loadDashboardData = async () => {
     try {
-      const [kpiRes, trendRes, advRes, custRes, historyRes, bizRes] = await Promise.all([
+      const [kpiRes, trendRes, advRes, custRes, historyRes, bizRes, billingRes] = await Promise.all([
         fetchKPISummary(dateRangeDays, startDate, endDate),
         fetchRevenueTrend(dateRangeDays, startDate, endDate),
         fetchLatestAdvisory(),
         fetchCustomers(),
         fetchAdvisoryHistory(),
         fetchBusinessProfile().catch(() => null),
+        fetchBillingOverview().catch(() => null),
       ]);
       setKpi(kpiRes);
       setTrend(trendRes);
@@ -51,6 +57,7 @@ export const DashboardPage: React.FC = () => {
       setAdvisoryHistory(historyRes);
       setTopCustomers(custRes.slice(0, 5));
       if (bizRes) setBusinessProfile(bizRes);
+      if (billingRes) setBilling(billingRes);
     } catch (err) {
       console.error(err);
     }
@@ -93,6 +100,15 @@ export const DashboardPage: React.FC = () => {
       {/* 3-Hour AI Advisory Widget */}
       <div data-guide="dashboard-advisory">
         <AdvisoryCard advisory={advisory} history={advisoryHistory} onRefresh={loadDashboardData} readOnly={Boolean(user?.is_read_only)} />
+        {aiUsage && (
+          <p className="mt-2 px-1 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+            <Sparkles className="w-3.5 h-3.5 text-sky-500" />
+            <span>
+              {USAGE_LABELS['daily_ai_run_limit']}: {toGroupedPersianDigits(aiUsage.used)}
+              {aiUsage.limit === null ? ' — نامحدود' : ` از ${toGroupedPersianDigits(aiUsage.limit)}`}
+            </span>
+          </p>
+        )}
       </div>
 
       {/* KPI Cards Grid */}
@@ -218,10 +234,8 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Remaining Subscription Status Card (Under Data Entry Section) */}
-          <div data-guide="dashboard-subscription">
-            <SubscriptionStatusCard user={user} />
-          </div>
+          {/* Plan & Credit Overview Card (Under Data Entry Section) */}
+          <PlanCreditOverviewCard overview={billing} />
         </div>
       </div>
 

@@ -1,13 +1,40 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send, CheckCircle2, MessageSquareText, Shield, ExternalLink } from 'lucide-react';
+import { Send, CheckCircle2, MessageSquareText, Shield, ExternalLink, ReceiptText } from 'lucide-react';
 import { FileUploader } from '../components/ingestion/FileUploader';
+import { fetchBillingOverview } from '../services/api';
+import type { BillingOverview, BillingUsage } from '../types';
+import { USAGE_LABELS } from '../config/plansDisplay';
+import { toGroupedPersianDigits } from '../utils/persian';
 import { useAuth } from '../context/AuthContext';
 import { SEO } from '../components/common/SEO';
 
 export const IngestionPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [billing, setBilling] = useState<BillingOverview | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    fetchBillingOverview()
+      .then((data) => {
+        if (active) setBilling(data);
+      })
+      .catch(() => null);
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const dailyInvoiceUsage: BillingUsage | undefined = billing?.usage.find(
+    (u) => u.feature_key === 'invoice_daily_limit'
+  );
+  const isNearDailyLimit = Boolean(
+    dailyInvoiceUsage &&
+      dailyInvoiceUsage.limit !== null &&
+      dailyInvoiceUsage.limit > 0 &&
+      dailyInvoiceUsage.used / dailyInvoiceUsage.limit >= 0.9
+  );
 
   return (
     <div className="space-y-6">
@@ -19,6 +46,32 @@ export const IngestionPage: React.FC = () => {
 
       {/* Single H1 requirement */}
       <h1 className="sr-only">ورود داده‌ها و بارگذاری فایل فاکتور شاپیک</h1>
+
+      {/* Daily Invoice Quota Indicator */}
+      {dailyInvoiceUsage && (
+        <div
+          data-guide="ingestion-usage"
+          className="glass-card px-4 py-3 rounded-2xl flex items-center justify-between gap-3 shadow-xs"
+        >
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
+            <ReceiptText className={`w-4 h-4 ${isNearDailyLimit ? 'text-rose-500' : 'text-sky-500'}`} />
+            <span>{USAGE_LABELS['invoice_daily_limit']}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {isNearDailyLimit && (
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300">
+                نزدیک سقف روزانه
+              </span>
+            )}
+            <span className={`text-xs font-extrabold ${isNearDailyLimit ? 'text-rose-600 dark:text-rose-400' : 'text-slate-800 dark:text-slate-100'}`}>
+              {toGroupedPersianDigits(dailyInvoiceUsage.used)}
+              {dailyInvoiceUsage.limit === null
+                ? ' — نامحدود'
+                : ` از ${toGroupedPersianDigits(dailyInvoiceUsage.limit)}`}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* File Upload Section */}
       <FileUploader onSuccess={() => navigate('/dashboard')} readOnly={Boolean(user?.is_read_only)} />

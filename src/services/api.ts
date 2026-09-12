@@ -45,4 +45,9 @@ export {
   deleteAdminUser,
   restoreAdminUser,
   fetchAdminErrors,
+  fetchAdminPlans,
+  fetchAdminUserBilling,
+  recordAdminPayment,
+  grantAdminCredits,
+  adjustAdminWallet,
 } from './api/admin';

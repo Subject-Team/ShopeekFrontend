@@ -6,11 +6,13 @@ import { DashboardPage } from '../DashboardPage';
 import { AnalyticsPage } from '../AnalyticsPage';
 import { CustomersPage } from '../CustomersPage';
 import { IngestionPage } from '../IngestionPage';
+import { RestrictionBanner } from '../../components/dashboard/RestrictionBanner';
 import { AuthProvider } from '../../context/AuthContext';
 import { GuideProvider } from '../../context/GuideContext';
 import { PageContextProvider } from '../../context/PageContext';
 import { ToastProvider } from '../../context/ToastContext';
 import * as api from '../../services/api';
+import { User } from '../../types';
 
 vi.mock('../../services/api', () => ({
   fetchKPISummary: vi.fn(),
@@ -27,7 +29,41 @@ vi.mock('../../services/api', () => ({
   fetchSalesSuggestions: vi.fn(),
   createInvoice: vi.fn(),
   fetchBusinessProfile: vi.fn(),
+  fetchBillingOverview: vi.fn(),
 }));
+
+const activeBillingOverview = {
+  plan: {
+    key: 'pro',
+    name_fa: null,
+    status: 'active',
+    is_exempt: false,
+    remaining_days: 12,
+    next_payment_due: '2026-09-23T00:00:00',
+    current_period_started_at: '2026-08-24T00:00:00',
+  },
+  wallet: {
+    monthly_balance: 230,
+    purchased_balance: 40,
+    pending_session_charge: 0,
+    pending_account_charge: 0,
+  },
+  usage: [
+    { feature_key: 'invoice_daily_limit', used: 4, limit: 10 },
+    { feature_key: 'daily_ai_run_limit', used: 2, limit: 10 },
+  ],
+  ledger: [],
+  stats: { total_granted: 250, total_spent: 20, spend_by_feature: {} },
+};
+
+const expiredBillingOverview = {
+  ...activeBillingOverview,
+  plan: {
+    ...activeBillingOverview.plan,
+    status: 'expired',
+    remaining_days: 0,
+  },
+};
 
 describe('Dashboard Pages', () => {
   beforeEach(() => {
@@ -77,6 +113,7 @@ describe('Dashboard Pages', () => {
     });
     (api.createInvoice as any).mockResolvedValue({ transaction_reference: 'INV-10001' });
     (api.fetchBusinessProfile as any).mockResolvedValue(null);
+    (api.fetchBillingOverview as any).mockResolvedValue(activeBillingOverview);
   });
 
   const renderPage = (ui: React.ReactElement, initialPath = '/dashboard') => {
@@ -151,6 +188,66 @@ describe('Dashboard Pages', () => {
     await waitFor(() => {
       expect(screen.getByText(/یک تراکنش فروش را سریع و بدون نیاز به فایل ثبت کنید/i)).toBeInTheDocument();
       expect(screen.getByText(/محصول/i)).toBeInTheDocument();
+    });
+  });
+
+  it('renders the plan & credit overview for an active user without restriction banner', async () => {
+    renderPage(<DashboardPage />, '/dashboard');
+
+    await waitFor(() => {
+      expect(screen.getByText('طرح و اعتبار')).toBeInTheDocument();
+      expect(screen.getByText('پرو')).toBeInTheDocument();
+      expect(screen.getByText('مشاهده جزئیات اشتراک و پرداخت')).toBeInTheDocument();
+      expect(screen.getAllByText(/درخواست هوش مصنوعی امروز/).length).toBeGreaterThanOrEqual(1);
+    });
+
+    expect(screen.queryByText(/فقط.*خواندنی/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/اشتراک حساب کاربری شما به پایان رسیده است/)).not.toBeInTheDocument();
+  });
+
+  it('still triggers the restriction banner hard state for an expired read-only user', async () => {
+    const expiredUser: User = {
+      id: 'u-1',
+      email: 'test@shopeek.ir',
+      full_name: 'کاربر تست',
+      role: 'User',
+      created_at: '2026-01-01T00:00:00Z',
+      is_read_only: true,
+      restriction_reasons: ['plan_expired'],
+    };
+
+    render(
+      <MemoryRouter>
+        <RestrictionBanner user={expiredUser} />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText(/اشتراک حساب کاربری شما به پایان رسیده است/)).toBeInTheDocument();
+    expect(screen.getByText('تماس با پشتیبانی')).toBeInTheDocument();
+  });
+
+  it('shows the expired status chip in the overview for an expired plan', async () => {
+    (api.fetchBillingOverview as any).mockResolvedValue(expiredBillingOverview);
+
+    renderPage(<DashboardPage />, '/dashboard');
+
+    await waitFor(() => {
+      expect(screen.getByText('طرح و اعتبار')).toBeInTheDocument();
+      expect(screen.getByText('منقضی شده')).toBeInTheDocument();
+    });
+  });
+
+  it('shows a red debt note when the purchased wallet balance is negative', async () => {
+    (api.fetchBillingOverview as any).mockResolvedValue({
+      ...activeBillingOverview,
+      wallet: { ...activeBillingOverview.wallet, purchased_balance: -20 },
+    });
+
+    renderPage(<DashboardPage />, '/dashboard');
+
+    await waitFor(() => {
+      expect(screen.getByText(/بدهی: ۲۰ اعتبار/)).toBeInTheDocument();
+      expect(screen.getByText(/پرداخت آن ورود داده را مسدود می‌کند/)).toBeInTheDocument();
     });
   });
 });

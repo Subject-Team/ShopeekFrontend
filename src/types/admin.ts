@@ -25,10 +25,14 @@ export interface AdminUserItem {
   role: string;
   email_verified: boolean;
   phone_verified: boolean;
+  plan_key?: string | null;
+  subscription_status?: string;
   subscription_expires_at?: string | null;
   is_subscription_active: boolean;
   remaining_days?: number | null;
   is_read_only: boolean;
+  monthly_balance?: number | null;
+  purchased_balance?: number | null;
   created_at: string;
   customers_count: number;
   transactions_count: number;
