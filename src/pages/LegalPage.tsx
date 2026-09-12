@@ -60,7 +60,7 @@ export const LegalPage: React.FC = () => {
         </div>
 
         {/* In-page document switcher */}
-        <nav className="sticky top-16 z-10 -mt-2 py-3 bg-slate-50/95 backdrop-blur flex flex-wrap items-center gap-2">
+        <nav className="sticky top-16 z-10 -mt-2 py-3 bg-transparent flex flex-wrap items-center gap-2">
           <a
             href="#terms"
             onClick={handleDocClick('terms')}
