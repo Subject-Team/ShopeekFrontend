@@ -24,6 +24,17 @@ describe('Layout Components', () => {
     expect(screen.getAllByText('شاپیک').length).toBeGreaterThan(0);
   });
 
+  it('renders PublicHeader with a plans link in the desktop nav', () => {
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <PublicHeader />
+      </MemoryRouter>
+    );
+
+    const plansLink = screen.getByRole('link', { name: 'طرح‌ها' });
+    expect(plansLink).toHaveAttribute('href', '/plans');
+  });
+
   it('renders MainFooter with copyright and social links', () => {
     render(
       <MemoryRouter>
@@ -32,6 +43,17 @@ describe('Layout Components', () => {
     );
 
     expect(screen.getByText(/تمامی حقوق محفوظ است/i)).toBeInTheDocument();
+  });
+
+  it('renders MainFooter with a plans link', () => {
+    render(
+      <MemoryRouter>
+        <MainFooter />
+      </MemoryRouter>
+    );
+
+    const plansLink = screen.getByRole('link', { name: 'طرح‌ها و تعرفه‌ها' });
+    expect(plansLink).toHaveAttribute('href', '/plans');
   });
 
   it('renders MinimalFooter', () => {

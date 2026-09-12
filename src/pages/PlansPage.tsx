@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Check, Minus, Sparkles } from 'lucide-react';
 
 import { SEO } from '../components/common/SEO';
@@ -6,6 +7,7 @@ import { fetchPublicPlans } from '../services/api';
 import { PublicHeader } from '../components/layout/PublicHeader';
 import { MainFooter } from '../components/layout/MainFooter';
 import { featureLabel, planLabel } from '../config/plansDisplay';
+import { useAuth } from '../context/AuthContext';
 import type { PublicPlan, PublicPlanFeature } from '../types';
 import { formatTomaan, toGroupedPersianDigits, toPersianDigits } from '../utils/persian';
 
@@ -40,6 +42,7 @@ const FeatureCell: React.FC<{ feature: PublicPlanFeature | undefined }> = ({ fea
 };
 
 export const PlansPage: React.FC = () => {
+  const { isAuthenticated } = useAuth();
   const [plans, setPlans] = useState<PublicPlan[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
@@ -142,6 +145,19 @@ export const PlansPage: React.FC = () => {
                     ))}
                   </tr>
                 ))}
+                <tr className="border-t border-slate-200 bg-slate-50/60">
+                  <td className="p-4 font-medium text-slate-600">اقدام</td>
+                  {plans.map(plan => (
+                    <td key={plan.key} className="p-4 text-center">
+                      <Link
+                        to={isAuthenticated ? '/dashboard/subscription' : '/contact'}
+                        className="inline-flex min-h-[44px] w-full max-w-[240px] flex-wrap items-center justify-center gap-1 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
+                      >
+                        {isAuthenticated ? 'تمدید یا ارتقای اشتراک' : 'مشاوره و ثبت‌نام'}
+                      </Link>
+                    </td>
+                  ))}
+                </tr>
               </tbody>
             </table>
           </div>

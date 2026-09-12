@@ -45,6 +45,19 @@ describe('LoginPage Comprehensive Tests', () => {
     expect(passwordInput.type).toBe('text');
   });
 
+  it('switches back from register mode to login mode via the login tab', () => {
+    renderLogin();
+
+    expect(screen.getByText('ورود به سامانه شاپیک')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('ثبت‌نام کاربر جدید'));
+    expect(screen.getByText('ثبت‌نام کاربر جدید در شاپیک')).toBeInTheDocument();
+
+    fireEvent.click(screen.getAllByText('ورود به حساب')[0]);
+    expect(screen.getByText('ورود به سامانه شاپیک')).toBeInTheDocument();
+    expect(screen.getByTestId('otp-phone')).toBeInTheDocument();
+  });
+
   it('walking the phone OTP register flow reaches details and validates password requirements dynamically', async () => {
     (api.sendOtpApi as any).mockResolvedValue({ sent: true, message_id: 1, registered: false });
     (api.verifyOtpApi as any).mockResolvedValue({

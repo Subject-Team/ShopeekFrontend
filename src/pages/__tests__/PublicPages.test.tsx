@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { LandingPage } from '../LandingPage';
 import { LoginPage } from '../LoginPage';
@@ -20,6 +20,17 @@ describe('Public Pages', () => {
     const h1Elements = screen.getAllByRole('heading', { level: 1 });
     expect(h1Elements.length).toBe(1);
     expect(screen.getAllByText(/شاپیک/i).length).toBeGreaterThan(0);
+  });
+
+  it('renders LandingPage with a plans CTA linking to /plans', () => {
+    render(
+      <MemoryRouter>
+        <LandingPage />
+      </MemoryRouter>
+    );
+
+    const plansCta = screen.getByRole('link', { name: 'مشاهده طرح‌ها' });
+    expect(plansCta).toHaveAttribute('href', '/plans');
   });
 
   it('renders LoginPage with single H1, form fields, and submit button', () => {
@@ -72,5 +83,39 @@ describe('Public Pages', () => {
     const h1Elements = screen.getAllByRole('heading', { level: 1 });
     expect(h1Elements.length).toBe(1);
     expect(screen.getByText(/صفحه مورد نظر یافت نشد/i)).toBeInTheDocument();
+  });
+
+  it('toggles the FAQ accordion open and closed', () => {
+    render(
+      <MemoryRouter>
+        <LandingPage />
+      </MemoryRouter>
+    );
+
+    const question = 'شاپیک برای چه کسب‌وکارهایی مناسب است؟';
+    const faqButton = screen.getByRole('button', { name: question });
+
+    expect(faqButton).toHaveAttribute('aria-expanded', 'false');
+
+    fireEvent.click(faqButton);
+    expect(faqButton).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.click(faqButton);
+    expect(faqButton).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('scrolls to the features section when landing with a #features hash', async () => {
+    const scrollIntoView = Element.prototype.scrollIntoView as ReturnType<typeof vi.fn>;
+    scrollIntoView.mockClear();
+
+    render(
+      <MemoryRouter initialEntries={['/#features']}>
+        <LandingPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
+    });
   });
 });

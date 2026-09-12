@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Sparkles, TrendingUp, Users, UploadCloud, ShieldCheck, ArrowLeft, BarChart3, Bot, Zap, MessageSquare, HelpCircle, ChevronDown } from 'lucide-react';
+import { Sparkles, TrendingUp, Users, UploadCloud, ShieldCheck, ArrowLeft, BarChart3, Bot, Zap, MessageSquare, HelpCircle, ChevronDown, Tags } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { PublicHeader } from '../components/layout/PublicHeader';
 import { MainFooter } from '../components/layout/MainFooter';
@@ -81,7 +81,7 @@ export const LandingPage: React.FC = () => {
         </p>
 
         {/* Hero Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full max-w-md mb-16">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full max-w-xl mb-16">
           <Link
             to="/login"
             className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-brand-500/25 transition-all flex items-center justify-center gap-2"
@@ -96,6 +96,13 @@ export const LandingPage: React.FC = () => {
             <BarChart3 className="w-4 h-4 text-brand-600" />
             <span>مشاهده قابلیت‌ها</span>
           </a>
+          <Link
+            to="/plans"
+            className="w-full sm:w-auto px-8 py-3.5 sm:py-4 rounded-2xl bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 font-bold text-sm shadow-2xs transition-all flex items-center justify-center gap-2"
+          >
+            <Tags className="w-4 h-4 text-brand-600" />
+            <span>مشاهده طرح‌ها</span>
+          </Link>
         </div>
 
         {/* Hero Interactive Dashboard Mockup Card (Light Theme) */}

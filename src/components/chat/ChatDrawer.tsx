@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { X, Sparkles, Send, Bot, User, Layers, RefreshCw, Trash2, Lock } from 'lucide-react';
+import { X, Sparkles, Send, Bot, User, Layers, RefreshCw, Trash2, Lock, Wallet, Hourglass } from 'lucide-react';
 import { usePageContext } from '../../context/PageContext';
 import { useAuth } from '../../context/AuthContext';
-import { sendChatMessage, fetchChatHistory, clearChatHistory } from '../../services/api';
-import { ChatMessage } from '../../types';
+import { sendChatMessage, fetchChatHistory, clearChatHistory, fetchBillingOverview } from '../../services/api';
+import type { ChatMessage, BillingOverview } from '../../types';
 import { toGroupedPersianDigits } from "../../utils/persian";
 import { formatJalaliRangeLabel } from "../../utils/persian/date";
 
@@ -81,6 +81,7 @@ export const ChatDrawer: React.FC = () => {
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [clearing, setClearing] = useState<boolean>(false);
+  const [billing, setBilling] = useState<BillingOverview | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const sessionId = 'session_default_user';
 
@@ -101,6 +102,20 @@ export const ChatDrawer: React.FC = () => {
           setMessages([buildWelcomeMessage()]);
         }
       });
+    }
+  }, [isChatOpen]);
+
+  const refreshBilling = (): void => {
+    fetchBillingOverview()
+      .then(data => setBilling(data))
+      .catch(() => {
+        // Silent fallback: keep stale values or nothing; never break the chat.
+      });
+  };
+
+  useEffect(() => {
+    if (isChatOpen) {
+      refreshBilling();
     }
   }, [isChatOpen]);
 
@@ -144,6 +159,7 @@ export const ChatDrawer: React.FC = () => {
       setMessages(prev => [...prev, errorMsg]);
     } finally {
       setLoading(false);
+      refreshBilling();
     }
   };
 
@@ -162,6 +178,10 @@ export const ChatDrawer: React.FC = () => {
   };
 
   if (!isChatOpen) return null;
+
+  const wallet = billing?.wallet;
+  const remainingCredits = wallet ? wallet.purchased_balance + wallet.monthly_balance : 0;
+  const inReviewCredits = wallet ? wallet.pending_session_charge + wallet.pending_account_charge : 0;
 
   return (
     <div className="fixed inset-0 h-[100dvh] z-50 overflow-hidden">
@@ -214,6 +234,17 @@ export const ChatDrawer: React.FC = () => {
 
           {/* Messages Body */}
           <div className="flex-1 p-4 overflow-y-auto space-y-4">
+            {wallet && (
+              <div className="flex justify-center">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 text-[10px] text-slate-500 dark:text-slate-400 max-w-full">
+                  <Wallet className="w-3 h-3 text-indigo-500 shrink-0" />
+                  <span className="whitespace-nowrap">اعتبار مانده: {toGroupedPersianDigits(remainingCredits)}</span>
+                  <span className="w-px h-3 bg-slate-300 dark:bg-slate-600" aria-hidden="true" />
+                  <Hourglass className="w-3 h-3 text-amber-500 shrink-0" />
+                  <span className="whitespace-nowrap">در حال بررسی: {toGroupedPersianDigits(inReviewCredits)}</span>
+                </div>
+              </div>
+            )}
             {messages.map(msg => (
               <div
                 key={msg.id}

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Briefcase, ShieldCheck, User as UserIcon } from 'lucide-react';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { Briefcase, ChevronLeft, CreditCard, ShieldCheck, User as UserIcon } from 'lucide-react';
 import {
   fetchSettings,
   deleteAccountApi,
@@ -20,6 +20,7 @@ import { TelegramSessionsCard } from '../components/settings/TelegramSessionsCar
 import { BusinessProfileForm } from '../components/settings/BusinessProfileForm';
 import { DangerZoneCard } from '../components/settings/DangerZoneCard';
 import { DeleteAccountModal } from '../components/settings/DeleteAccountModal';
+import { ScheduleSettingsCard } from '../components/settings/ScheduleSettingsCard';
 
 const cardClass =
   'glass-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xs bg-gradient-to-br from-indigo-50/70 via-white to-blue-50/50 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60';
@@ -70,7 +71,7 @@ export const SettingsPage: React.FC = () => {
       currentStep.id === 'settings-telegram'
     ) {
       setActiveTab('security');
-    } else if (currentStep.id === 'settings-profile' || currentStep.id === 'settings-danger-zone') {
+    } else if (currentStep.id === 'settings-profile' || currentStep.id === 'settings-danger-zone' || currentStep.id === 'settings-schedule') {
       setActiveTab('account');
     } else if (currentStep.id === 'settings-business-profile') {
       setActiveTab('business_profile');
@@ -199,6 +200,26 @@ export const SettingsPage: React.FC = () => {
               )}
             </div>
           </div>
+
+          <Link
+            to="/dashboard/subscription"
+            className="flex items-center justify-between gap-3 p-4 sm:p-5 rounded-2xl border border-indigo-100 dark:border-indigo-900/60 bg-white dark:bg-slate-900 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors shadow-xs"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-600/25 shrink-0">
+                <CreditCard className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="font-extrabold text-slate-900 dark:text-white text-sm">اشتراک و پرداخت</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                  مشاهده طرح، اعتبار و تاریخچه مصرف
+                </p>
+              </div>
+            </div>
+            <ChevronLeft className="w-4 h-4 text-slate-400 shrink-0" />
+          </Link>
+
+          <ScheduleSettingsCard />
 
           <DangerZoneCard
             onDeleteClick={() => setIsDeleteModalOpen(true)}

@@ -36,6 +36,7 @@ export {
 } from './api/settings';
 export { fetchBillingOverview } from './api/billing';
 export { fetchPublicPlans } from './api/plans';
+export { fetchSchedulePrefs, updateSchedulePrefs } from './api/schedule';
 export {
   fetchAdminStats,
   fetchAdminUsers,

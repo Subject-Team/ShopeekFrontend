@@ -125,6 +125,7 @@ export const MainFooter: React.FC = () => {
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-6">
             <Link to="/blog" className="hover:text-slate-900 transition-colors">وبلاگ</Link>
             <Link to="/contact" className="hover:text-slate-900 transition-colors">تماس با ما</Link>
+            <Link to="/plans" className="hover:text-slate-900 transition-colors">طرح‌ها و تعرفه‌ها</Link>
             <Link to="/privacy-policy" className="hover:text-slate-900 transition-colors">حریم خصوصی</Link>
             <Link to="/" className="hover:text-slate-900 transition-colors">صفحه اصلی</Link>
             <Link to="/login" className="hover:text-slate-900 transition-colors">ورود کاربران</Link>

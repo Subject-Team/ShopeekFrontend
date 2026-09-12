@@ -5,13 +5,36 @@ import { ChatDrawer } from '../ChatDrawer';
 import { PageContextProvider, usePageContext } from '../../../context/PageContext';
 import { AuthProvider } from '../../../context/AuthContext';
 import * as api from '../../../services/api';
-import { ChatMessage } from '../../../types';
+import type { ChatMessage, BillingOverview, BillingWallet } from '../../../types';
 
 vi.mock('../../../services/api', () => ({
   fetchChatHistory: vi.fn(),
   sendChatMessage: vi.fn(),
   clearChatHistory: vi.fn(),
+  fetchBillingOverview: vi.fn().mockResolvedValue({
+    plan: { status: 'exempt' },
+    wallet: null,
+    usage: [],
+    ledger: [],
+    stats: {},
+  }),
 }));
+
+const makeBilling = (wallet: BillingWallet | null): BillingOverview => ({
+  plan: {
+    key: null,
+    name_fa: null,
+    status: wallet ? 'active' : 'exempt',
+    is_exempt: !wallet,
+    remaining_days: null,
+    next_payment_due: null,
+    current_period_started_at: null,
+  },
+  wallet,
+  usage: [],
+  ledger: [],
+  stats: { total_granted: 0, total_spent: 0, spend_by_feature: {} },
+});
 
 const makeMsg = (partial: Partial<ChatMessage>): ChatMessage => ({
   id: Math.random().toString(),
@@ -47,6 +70,8 @@ const openChat = async () => {
 describe('ChatDrawer Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    (api.fetchChatHistory as any).mockResolvedValue([]);
+    (api.fetchBillingOverview as any).mockResolvedValue(makeBilling(null));
   });
 
   it('renders chat drawer and sends message', async () => {
@@ -168,5 +193,79 @@ describe('ChatDrawer Component', () => {
 
     expect(api.clearChatHistory).not.toHaveBeenCalled();
     expect(screen.getByText('پاسخ قبلی دستیار')).toBeInTheDocument();
+  });
+
+  it('shows remaining and in-review credits when a wallet exists', async () => {
+    (api.fetchBillingOverview as any).mockResolvedValue(
+      makeBilling({
+        monthly_balance: 120,
+        purchased_balance: 30,
+        pending_session_charge: 5,
+        pending_account_charge: 2,
+      })
+    );
+
+    await openChat();
+
+    await waitFor(() => {
+      expect(screen.getByText(/اعتبار مانده: ۱۵۰/)).toBeInTheDocument();
+    });
+    expect(screen.getByText(/در حال بررسی: ۷/)).toBeInTheDocument();
+  });
+
+  it('renders no quota indicator when wallet is null', async () => {
+    (api.fetchBillingOverview as any).mockResolvedValue(makeBilling(null));
+
+    await openChat();
+
+    await waitFor(() => {
+      expect(screen.getByText(/سلام! من دستیار هوشمند شاپیک هستم/i)).toBeInTheDocument();
+    });
+    expect(screen.queryByText(/اعتبار مانده/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/در حال بررسی/)).not.toBeInTheDocument();
+  });
+
+  it('re-fetches billing after sending a message', async () => {
+    (api.fetchBillingOverview as any).mockResolvedValue(makeBilling(null));
+    (api.sendChatMessage as any).mockResolvedValue(
+      makeMsg({ message_content: 'پاسخ هوش مصنوعی' })
+    );
+
+    await openChat();
+
+    await waitFor(() => {
+      expect(screen.getByText(/سلام! من دستیار هوشمند شاپیک هستم/i)).toBeInTheDocument();
+    });
+    expect(api.fetchBillingOverview).toHaveBeenCalledTimes(1);
+
+    const input = screen.getByPlaceholderText('سوال خود درباره فروش را بپرسید...');
+    fireEvent.change(input, { target: { value: 'سوال جدید' } });
+    fireEvent.submit(input.closest('form')!);
+
+    await waitFor(() => {
+      expect(api.fetchBillingOverview).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it('keeps the chat working when the billing fetch fails', async () => {
+    (api.fetchBillingOverview as any).mockRejectedValue(new Error('خطا در دریافت اطلاعات اشتراک و اعتبار'));
+    (api.sendChatMessage as any).mockResolvedValue(
+      makeMsg({ message_content: 'پاسخ هوش مصنوعی' })
+    );
+
+    await openChat();
+
+    await waitFor(() => {
+      expect(screen.getByText(/سلام! من دستیار هوشمند شاپیک هستم/i)).toBeInTheDocument();
+    });
+    expect(screen.queryByText(/اعتبار مانده/)).not.toBeInTheDocument();
+
+    const input = screen.getByPlaceholderText('سوال خود درباره فروش را بپرسید...');
+    fireEvent.change(input, { target: { value: 'سوال جدید' } });
+    fireEvent.submit(input.closest('form')!);
+
+    await waitFor(() => {
+      expect(screen.getByText('پاسخ هوش مصنوعی')).toBeInTheDocument();
+    });
   });
 });

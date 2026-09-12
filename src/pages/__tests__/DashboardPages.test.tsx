@@ -202,7 +202,7 @@ describe('Dashboard Pages', () => {
     });
 
     expect(screen.queryByText(/فقط.*خواندنی/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/اشتراک حساب کاربری شما به پایان رسیده است/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/اشتراک\/طرح حساب شما منقضی شده است/)).not.toBeInTheDocument();
   });
 
   it('still triggers the restriction banner hard state for an expired read-only user', async () => {
@@ -222,7 +222,7 @@ describe('Dashboard Pages', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText(/اشتراک حساب کاربری شما به پایان رسیده است/)).toBeInTheDocument();
+    expect(screen.getByText(/اشتراک\/طرح حساب شما منقضی شده است/)).toBeInTheDocument();
     expect(screen.getByText('تماس با پشتیبانی')).toBeInTheDocument();
   });
 

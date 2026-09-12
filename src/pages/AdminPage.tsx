@@ -43,8 +43,9 @@ import type {
   AdminTransaction,
   AdminErrorEvent,
 } from '../types/admin';
+import { planLabel } from '../config/plansDisplay';
 import { toGroupedPersianDigits, toPersianDigits, formatTomaan } from '../utils/persian';
-import { utcStringToPersianDate } from '../utils/persian/date';
+import { utcStringToPersianDate, formatJalaliNumeric } from '../utils/persian/date';
 
 type AdminTab = 'stats' | 'users' | 'errors';
 
@@ -576,6 +577,49 @@ interface UsersTabProps {
   currentUserId: string;
 }
 
+// ---------------------------------------------------------------------------
+// Plan cell helpers (users table)
+// ---------------------------------------------------------------------------
+
+const PLAN_BADGE_LABELS: Record<string, string> = {
+  trial: 'آزمایشی',
+  active: 'فعال',
+  expired: 'منقضی',
+  exempt: 'معاف',
+};
+
+const PLAN_BADGE_STYLES: Record<string, string> = {
+  trial: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300',
+  active: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300',
+  expired: 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300',
+  exempt: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
+};
+
+const planCellLabel = (u: AdminUserItem): string => {
+  const key = u.plan_key;
+  if (key === 'exempt' || u.subscription_status === 'exempt') return 'معاف';
+  if (!key) return '—';
+  const label = planLabel(key);
+  return label !== 'بدون طرح' ? label : key.charAt(0).toUpperCase() + key.slice(1);
+};
+
+const planCellBadge = (status: string | undefined): { label: string; className: string } | null => {
+  if (!status) return null;
+  return {
+    label: PLAN_BADGE_LABELS[status] ?? status,
+    className: PLAN_BADGE_STYLES[status] ?? PLAN_BADGE_STYLES.exempt,
+  };
+};
+
+const planCellMeta = (u: AdminUserItem): string | null => {
+  const days = u.remaining_days;
+  if (days != null && days > 0) return `${toPersianDigits(days)} روز مانده`;
+  if (u.subscription_expires_at) {
+    return `انقضا: ${toPersianDigits(formatJalaliNumeric(u.subscription_expires_at))}`;
+  }
+  return null;
+};
+
 const UsersTab: React.FC<UsersTabProps> = ({ currentUserId }) => {
   const [users, setUsers] = useState<AdminUserItem[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -751,6 +795,7 @@ const UsersTab: React.FC<UsersTabProps> = ({ currentUserId }) => {
                 <th className="text-right p-3 font-bold text-slate-500 dark:text-slate-400">ایمیل</th>
                 <th className="text-right p-3 font-bold text-slate-500 dark:text-slate-400">تلفن</th>
                 <th className="text-right p-3 font-bold text-slate-500 dark:text-slate-400">نقش</th>
+                <th className="text-right p-3 font-bold text-slate-500 dark:text-slate-400">طرح</th>
                 <th className="text-right p-3 font-bold text-slate-500 dark:text-slate-400">وضعیت</th>
                 <th className="text-right p-3 font-bold text-slate-500 dark:text-slate-400">مشتریان</th>
                 <th className="text-right p-3 font-bold text-slate-500 dark:text-slate-400">تراکنش</th>
@@ -760,13 +805,13 @@ const UsersTab: React.FC<UsersTabProps> = ({ currentUserId }) => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-8">
+                  <td colSpan={9} className="text-center py-8">
                     <Loader2 className="w-5 h-5 text-brand-500 animate-spin mx-auto" />
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-8 text-slate-400">کاربری یافت نشد</td>
+                  <td colSpan={9} className="text-center py-8 text-slate-400">کاربری یافت نشد</td>
                 </tr>
               ) : (
                 users.map((u) => {
@@ -794,6 +839,10 @@ const UsersTab: React.FC<UsersTabProps> = ({ currentUserId }) => {
                     ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
                     : 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300';
 
+                  const planLabelText = planCellLabel(u);
+                  const planBadge = planCellBadge(u.subscription_status);
+                  const planMeta = planCellMeta(u);
+
                   const rowClass = isDeleted7DaysAgo
                     ? 'border-b border-rose-300 dark:border-rose-900 bg-rose-50/80 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-950/60 border-r-4 border-r-rose-600'
                     : isDeleted
@@ -817,6 +866,23 @@ const UsersTab: React.FC<UsersTabProps> = ({ currentUserId }) => {
                         }`}>
                           {u.role === 'Admin' ? 'مدیر' : 'کاربر'}
                         </span>
+                      </td>
+                      <td className="p-3 whitespace-nowrap">
+                        {planLabelText === '—' ? (
+                          <span className="text-slate-400 dark:text-slate-500">—</span>
+                        ) : (
+                          <div className="flex flex-col items-start gap-1">
+                            <span className="font-bold text-slate-800 dark:text-slate-200">{planLabelText}</span>
+                            {planBadge && (
+                              <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${planBadge.className}`}>
+                                {planBadge.label}
+                              </span>
+                            )}
+                            {planMeta && (
+                              <span className="text-[10px] text-slate-400 dark:text-slate-500">{planMeta}</span>
+                            )}
+                          </div>
+                        )}
                       </td>
                       <td className="p-3">
                         <span className={`px-2 py-0.5 rounded-full font-bold text-[11px] ${statusColor}`}>

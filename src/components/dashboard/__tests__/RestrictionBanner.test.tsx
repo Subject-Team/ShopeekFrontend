@@ -14,10 +14,10 @@ const baseUser = (overrides: Partial<User>): User => ({
 });
 
 describe('RestrictionBanner', () => {
-  const renderBanner = (user: User | null) =>
+  const renderBanner = (user: User | null, debt?: number) =>
     render(
       <MemoryRouter>
-        <RestrictionBanner user={user} />
+        <RestrictionBanner user={user} debt={debt} />
       </MemoryRouter>
     );
 
@@ -56,8 +56,41 @@ describe('RestrictionBanner', () => {
       })
     );
 
-    expect(screen.getByText(/اشتراک حساب کاربری شما به پایان رسیده است/)).toBeInTheDocument();
+    expect(screen.getByText(/اشتراک\/طرح حساب شما منقضی شده است/)).toBeInTheDocument();
     expect(screen.getByText(/امکان ثبت تراکنش، ایجاد مشتری/)).toBeInTheDocument();
+    expect(screen.getByText('تمدید از طریق صفحه اشتراک')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'تمدید از طریق صفحه اشتراک' })).toHaveAttribute(
+      'href',
+      '/dashboard/subscription'
+    );
     expect(screen.getByText('تماس با پشتیبانی')).toBeInTheDocument();
+  });
+
+  it('renders a debt line with a settlement link when debt is positive', () => {
+    renderBanner(
+      baseUser({
+        is_read_only: true,
+        restriction_reasons: ['plan_expired'],
+      }),
+      50
+    );
+
+    expect(screen.getByText(/بدهی ۵۰ اعتبار/)).toBeInTheDocument();
+    expect(screen.getByText(/تسویه برای ادامه استفاده الزامی است/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'تسویه از طریق صفحه اشتراک' })).toHaveAttribute(
+      'href',
+      '/dashboard/subscription'
+    );
+  });
+
+  it('omits the debt line when debt is zero or absent', () => {
+    renderBanner(
+      baseUser({
+        is_read_only: true,
+        restriction_reasons: ['plan_expired'],
+      })
+    );
+
+    expect(screen.queryByText(/بدهی/)).not.toBeInTheDocument();
   });
 });

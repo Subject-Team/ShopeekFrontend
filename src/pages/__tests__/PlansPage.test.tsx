@@ -8,7 +8,12 @@ vi.mock('../../services/api', () => ({
   fetchPublicPlans: vi.fn(),
 }));
 
+vi.mock('../../context/AuthContext', () => ({
+  useAuth: vi.fn(),
+}));
+
 import * as api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 const mockPlans = [
   {
@@ -54,6 +59,7 @@ describe('PlansPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     document.head.innerHTML = '';
+    vi.mocked(useAuth).mockReturnValue({ isAuthenticated: false } as any);
   });
 
   it('renders the comparison table with plans, prices, and grants', async () => {
@@ -115,5 +121,33 @@ describe('PlansPage', () => {
     await waitFor(() => {
       expect(screen.getByText('در حال حاضر طرحی برای نمایش وجود ندارد.')).toBeInTheDocument();
     });
+  });
+
+  it('renders a /contact CTA per plan for visitors', async () => {
+    vi.mocked(api.fetchPublicPlans).mockResolvedValue(mockPlans as any);
+    vi.mocked(useAuth).mockReturnValue({ isAuthenticated: false } as any);
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('لایت')).toBeInTheDocument();
+    });
+    const ctas = screen.getAllByRole('link', { name: 'مشاوره و ثبت‌نام' });
+    expect(ctas.length).toBe(2);
+    ctas.forEach(link => expect(link).toHaveAttribute('href', '/contact'));
+  });
+
+  it('renders a /dashboard/subscription CTA per plan for logged-in users', async () => {
+    vi.mocked(api.fetchPublicPlans).mockResolvedValue(mockPlans as any);
+    vi.mocked(useAuth).mockReturnValue({ isAuthenticated: true } as any);
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('لایت')).toBeInTheDocument();
+    });
+    const ctas = screen.getAllByRole('link', { name: 'تمدید یا ارتقای اشتراک' });
+    expect(ctas.length).toBe(2);
+    ctas.forEach(link => expect(link).toHaveAttribute('href', '/dashboard/subscription'));
   });
 });
