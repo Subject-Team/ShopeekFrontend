@@ -22,6 +22,23 @@ export const LegalPage: React.FC = () => {
     }
   }, [location.hash]);
 
+  // Follow the currently visible section while scrolling.
+  useEffect(() => {
+    const onScroll = () => {
+      const terms = document.getElementById('terms');
+      const privacy = document.getElementById('privacy');
+      if (!terms || !privacy) return;
+      // privacy section has moved past the sticky header offset -> privacy is active
+      const threshold = 140;
+      const privacyTop = privacy.getBoundingClientRect().top;
+      setActiveDoc(privacyTop <= threshold ? 'privacy' : 'terms');
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const handleDocClick = (docId: string) => (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     const target = document.getElementById(docId);
