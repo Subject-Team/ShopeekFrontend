@@ -22,14 +22,13 @@ export const LegalPage: React.FC = () => {
     }
   }, [location.hash]);
 
-  // Follow the currently visible section while scrolling.
   useEffect(() => {
     const onScroll = () => {
       const terms = document.getElementById('terms');
       const privacy = document.getElementById('privacy');
       if (!terms || !privacy) return;
-      // privacy section has moved past the sticky header offset -> privacy is active
-      const threshold = 140;
+      const isMobile = window.innerWidth < 1024;
+      const threshold = isMobile ? 72 : 140;
       const privacyTop = privacy.getBoundingClientRect().top;
       setActiveDoc(privacyTop <= threshold ? 'privacy' : 'terms');
     };
@@ -77,7 +76,7 @@ export const LegalPage: React.FC = () => {
         </div>
 
         {/* In-page document switcher */}
-        <nav className="sticky top-16 z-10 -mt-2 py-3 bg-transparent flex flex-wrap items-center gap-2">
+        <nav className="sticky top-2 lg:top-16 z-10 -mt-6 lg:-mt-2 py-3 bg-transparent flex flex-wrap items-center gap-2">
           <a
             href="#terms"
             onClick={handleDocClick('terms')}
@@ -105,7 +104,7 @@ export const LegalPage: React.FC = () => {
         </nav>
 
         {/* Terms of Service Document */}
-        <div id="terms" className="scroll-mt-28 space-y-6">
+        <div id="terms" className="scroll-mt-6 lg:scroll-mt-28 space-y-6">
           <div className="flex items-center gap-3">
             <h2 className="text-xl md:text-2xl font-black text-slate-900 flex items-center gap-2">
               <FileText className="w-5 h-5 text-brand-600" />
@@ -116,7 +115,7 @@ export const LegalPage: React.FC = () => {
         </div>
 
         {/* Privacy Policy Document */}
-        <div id="privacy" className="scroll-mt-28 space-y-6">
+        <div id="privacy" className="scroll-mt-6 lg:scroll-mt-28 space-y-6">
           <div className="flex items-center gap-3">
             <h2 className="text-xl md:text-2xl font-black text-slate-900 flex items-center gap-2">
               <FileText className="w-5 h-5 text-brand-600" />
