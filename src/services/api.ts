@@ -35,6 +35,7 @@ export {
   updateBusinessProfile,
 } from './api/settings';
 export { fetchBillingOverview } from './api/billing';
+export { fetchPublicPlans } from './api/plans';
 export {
   fetchAdminStats,
   fetchAdminUsers,

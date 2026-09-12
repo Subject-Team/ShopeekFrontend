@@ -8,15 +8,14 @@ import type {
   BillingOverview,
   BillingUsage,
 } from '../types';
+import {
+  featureLabel,
+  planLabel,
+  SOURCE_LABELS,
+  USAGE_LABELS,
+} from '../config/plansDisplay';
 import { toGroupedPersianDigits, toPersianDigits } from '../utils/persian';
 import { formatJalaliNumeric } from '../utils/persian/date';
-
-const PLAN_LABELS: Record<string, string> = {
-  lite: 'لایت',
-  pro: 'پرو',
-  trial: 'دوره آزمایشی',
-  lifetime: 'دسترسی مادام‌العمر',
-};
 
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
   active: { label: 'فعال', className: 'bg-emerald-100 text-emerald-700' },
@@ -24,30 +23,6 @@ const STATUS_LABELS: Record<string, { label: string; className: string }> = {
   expired: { label: 'منقضی شده', className: 'bg-rose-100 text-rose-700' },
   exempt: { label: 'دسترسی کامل', className: 'bg-violet-100 text-violet-700' },
 };
-
-const SOURCE_LABELS: Record<string, string> = {
-  purchase: 'خرید اعتبار',
-  admin_grant: 'هدیه پشتیبانی',
-  period_grant: 'شارژ دوره',
-  deduction: 'مصرف اعتبار',
-};
-
-const FEATURE_LABELS: Record<string, string> = {
-  invoice_daily_limit: 'فاکتور روزانه',
-  invoice_monthly_limit: 'فاکتور ماهانه',
-  daily_ai_run_limit: 'درخواست هوش مصنوعی',
-  web_sessions: 'نشست وب فعال',
-  telegram_accounts: 'حساب تلگرام',
-};
-
-const USAGE_LABELS: Record<string, string> = {
-  invoice_daily_limit: 'فاکتور ثبت‌شده امروز',
-  invoice_monthly_limit: 'فاکتور این دوره',
-  daily_ai_run_limit: 'درخواست هوش مصنوعی امروز',
-};
-
-const featureLabel = (key: string | null): string =>
-  (key && FEATURE_LABELS[key]) || 'سایر';
 
 const UsageRow: React.FC<{ usage: BillingUsage }> = ({ usage }) => {
   const percent =
@@ -132,7 +107,7 @@ export const SubscriptionPage: React.FC = () => {
     label: plan.status,
     className: 'bg-slate-100 text-slate-600',
   };
-  const planName = plan.name_fa || (plan.key && PLAN_LABELS[plan.key]) || 'بدون طرح';
+  const planName = plan.name_fa || planLabel(plan.key);
   const hasDebt = wallet !== null && wallet.purchased_balance < 0;
 
   return (

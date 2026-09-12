@@ -286,3 +286,26 @@ export interface BillingOverview {
   ledger: BillingCreditTransaction[];
   stats: BillingStats;
 }
+
+// --- Public plans comparison page ---
+
+export interface PublicPlanPrice {
+  duration_months: number;
+  price_toman: number;
+}
+
+export interface PublicPlanFeature {
+  feature_key: string;
+  enabled: boolean;
+  limit_value: number | null;
+  payg_cost: number | null;
+}
+
+export interface PublicPlan {
+  key: string;
+  name_fa: string;
+  sort_order: number;
+  monthly_credit_grant: number;
+  prices: PublicPlanPrice[];
+  features: PublicPlanFeature[];
+}

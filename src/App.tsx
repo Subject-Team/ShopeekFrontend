@@ -11,6 +11,7 @@ import { LandingPage } from './pages/LandingPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { ContactPage } from './pages/ContactPage';
 import { BlogPage } from './pages/BlogPage';
+import { PlansPage } from './pages/PlansPage';
 import { BlogPostPage } from './pages/BlogPostPage';
 import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
@@ -73,6 +74,9 @@ const AppRoutes: React.FC = () => {
 
       {/* Contact Support Page */}
       <Route path="/contact" element={<ContactPage />} />
+
+      {/* Public Plans Comparison Page */}
+      <Route path="/plans" element={<PlansPage />} />
 
       {/* Blog & Articles Pages */}
       <Route path="/blog" element={<BlogPage />} />
