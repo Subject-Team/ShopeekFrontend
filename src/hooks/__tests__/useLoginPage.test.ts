@@ -630,7 +630,7 @@ describe('useLoginPage', () => {
       await result.current.handleRegisterDetails({ preventDefault } as any);
     });
 
-    expect(screen.getByText('لطفاً جهت ایجاد حساب، سیاست حفظ حریم خصوصی را بپذیرید.')).toBeInTheDocument();
+    expect(screen.getByText('لطفاً جهت ایجاد حساب، قوانین و مقررات و سیاست حفظ حریم خصوصی را بپذیرید.')).toBeInTheDocument();
   });
 
   it('handleRegisterDetails registers and shows success toast', async () => {

@@ -405,7 +405,7 @@ export const useLoginPage = (): LoginPageForm => {
       return;
     }
     if (!acceptedPrivacy) {
-      showToast('لطفاً جهت ایجاد حساب، سیاست حفظ حریم خصوصی را بپذیرید.', 'warning');
+      showToast('لطفاً جهت ایجاد حساب، قوانین و مقررات و سیاست حفظ حریم خصوصی را بپذیرید.', 'warning');
       return;
     }
     setSubmitting(true);

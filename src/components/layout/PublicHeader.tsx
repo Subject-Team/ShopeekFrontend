@@ -93,10 +93,10 @@ export const PublicHeader: React.FC = () => {
               تماس با ما
             </Link>
             <Link
-              to="/privacy-policy"
-              className={`transition-colors ${location.pathname === '/privacy-policy' ? 'text-brand-600 font-bold' : 'hover:text-brand-600'}`}
+              to="/legal"
+              className={`transition-colors ${location.pathname.startsWith('/legal') ? 'text-brand-600 font-bold' : 'hover:text-brand-600'}`}
             >
-              حریم خصوصی
+              قوانین و مقررات
             </Link>
           </nav>
 
@@ -215,14 +215,14 @@ export const PublicHeader: React.FC = () => {
             </Link>
 
             <Link
-              to="/privacy-policy"
+              to="/legal"
               onClick={() => setMobileMenuOpen(false)}
               className={`flex items-center gap-3 p-2.5 rounded-xl transition-colors ${
-                location.pathname === '/privacy-policy' ? 'bg-brand-50 text-brand-600 font-bold' : 'hover:bg-slate-100'
+                location.pathname.startsWith('/legal') ? 'bg-brand-50 text-brand-600 font-bold' : 'hover:bg-slate-100'
               }`}
             >
               <Shield className="w-4 h-4 text-brand-600" />
-              <span>سیاست حفظ حریم خصوصی</span>
+              <span>قوانین و مقررات و حریم خصوصی</span>
             </Link>
           </nav>
 

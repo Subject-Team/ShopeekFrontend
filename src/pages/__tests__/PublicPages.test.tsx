@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { LandingPage } from '../LandingPage';
 import { LoginPage } from '../LoginPage';
 import { ContactPage } from '../ContactPage';
-import { PrivacyPage } from '../PrivacyPage';
+import { LegalPage } from '../LegalPage';
 import { NotFoundPage } from '../NotFoundPage';
 import { AuthProvider } from '../../context/AuthContext';
 import { ToastProvider } from '../../context/ToastContext';
@@ -61,15 +61,16 @@ describe('Public Pages', () => {
     expect(screen.getByText(/تماس با پشتیبانی و ارتباط با شاپیک/i)).toBeInTheDocument();
   });
 
-  it('renders PrivacyPage with single H1 and legal policy text', () => {
+  it('renders LegalPage with single H1 and both legal documents', () => {
     render(
       <MemoryRouter>
-        <PrivacyPage />
+        <LegalPage />
       </MemoryRouter>
     );
 
     const h1Elements = screen.getAllByRole('heading', { level: 1 });
     expect(h1Elements.length).toBe(1);
+    expect(screen.getByText(/شرایط سرویس و قوانین استفاده/i)).toBeInTheDocument();
     expect(screen.getByText(/سیاست حفظ حریم خصوصی و پردازش داده‌ها/i)).toBeInTheDocument();
   });
 

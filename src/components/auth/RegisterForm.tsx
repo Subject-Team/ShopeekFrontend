@@ -347,7 +347,15 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ form }) => {
                     <span className="underline underline-offset-4 decoration-slate-300">
                       من{' '}
                       <Link
-                        to="/privacy-policy"
+                        to="/legal#terms"
+                        target="_blank"
+                        className="text-brand-600 hover:text-brand-700 font-bold underline underline-offset-4"
+                      >
+                        قوانین و مقررات
+                      </Link>{' '}
+                      و{' '}
+                      <Link
+                        to="/legal#privacy"
                         target="_blank"
                         className="text-brand-600 hover:text-brand-700 font-bold underline underline-offset-4"
                       >
@@ -359,7 +367,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ form }) => {
                   {hasSubmitted && !acceptedPrivacy && (
                     <p className="text-[11px] text-rose-600 font-semibold flex items-center gap-1 mt-2 pr-6">
                       <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                      <span>پذیرش سیاست حفظ حریم خصوصی جهت ایجاد حساب کاربری الزامی است.</span>
+                      <span>پذیرش قوانین و مقررات و سیاست حفظ حریم خصوصی جهت ایجاد حساب کاربری الزامی است.</span>
                     </p>
                   )}
                 </div>
