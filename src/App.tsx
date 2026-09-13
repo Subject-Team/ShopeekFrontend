@@ -8,7 +8,7 @@ import { GuideProvider } from './context/GuideContext';
 import { ScrollToTop } from './components/common/ScrollToTop';
 import { Shell } from './components/layout/Shell';
 import { LandingPage } from './pages/LandingPage';
-import { PrivacyPage } from './pages/PrivacyPage';
+import { LegalPage } from './pages/LegalPage';
 import { ContactPage } from './pages/ContactPage';
 import { BlogPage } from './pages/BlogPage';
 import { PlansPage } from './pages/PlansPage';
@@ -82,9 +82,10 @@ const AppRoutes: React.FC = () => {
       <Route path="/blog" element={<BlogPage />} />
       <Route path="/blog/:slug" element={<BlogPostPage />} />
 
-      {/* Privacy Policy Main Page & Legacy Path Redirect */}
-      <Route path="/privacy-policy" element={<PrivacyPage />} />
-      <Route path="/privacy" element={<Navigate to="/privacy-policy" replace />} />
+      {/* Unified Legal Page (Terms of Service + Privacy Policy) & Legacy Path Redirects */}
+      <Route path="/legal" element={<LegalPage />} />
+      <Route path="/privacy-policy" element={<Navigate to="/legal" replace />} />
+      <Route path="/privacy" element={<Navigate to="/legal" replace />} />
 
       {/* Protected Dashboard Section with Sub-routes */}
       <Route path="/dashboard/*" element={<ProtectedDashboardLayout />} />

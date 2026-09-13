@@ -173,7 +173,7 @@ describe('RegisterForm', () => {
       renderRegister(detailsForm({ hasSubmitted: true, acceptedPrivacy: false }));
 
       expect(
-        screen.getByText('پذیرش سیاست حفظ حریم خصوصی جهت ایجاد حساب کاربری الزامی است.')
+        screen.getByText('پذیرش قوانین و مقررات و سیاست حفظ حریم خصوصی جهت ایجاد حساب کاربری الزامی است.')
       ).toBeInTheDocument();
     });
 

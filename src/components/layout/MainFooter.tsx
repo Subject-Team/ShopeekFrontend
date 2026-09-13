@@ -92,7 +92,7 @@ export const MainFooter: React.FC = () => {
                 <ArrowUpLeft className="w-3.5 h-3.5" />
               </Link>
               <Link
-                to="/privacy-policy"
+                to="/legal#privacy"
                 className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900"
               >
                 <Shield className="w-3.5 h-3.5 text-emerald-600" />
@@ -126,7 +126,7 @@ export const MainFooter: React.FC = () => {
             <Link to="/blog" className="hover:text-slate-900 transition-colors">وبلاگ</Link>
             <Link to="/contact" className="hover:text-slate-900 transition-colors">تماس با ما</Link>
             <Link to="/plans" className="hover:text-slate-900 transition-colors">طرح‌ها و تعرفه‌ها</Link>
-            <Link to="/privacy-policy" className="hover:text-slate-900 transition-colors">حریم خصوصی</Link>
+            <Link to="/legal" className="hover:text-slate-900 transition-colors">قوانین و مقررات</Link>
             <Link to="/" className="hover:text-slate-900 transition-colors">صفحه اصلی</Link>
             <Link to="/login" className="hover:text-slate-900 transition-colors">ورود کاربران</Link>
           </div>
