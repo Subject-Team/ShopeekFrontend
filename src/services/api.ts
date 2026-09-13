@@ -33,6 +33,9 @@ export {
   unlinkTelegramSession,
   fetchBusinessProfile,
   updateBusinessProfile,
+  fetchSampleDataApi,
+  exportUserDataApi,
+  importUserDataApi,
 } from './api/settings';
 export { fetchBillingOverview } from './api/billing';
 export { fetchPublicPlans } from './api/plans';

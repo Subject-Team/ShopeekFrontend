@@ -9,10 +9,20 @@ export interface User {
   is_subscription_active?: boolean;
   is_infinite_subscription?: boolean;
   remaining_days?: number | null;
+  plan_key?: string | null;
+  subscription_status?: string;
   email_verified?: boolean;
   phone_verified?: boolean;
   is_read_only?: boolean;
   restriction_reasons?: string[];
+}
+
+export interface DataImportResult {
+  message: string;
+  imported_transactions: number;
+  imported_customers: number;
+  imported_interactions: number;
+  business_profile_updated: boolean;
 }
 
 export interface AuthTokenResponse {

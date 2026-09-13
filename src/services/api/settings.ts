@@ -3,6 +3,7 @@ import type {
   BusinessProfile,
   BusinessProfileUpdatePayload,
   DeleteAccountResponse,
+  DataImportResult,
 } from '../../types';
 import { authFetch, getWebSessionId } from './client';
 
@@ -84,4 +85,38 @@ export const updateBusinessProfile = async (
   }
   return res.json();
 };
+
+export const fetchSampleDataApi = async (): Promise<Record<string, unknown>> => {
+  const res = await authFetch(`${API_BASE}/settings/data-transfer/example`);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در دریافت ساختار نمونه داده' }));
+    throw new Error(err.detail || 'خطا در دریافت ساختار نمونه داده');
+  }
+  return res.json();
+};
+
+export const exportUserDataApi = async (): Promise<Blob> => {
+  const res = await authFetch(`${API_BASE}/settings/data-transfer/export`);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در دریافت خروجی داده‌ها' }));
+    throw new Error(err.detail || 'خطا در دریافت خروجی داده‌ها');
+  }
+  return res.blob();
+};
+
+export const importUserDataApi = async (file: File): Promise<DataImportResult> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const res = await authFetch(`${API_BASE}/settings/data-transfer/import`, {
+    method: 'POST',
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در بارگذاری و بازیابی اطلاعات' }));
+    throw new Error(err.detail || 'خطا در بارگذاری و بازیابی اطلاعات');
+  }
+  return res.json();
+};
+
 

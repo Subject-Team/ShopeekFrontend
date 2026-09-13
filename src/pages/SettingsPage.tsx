@@ -21,6 +21,7 @@ import { BusinessProfileForm } from '../components/settings/BusinessProfileForm'
 import { DangerZoneCard } from '../components/settings/DangerZoneCard';
 import { DeleteAccountModal } from '../components/settings/DeleteAccountModal';
 import { ScheduleSettingsCard } from '../components/settings/ScheduleSettingsCard';
+import { DataTransferCard } from '../components/settings/DataTransferCard';
 
 const cardClass =
   'glass-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xs bg-gradient-to-br from-indigo-50/70 via-white to-blue-50/50 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60';
@@ -220,6 +221,8 @@ export const SettingsPage: React.FC = () => {
           </Link>
 
           <ScheduleSettingsCard />
+
+          <DataTransferCard />
 
           <DangerZoneCard
             onDeleteClick={() => setIsDeleteModalOpen(true)}
