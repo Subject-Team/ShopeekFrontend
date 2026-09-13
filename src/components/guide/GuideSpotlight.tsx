@@ -74,10 +74,11 @@ export const GuideSpotlight: React.FC = () => {
       });
     }
 
-    // Measure after short scroll delay
+    // Measure immediately and re-measure after short scroll delay
+    updateRect();
     const timer = setTimeout(updateRect, 150);
     return () => clearTimeout(timer);
-  }, [isGuideOpen, currentStep, updateRect]);
+  }, [isGuideOpen, currentStep, isMobile, updateRect]);
 
   // Track window scroll, resize, element resize, and DOM mutations
   useEffect(() => {
@@ -156,26 +157,37 @@ export const GuideSpotlight: React.FC = () => {
       left = viewportWidth - tooltipWidth - padding;
     }
 
+    const isTargetInBottom =
+      (targetRect.top + targetRect.height / 2) > viewportHeight / 2 ||
+      targetRect.bottom > viewportHeight - tooltipHeight - padding - 12;
+
     if (placement === 'bottom') {
-      top = targetRect.bottom + 12;
-      // Flip to top if overflowing bottom
-      if (top + tooltipHeight > viewportHeight - padding && targetRect.top > tooltipHeight + padding) {
-        top = targetRect.top - tooltipHeight - 12;
+      if (isTargetInBottom) {
+        // Target is in bottom of page: move tooltip to top
+        top = Math.max(padding, targetRect.top - tooltipHeight - 12);
+      } else {
+        top = targetRect.bottom + 12;
+        // Flip to top if overflowing bottom
+        if (top + tooltipHeight > viewportHeight - padding) {
+          top = Math.max(padding, targetRect.top - tooltipHeight - 12);
+        }
       }
     } else if (placement === 'top') {
       top = targetRect.top - tooltipHeight - 12;
-      // Flip to bottom if overflowing top
-      if (top < padding && targetRect.bottom + tooltipHeight < viewportHeight - padding) {
+      // If overflowing top and target is in the top half, flip to bottom
+      if (top < padding && !isTargetInBottom && targetRect.bottom + tooltipHeight + 12 <= viewportHeight - padding) {
         top = targetRect.bottom + 12;
+      } else if (top < padding) {
+        top = padding;
       }
     } else {
-      // Auto placement
-      if (targetRect.bottom + tooltipHeight + 12 <= viewportHeight - padding) {
+      // Auto placement: move to top if target is in bottom, otherwise place below
+      if (isTargetInBottom) {
+        top = Math.max(padding, targetRect.top - tooltipHeight - 12);
+      } else if (targetRect.bottom + tooltipHeight + 12 <= viewportHeight - padding) {
         top = targetRect.bottom + 12;
-      } else if (targetRect.top - tooltipHeight - 12 >= padding) {
-        top = targetRect.top - tooltipHeight - 12;
       } else {
-        top = Math.max(padding, (viewportHeight - tooltipHeight) / 2);
+        top = Math.max(padding, targetRect.top - tooltipHeight - 12);
       }
     }
 
@@ -188,6 +200,13 @@ export const GuideSpotlight: React.FC = () => {
   if (!isGuideOpen || !currentStep || !currentConfig) {
     return null;
   }
+
+  const isTargetInBottom = Boolean(
+    targetRect && (
+      (targetRect.top + targetRect.height / 2) > (typeof window !== 'undefined' ? window.innerHeight / 2 : 400) ||
+      targetRect.bottom > (typeof window !== 'undefined' ? window.innerHeight - 240 : 500)
+    )
+  );
 
   const isLastStep = currentStepIndex >= totalSteps - 1;
   const isFirstStep = currentStepIndex === 0;
@@ -242,12 +261,14 @@ export const GuideSpotlight: React.FC = () => {
         />
       )}
 
-      {/* Tooltip Card: Fixed bottom sheet on mobile, anchored floating card on desktop */}
+      {/* Tooltip Card: Dynamic top/bottom sheet on mobile, anchored floating card on desktop */}
       <div
         ref={tooltipRef}
         className={`pointer-events-auto transition-all duration-300 ease-out ${
           isMobile
-            ? 'fixed bottom-4 inset-x-3 max-w-md mx-auto z-50'
+            ? isTargetInBottom
+              ? 'fixed top-4 inset-x-3 max-w-md mx-auto z-50'
+              : 'fixed bottom-4 inset-x-3 max-w-md mx-auto z-50'
             : `absolute ${
                 !targetRect || !tooltipPos
                   ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'

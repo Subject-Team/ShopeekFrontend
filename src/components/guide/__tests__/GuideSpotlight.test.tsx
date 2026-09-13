@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen, fireEvent, act } from '@testing-library/react';
+import { screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { GuideSpotlight } from '../GuideSpotlight';
 import { GuideProvider, useGuide } from '../../../context/GuideContext';
 import { renderWithProviders } from '../../../test/testUtils';
@@ -62,7 +62,7 @@ describe('GuideSpotlight Component', () => {
       fireEvent.click(nextBtn);
     });
 
-    expect(screen.getByText(/شاخص‌های کلیدی عملکرد/i)).toBeInTheDocument();
+    expect(await screen.findByText(/پیشنهادات اختصاصی هوش مصنوعی/i)).toBeInTheDocument();
     expect(screen.getByText('قبلی')).toBeInTheDocument();
   });
 
@@ -88,7 +88,7 @@ describe('GuideSpotlight Component', () => {
       screen.getByText('Launch Guide').click();
     });
 
-    expect(await screen.findByText(/برای جابجایی بین بخش‌ها، از منوی سمت راست استفاده کنید/i)).toBeInTheDocument();
+    expect(await screen.findByText(/از منوی سمت راست برای دسترسی سریع/i)).toBeInTheDocument();
   });
 
   it('hides the previous button on the first step', async () => {
@@ -115,7 +115,7 @@ describe('GuideSpotlight Component', () => {
       fireEvent.click(secondDot);
     });
 
-    expect(await screen.findByText(/شاخص‌های کلیدی عملکرد/i)).toBeInTheDocument();
+    expect(await screen.findByText(/پیشنهادات اختصاصی هوش مصنوعی/i)).toBeInTheDocument();
     expect(screen.getByText('قبلی')).toBeInTheDocument();
   });
 
@@ -154,5 +154,55 @@ describe('GuideSpotlight Component', () => {
     });
 
     expect(screen.queryByText(/خوش‌آمدید به داشبورد تحلیلی شاپیک/i)).not.toBeInTheDocument();
+  });
+
+  it('flips mobile modal position between top and bottom based on target coordinates', async () => {
+    window.innerWidth = 480;
+    window.innerHeight = 800;
+
+    const MobileTestApp: React.FC<{ isBottom: boolean }> = ({ isBottom }) => {
+      const { startGuide } = useGuide();
+      return (
+        <div>
+          <div
+            data-guide="dashboard-welcome"
+            ref={(el) => {
+              if (el) {
+                vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({
+                  top: isBottom ? 620 : 60,
+                  bottom: isBottom ? 760 : 160,
+                  left: 20,
+                  right: 460,
+                  width: 440,
+                  height: 100,
+                  x: 20,
+                  y: isBottom ? 620 : 60,
+                  toJSON: () => {},
+                });
+              }
+            }}
+          >
+            Target Element
+          </div>
+          <button onClick={() => startGuide('dashboard')}>Start</button>
+          <GuideSpotlight />
+        </div>
+      );
+    };
+
+    const { unmount } = await renderWithProviders(<MobileTestApp isBottom={true} />);
+
+    act(() => {
+      screen.getByText('Start').click();
+    });
+
+    await waitFor(() => {
+      const closeBtn = screen.getByTitle('بستن راهنما');
+      const modalContainer = closeBtn.closest('.pointer-events-auto');
+      expect(modalContainer?.className).toContain('top-4');
+    });
+
+    unmount();
+    window.innerWidth = 1024; // restore
   });
 });

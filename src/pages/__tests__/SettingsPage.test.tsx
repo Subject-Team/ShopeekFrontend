@@ -224,9 +224,9 @@ describe('SettingsPage Component & Guide Integration', () => {
           <button onClick={() => startGuide('settings')}>Start Settings Guide</button>
           <button onClick={() => goToStep(2)}>Jump to Danger Zone</button>
           <button onClick={() => goToStep(3)}>Jump to Business Profile</button>
-          <button onClick={() => goToStep(4)}>Jump to Password</button>
+          <button onClick={() => goToStep(4)}>Jump to Schedule</button>
+          <button onClick={() => goToStep(6)}>Jump to Password</button>
           <button onClick={() => goToStep(1)}>Jump to Profile</button>
-          <button onClick={() => goToStep(7)}>Jump to Schedule</button>
           <SettingsPage />
         </div>
       );
@@ -267,7 +267,15 @@ describe('SettingsPage Component & Guide Integration', () => {
       expect(screen.getByText('دسته‌بندی و حوزه کاری کسب‌وکار')).toBeInTheDocument();
     });
 
-    // Jump to step 4 (settings-password) -> should auto-switch tab to security
+    // Jump to step 4 (settings-schedule) -> should auto-switch tab to ai_data
+    fireEvent.click(screen.getByText('Jump to Schedule'));
+
+    await waitFor(() => {
+      expect(container.querySelector('[data-guide="settings-schedule-card"]')).toBeInTheDocument();
+      expect(screen.getByText('زمان‌بندی مشاوره')).toBeInTheDocument();
+    });
+
+    // Jump to step 6 (settings-password) -> should auto-switch tab to security
     fireEvent.click(screen.getByText('Jump to Password'));
 
     await waitFor(() => {
@@ -280,14 +288,6 @@ describe('SettingsPage Component & Guide Integration', () => {
 
     await waitFor(() => {
       expect(container.querySelector('[data-guide="settings-profile"]')).toBeInTheDocument();
-    });
-
-    // Jump to step 7 (settings-schedule) -> should auto-switch tab to ai_data
-    fireEvent.click(screen.getByText('Jump to Schedule'));
-
-    await waitFor(() => {
-      expect(container.querySelector('[data-guide="settings-schedule-card"]')).toBeInTheDocument();
-      expect(screen.getByText('زمان‌بندی مشاوره')).toBeInTheDocument();
     });
   });
 

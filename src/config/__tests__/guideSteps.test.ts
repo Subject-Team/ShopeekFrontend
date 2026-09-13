@@ -2,11 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { GUIDE_CONFIGS } from '../guideSteps';
 
 describe('guideSteps configuration validation', () => {
-  it('has configurations for all 5 dashboard pages', () => {
+  it('has configurations for all dashboard pages including subscription', () => {
     expect(GUIDE_CONFIGS).toHaveProperty('dashboard');
     expect(GUIDE_CONFIGS).toHaveProperty('ingestion');
     expect(GUIDE_CONFIGS).toHaveProperty('customers');
     expect(GUIDE_CONFIGS).toHaveProperty('analytics');
+    expect(GUIDE_CONFIGS).toHaveProperty('subscription');
     expect(GUIDE_CONFIGS).toHaveProperty('settings');
   });
 
@@ -34,12 +35,22 @@ describe('guideSteps configuration validation', () => {
     expect(dashboardStepIds).toContain('dashboard-subscription');
   });
 
-  it('settings guide has critical steps for tabs, profile, password, sessions, and telegram', () => {
+  it('ingestion guide has critical steps including usage quota, sample data, and telegram bot', () => {
+    const ingestionStepIds = GUIDE_CONFIGS.ingestion.steps.map((s) => s.id);
+    expect(ingestionStepIds).toContain('ingestion-usage');
+    expect(ingestionStepIds).toContain('ingestion-sample-data');
+    expect(ingestionStepIds).toContain('ingestion-upload-zone');
+    expect(ingestionStepIds).toContain('ingestion-telegram-bot');
+  });
+
+  it('settings guide has critical steps for tabs, profile, password, sessions, telegram, schedule, and data transfer', () => {
     const settingsStepIds = GUIDE_CONFIGS.settings.steps.map((s) => s.id);
     expect(settingsStepIds).toContain('settings-tabs');
     expect(settingsStepIds).toContain('settings-profile');
     expect(settingsStepIds).toContain('settings-password');
     expect(settingsStepIds).toContain('settings-sessions');
     expect(settingsStepIds).toContain('settings-telegram');
+    expect(settingsStepIds).toContain('settings-schedule');
+    expect(settingsStepIds).toContain('settings-data-transfer');
   });
 });

@@ -76,7 +76,7 @@ export const SettingsPage: React.FC = () => {
       setActiveTab('security');
     } else if (currentStep.id === 'settings-profile' || currentStep.id === 'settings-danger-zone') {
       setActiveTab('account');
-    } else if (currentStep.id === 'settings-schedule') {
+    } else if (currentStep.id === 'settings-schedule' || currentStep.id === 'settings-data-transfer') {
       setActiveTab('ai_data');
     } else if (currentStep.id === 'settings-business-profile') {
       setActiveTab('business_profile');
