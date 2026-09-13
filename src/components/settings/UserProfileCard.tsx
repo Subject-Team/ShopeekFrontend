@@ -184,7 +184,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
 
           <div className="flex items-center gap-3 self-stretch sm:self-auto justify-between sm:justify-end">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-xs sm:text-sm text-slate-800 dark:text-slate-100 font-bold" dir="ltr">
+              <span className="text-xs sm:text-sm text-slate-800 dark:text-slate-100 font-bold" dir="ltr">
                 {profile.phone ? toPersianDigits(profile.phone) : 'ثبت نشده'}
               </span>
               {profile.phone ? (

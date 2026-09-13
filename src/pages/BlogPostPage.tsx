@@ -161,7 +161,7 @@ export const BlogPostPage: React.FC = () => {
                     href={`#${section.id}`}
                     className="hover:text-brand-600 transition-colors flex items-center gap-1.5"
                   >
-                    <span className="text-slate-400 font-mono text-[11px]">{toPersianDigits(idx + 1)}.</span>
+                    <span className="text-slate-400 text-[11px]">{toPersianDigits(idx + 1)}.</span>
                     <span className="underline-offset-4 hover:underline">{section.title}</span>
                   </a>
                 </li>

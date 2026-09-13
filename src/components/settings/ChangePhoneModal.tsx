@@ -293,7 +293,7 @@ export const ChangePhoneModal: React.FC<ChangePhoneModalProps> = ({
                   setCode(e.target.value.replace(/\D/g, '').slice(0, 6));
                 }}
                 disabled={verifyingOtp}
-                className="w-full px-4 py-3 rounded-xl text-center text-lg font-mono tracking-widest text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                className="w-full px-4 py-3 rounded-xl text-center text-lg tracking-widest text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
               />
             </div>
 
