@@ -8,7 +8,7 @@ import {
   Check,
   Send,
   HelpCircle,
-  Sparkles,
+  Sparkle,
   ArrowLeft,
   Info,
   AlertTriangle,
@@ -235,7 +235,7 @@ export const BlogPostPage: React.FC = () => {
         {/* In-Article Contextual Shopeek CTA Card */}
         <section className="bg-gradient-to-br from-slate-900 to-indigo-950 p-6 sm:p-8 rounded-3xl text-white border border-slate-800 shadow-lg space-y-4">
           <div className="flex items-center gap-2 text-brand-400 text-xs font-bold">
-            <Sparkles className="w-4 h-4" />
+            <Sparkle className="w-4 h-4" />
             <span>راهکار عملی شاپیک برای کسب‌وکار شما</span>
           </div>
 

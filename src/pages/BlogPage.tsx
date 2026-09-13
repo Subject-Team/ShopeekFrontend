@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Clock, Calendar, ArrowLeft, BookOpen, Sparkles, Filter, X } from 'lucide-react';
+import { Search, Clock, Calendar, ArrowLeft, BookOpen, Star, Filter, X } from 'lucide-react';
 import { PublicHeader } from '../components/layout/PublicHeader';
 import { MainFooter } from '../components/layout/MainFooter';
 import { BlogSEO } from '../components/common/BlogSEO';
@@ -119,7 +119,7 @@ export const BlogPage: React.FC = () => {
               <div className="lg:col-span-7 space-y-4">
                 <div className="flex flex-wrap items-center gap-3 text-xs">
                   <span className="px-3 py-1 rounded-full bg-brand-500/20 border border-brand-400/30 text-brand-300 font-bold flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-brand-400" />
+                    <Star className="w-3.5 h-3.5 text-brand-400" />
                     <span>مقاله ویژه و منتخب</span>
                   </span>
                   <span className="text-slate-400">{featuredPost.category}</span>

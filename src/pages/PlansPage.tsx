@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Check, Minus, Sparkles } from 'lucide-react';
+import { Check, Minus, Asterisk } from 'lucide-react';
 
 import { SEO } from '../components/common/SEO';
 import { fetchPublicPlans } from '../services/api';
@@ -103,7 +103,7 @@ export const PlansPage: React.FC = () => {
                         {plan.name_fa || planLabel(plan.key)}
                       </div>
                       <div className="mt-1 flex items-center justify-center gap-1 text-xs font-normal text-emerald-600">
-                        <Sparkles className="h-3.5 w-3.5" />
+                        <Asterisk className="h-3.5 w-3.5" />
                         {toGroupedPersianDigits(plan.monthly_credit_grant)} اعتبار هدیه هر دوره
                       </div>
                     </th>

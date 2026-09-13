@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   Package,
   User,
-  Wallet,
+  Coins,
   Calendar,
   ReceiptText,
   Loader2,
@@ -288,7 +288,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose }) =
             {/* Amount */}
             <div data-guide="invoice-amount" className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-200">
-                <Wallet className="w-4 h-4 text-brand-500" />
+                <Coins className="w-4 h-4 text-brand-500" />
                 <span>مبلغ (هزار تومان)</span>
               </label>
               <div className="relative">

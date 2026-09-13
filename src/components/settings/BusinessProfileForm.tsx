@@ -11,7 +11,7 @@ import {
   Plus,
   Search,
   Send,
-  Sparkles,
+  Sparkle,
   Trash2,
   Wrench,
 } from 'lucide-react';
@@ -167,7 +167,7 @@ export const BusinessProfileForm: React.FC<BusinessProfileFormProps> = ({
       {/* Informational Guidance Notice */}
       <div className="flex items-start gap-3 p-3.5 sm:p-4 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-900/60 mb-5 sm:mb-6 text-indigo-900 dark:text-indigo-200">
         <div className="p-2 rounded-xl bg-indigo-600 text-white shrink-0 shadow-xs">
-          <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+          <Sparkle className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
         <div className="flex-1 min-w-0 text-xs leading-relaxed space-y-1">
           <h3 className="font-extrabold text-xs sm:text-sm text-indigo-950 dark:text-indigo-100">

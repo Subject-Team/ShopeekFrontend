@@ -7,7 +7,7 @@ import {
   UploadCloud,
   Settings as SettingsIcon,
   CreditCard,
-  Sparkles,
+  Sparkle,
   ChevronRight,
   Home,
   HelpCircle,
@@ -150,7 +150,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         <div data-guide="sidebar-chat" className="p-4 border-t border-slate-100 dark:border-slate-800">
           <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50 to-emerald-50 dark:from-indigo-950/40 dark:to-emerald-950/40 border border-indigo-100 dark:border-indigo-900/50 relative overflow-hidden">
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              <Sparkle className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
               <span className="font-bold text-xs text-indigo-900 dark:text-indigo-200">دستیار هوشمند شاپیک</span>
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-3">
@@ -163,7 +163,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               }}
               className="w-full py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-colors flex items-center justify-center gap-2"
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkle className="w-3.5 h-3.5" />
               <span>گفتگو با دستیار</span>
             </button>
           </div>

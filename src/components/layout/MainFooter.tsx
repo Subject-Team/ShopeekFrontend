@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, BarChart3, Bot, FileText, ArrowUpLeft, MessageSquare, Send, Camera, Mail, BookOpen } from 'lucide-react';
+import { Shield, BarChart3, Sparkle, FileText, ArrowUpLeft, MessageSquare, Send, Camera, Mail, BookOpen } from 'lucide-react';
 
 export const MainFooter: React.FC = () => {
   return (
@@ -63,7 +63,7 @@ export const MainFooter: React.FC = () => {
                 <span>تحلیل پیشرفته نمودار و روند فروش</span>
               </li>
               <li className="flex items-center gap-2">
-                <Bot className="w-4 h-4 text-indigo-600 shrink-0" />
+                <Sparkle className="w-4 h-4 text-indigo-600 shrink-0" />
                 <span>مشاور هوشمند کسب‌وکار</span>
               </li>
               <li className="flex items-center gap-2">

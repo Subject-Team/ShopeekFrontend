@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Sparkles, TrendingUp, Users, UploadCloud, ShieldCheck, ArrowLeft, BarChart3, Bot, Zap, MessageSquare, HelpCircle, ChevronDown, Tags } from 'lucide-react';
+import { Sparkle, TrendingUp, Users, UploadCloud, ShieldCheck, ArrowLeft, BarChart3, Zap, MessageSquare, HelpCircle, ChevronDown, Tags } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { PublicHeader } from '../components/layout/PublicHeader';
 import { MainFooter } from '../components/layout/MainFooter';
@@ -67,7 +67,7 @@ export const LandingPage: React.FC = () => {
 
         {/* Compact Hero Pill Badge on Mobile */}
         <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-[11px] sm:text-xs font-semibold mb-6 max-w-[90vw] truncate">
-          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-600 shrink-0" />
+          <Sparkle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-600 shrink-0" />
           <span className="truncate">سامانه هوشمند تحلیلی فروش ویژه کسب‌وکارها</span>
         </div>
 
@@ -141,7 +141,7 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div className="p-4 rounded-2xl bg-indigo-50/80 border border-indigo-100 text-xs text-indigo-900 flex items-start gap-3">
-            <Bot className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
+            <Sparkle className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
             <div>
               <span className="font-bold block mb-0.5 text-indigo-950">پیشنهاد هوشمند سیستم:</span>
               <p className="text-slate-700 leading-relaxed">
@@ -174,7 +174,7 @@ export const LandingPage: React.FC = () => {
 
           <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
-              <Bot className="w-6 h-6" />
+              <Sparkle className="w-6 h-6" />
             </div>
             <h3 className="text-lg font-bold text-slate-900">مشاور هوش مصنوعی اختصاصی</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
