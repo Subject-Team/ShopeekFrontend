@@ -13,6 +13,7 @@ vi.mock('../../../context/AuthContext', () => ({
 
 vi.mock('../../../services/api', () => ({
   exportUserDataApi: vi.fn(),
+  fetchPublicPlans: vi.fn(),
   fetchSampleDataApi: vi.fn(),
   importUserDataApi: vi.fn(),
 }));
@@ -41,6 +42,25 @@ const mockTrialUser = {
   created_at: '2026-01-01T00:00:00',
 };
 
+const plansWithImportExport = (enabled: boolean) => [
+  {
+    key: 'lite',
+    name_fa: 'لایت',
+    sort_order: 1,
+    monthly_credit_grant: 0,
+    prices: [],
+    features: [{ feature_key: 'import_export', enabled, limit_value: null, payg_cost: null }],
+  },
+  {
+    key: 'pro',
+    name_fa: 'پرو',
+    sort_order: 2,
+    monthly_credit_grant: 0,
+    prices: [],
+    features: [{ feature_key: 'import_export', enabled, limit_value: null, payg_cost: null }],
+  },
+];
+
 const renderComponent = () => {
   return render(
     <MemoryRouter>
@@ -57,13 +77,30 @@ describe('DataTransferCard', () => {
     // Mock URL.createObjectURL and URL.revokeObjectURL
     window.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
     window.URL.revokeObjectURL = vi.fn();
+    (api.fetchPublicPlans as any).mockResolvedValue([
+      ...plansWithImportExport(true),
+      {
+        key: 'trial',
+        name_fa: 'آزمایشی',
+        sort_order: 0,
+        monthly_credit_grant: 0,
+        prices: [],
+        features: [
+          { feature_key: 'import_export', enabled: false, limit_value: null, payg_cost: null },
+        ],
+      },
+    ]);
   });
 
-  it('renders trial restriction banner and disables buttons for trial user', () => {
+  it('renders trial restriction banner and disables buttons for trial user', async () => {
     (authContext.useAuth as any).mockReturnValue({ user: mockTrialUser });
     renderComponent();
 
-    expect(screen.getByText(/خروجی و ورودی داده‌ها ویژه کاربران طرح‌های فعال/)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText(/قابلیت خروجی و ورودی داده برای طرح حساب شما فعال نیست/)
+      ).toBeInTheDocument();
+    });
     expect(screen.getByRole('link', { name: 'مشاهده و ارتقای اشتراک' })).toHaveAttribute(
       'href',
       '/dashboard/subscription'
@@ -76,10 +113,17 @@ describe('DataTransferCard', () => {
     expect(importBtn).toBeDisabled();
   });
 
-  it('renders enabled buttons for paid user without restriction banner', () => {
+  it('renders enabled buttons for paid user without restriction banner', async () => {
     (authContext.useAuth as any).mockReturnValue({ user: mockPaidUser });
     renderComponent();
 
+    await waitFor(() => {
+      expect(api.fetchPublicPlans).toHaveBeenCalledTimes(1);
+    });
+
+    expect(
+      screen.queryByText(/قابلیت خروجی و ورودی داده برای طرح حساب شما فعال نیست/)
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByText(/خروجی و ورودی داده‌ها ویژه کاربران طرح‌های فعال/)
     ).not.toBeInTheDocument();
@@ -89,6 +133,24 @@ describe('DataTransferCard', () => {
 
     expect(exportBtn).toBeEnabled();
     expect(importBtn).toBeEnabled();
+  });
+
+  it('locks data transfer for a paid user whose plan disables the feature', async () => {
+    (authContext.useAuth as any).mockReturnValue({ user: mockPaidUser });
+    (api.fetchPublicPlans as any).mockResolvedValue(plansWithImportExport(false));
+    renderComponent();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/قابلیت خروجی و ورودی داده برای طرح حساب شما فعال نیست/)
+      ).toBeInTheDocument();
+    });
+
+    const exportBtn = screen.getByRole('button', { name: /دریافت نسخه پشتیبان/ });
+    const importBtn = screen.getByRole('button', { name: /انتخاب فایل و بازیابی اطلاعات/ });
+
+    expect(exportBtn).toBeDisabled();
+    expect(importBtn).toBeDisabled();
   });
 
   it('triggers export API and download when export button is clicked by paid user', async () => {

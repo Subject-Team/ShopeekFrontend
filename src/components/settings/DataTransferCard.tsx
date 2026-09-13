@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowUpDown,
@@ -14,7 +14,13 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
-import { exportUserDataApi, fetchSampleDataApi, importUserDataApi } from '../../services/api';
+import {
+  exportUserDataApi,
+  fetchPublicPlans,
+  fetchSampleDataApi,
+  importUserDataApi,
+} from '../../services/api';
+import type { PublicPlanFeature } from '../../types';
 import { DataImportModal } from './DataImportModal';
 
 const cardClass =
@@ -26,12 +32,39 @@ export const DataTransferCard: React.FC = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Paid user check: not trial, active subscription, not read-only
-  const isPaid = Boolean(
+  const [planFeatures, setPlanFeatures] = useState<PublicPlanFeature[] | null>(null);
+
+  // Fail-open by design: the backend (require_import_export) is authoritative,
+  // so an unreachable catalog never locks the UI.
+  useEffect(() => {
+    let active = true;
+    if (!user?.plan_key) return;
+    fetchPublicPlans()
+      .then((plans) => {
+        if (!active) return;
+        const plan = plans.find((p) => p.key === user.plan_key);
+        setPlanFeatures(plan?.features ?? null);
+      })
+      .catch(() => {
+        if (active) setPlanFeatures(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [user?.plan_key]);
+
+  const isExemptUser = user?.role === 'Admin' || user?.plan_key === 'lifetime';
+  const importExportEnabled = planFeatures?.find(
+    (f) => f.feature_key === 'import_export'
+  )?.enabled;
+
+  // Paid check: not trial, active subscription, not read-only, plan enables import/export (fail-open when unknown)
+  const isPaid = isExemptUser || Boolean(
     !user?.is_read_only &&
       user?.plan_key !== 'trial' &&
       user?.subscription_status !== 'trial' &&
-      user?.is_subscription_active
+      user?.is_subscription_active &&
+      importExportEnabled !== false
   );
 
   const [isExporting, setIsExporting] = useState<boolean>(false);
@@ -168,13 +201,15 @@ export const DataTransferCard: React.FC = () => {
         </div>
       </div>
 
-      {/* Trial / Unpaid Restriction Banner */}
+      {/* Trial / Unpaid / Feature-disabled Restriction Banner */}
       {!isPaid && (
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 text-amber-800 dark:text-amber-200">
           <div className="flex items-center gap-2.5 text-xs font-bold">
             <Lock className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
             <span>
-              خروجی و ورودی داده‌ها ویژه کاربران طرح‌های فعال (لایت یا پرو) است و در دوره آزمایشی فعال نمی‌باشد.
+              {importExportEnabled === false
+                ? 'قابلیت خروجی و ورودی داده برای طرح حساب شما فعال نیست.'
+                : 'خروجی و ورودی داده‌ها ویژه کاربران طرح‌های فعال (لایت یا پرو) است و در دوره آزمایشی فعال نمی‌باشد.'}
             </span>
           </div>
           <Link
