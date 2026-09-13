@@ -1,49 +1,69 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
-  <defs>
-    <linearGradient id="bgGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0f172a" />
-      <stop offset="100%" stop-color="#1e1b4b" />
-    </linearGradient>
-    <linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.8" />
-      <stop offset="100%" stop-color="#6366f1" stop-opacity="0.05" />
-    </linearGradient>
-    <linearGradient id="barGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#38bdf8" />
-      <stop offset="100%" stop-color="#0284c7" />
-    </linearGradient>
-  </defs>
-  <rect width="800" height="450" fill="url(#bgGrad1)" rx="16" />
-  
-  <!-- Subtle Grid lines -->
-  <g stroke="#334155" stroke-width="1" stroke-dasharray="4 4" opacity="0.4">
-    <line x1="80" y1="100" x2="720" y2="100" />
-    <line x1="80" y1="180" x2="720" y2="180" />
-    <line x1="80" y1="260" x2="720" y2="260" />
-    <line x1="80" y1="340" x2="720" y2="340" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%" role="img" aria-label="تحلیل فروش فروشگاه آنلاین">
+  <rect width="800" height="450" fill="#f7faf9" />
+
+  <!-- backdrop shapes -->
+  <circle cx="688" cy="66" r="96" fill="#00a388" opacity="0.09" />
+  <circle cx="96" cy="386" r="72" fill="#2579ef" opacity="0.08" />
+  <g fill="#cbd5e1">
+    <circle cx="150" cy="90" r="4" />
+    <circle cx="178" cy="90" r="4" />
+    <circle cx="206" cy="90" r="4" />
+    <circle cx="150" cy="116" r="4" />
+    <circle cx="178" cy="116" r="4" />
+    <circle cx="206" cy="116" r="4" />
+  </g>
+  <!-- sparkles -->
+  <path d="M268 178 l5 12 12 5 -12 5 -5 12 -5 -12 -12 -5 12 -5 Z" fill="#f59e0b" />
+  <path d="M604 124 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 Z" fill="#2579ef" />
+  <path d="M532 332 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 Z" fill="#00a388" />
+
+  <!-- ground -->
+  <ellipse cx="400" cy="412" rx="270" ry="16" fill="#0f172a" opacity="0.07" />
+
+  <!-- coin stack -->
+  <g>
+    <ellipse cx="188" cy="384" rx="52" ry="14" fill="#d97706" />
+    <rect x="136" y="360" width="104" height="24" fill="#f59e0b" />
+    <ellipse cx="188" cy="360" rx="52" ry="14" fill="#fbbf24" />
+    <rect x="136" y="338" width="104" height="24" fill="#f59e0b" />
+    <ellipse cx="188" cy="338" rx="52" ry="14" fill="#fbbf24" />
+    <rect x="136" y="316" width="104" height="24" fill="#f59e0b" />
+    <ellipse cx="188" cy="316" rx="52" ry="14" fill="#fbbf24" />
   </g>
 
-  <!-- Area & Line Chart -->
-  <path d="M120 320 Q 220 280, 320 220 T 520 160 T 680 110 L 680 340 L 120 340 Z" fill="url(#chartGrad)" />
-  <path d="M120 320 Q 220 280, 320 220 T 520 160 T 680 110" fill="none" stroke="#818cf8" stroke-width="4" stroke-linecap="round" />
-
-  <!-- Data points -->
-  <circle cx="120" cy="320" r="6" fill="#38bdf8" stroke="#0f172a" stroke-width="2" />
-  <circle cx="320" cy="220" r="6" fill="#38bdf8" stroke="#0f172a" stroke-width="2" />
-  <circle cx="520" cy="160" r="6" fill="#38bdf8" stroke="#0f172a" stroke-width="2" />
-  <circle cx="680" cy="110" r="8" fill="#a855f7" stroke="#ffffff" stroke-width="3" />
-
-  <!-- Bar Chart accents -->
-  <rect x="200" y="260" width="28" height="80" rx="6" fill="url(#barGrad)" opacity="0.7" />
-  <rect x="250" y="210" width="28" height="130" rx="6" fill="url(#barGrad)" opacity="0.8" />
-  <rect x="420" y="190" width="28" height="150" rx="6" fill="url(#barGrad)" opacity="0.8" />
-  <rect x="580" y="140" width="28" height="200" rx="6" fill="url(#barGrad)" opacity="0.9" />
-
-  <!-- Floating Metric Pill -->
-  <g transform="translate(480, 60)">
-    <rect width="210" height="50" rx="12" fill="#1e293b" stroke="#475569" stroke-width="1.5" />
-    <circle cx="30" cy="25" r="12" fill="#10b981" />
-    <path d="M25 25 L29 29 L35 20" stroke="#ffffff" stroke-width="2.5" fill="none" stroke-linecap="round" />
-    <text x="54" y="31" fill="#f8fafc" font-family="sans-serif" font-size="14" font-weight="bold">+۴۲٪ رشد سود خالص</text>
+  <!-- smartphone -->
+  <g>
+    <rect x="296" y="72" width="208" height="330" rx="30" fill="#16233a" />
+    <rect x="310" y="86" width="180" height="302" rx="20" fill="#ffffff" />
+    <rect x="366" y="94" width="68" height="10" rx="5" fill="#16233a" />
+    <!-- screen header -->
+    <rect x="326" y="116" width="90" height="14" rx="7" fill="#00a388" />
+    <circle cx="474" cy="123" r="9" fill="#f59e0b" />
+    <!-- chart line -->
+    <path d="M326 268 L 362 244 L 396 252 L 430 214 L 462 220 L 478 188" fill="none" stroke="#00a388" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="478" cy="188" r="8" fill="#00a388" stroke="#ffffff" stroke-width="3" />
+    <!-- bars -->
+    <g>
+      <rect x="326" y="300" width="20" height="46" rx="5" fill="#2579ef" opacity="0.35" />
+      <rect x="354" y="286" width="20" height="60" rx="5" fill="#2579ef" opacity="0.5" />
+      <rect x="382" y="294" width="20" height="52" rx="5" fill="#2579ef" opacity="0.65" />
+      <rect x="410" y="272" width="20" height="74" rx="5" fill="#2579ef" opacity="0.8" />
+      <rect x="438" y="258" width="20" height="88" rx="5" fill="#2579ef" />
+    </g>
   </g>
+
+  <!-- magnifier over chart -->
+  <g transform="translate(516, 138) rotate(12)">
+    <circle cx="0" cy="0" r="44" fill="#ffffff" fill-opacity="0.55" stroke="#2579ef" stroke-width="11" />
+    <rect x="28" y="28" width="52" height="16" rx="8" fill="#16233a" transform="rotate(45 28 28)" />
+    <path d="M-22 6 L -8 -8 L 4 4 L 14 -6" fill="none" stroke="#00a388" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+
+  <!-- shopping bag -->
+  <g>
+    <path d="M560 268 L 688 268 L 672 400 L 576 400 Z" fill="#00a388" />
+    <path d="M560 268 L 688 268 L 684 292 L 564 292 Z" fill="#00856f" />
+    <path d="M592 268 c0 -34 12 -52 32 -52 s32 18 32 52" fill="none" stroke="#16233a" stroke-width="9" stroke-linecap="round" />
+  </g>
+
 </svg>

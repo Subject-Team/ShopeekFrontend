@@ -1,48 +1,55 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
-  <defs>
-    <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1e1b4b" />
-      <stop offset="100%" stop-color="#0f172a" />
-    </linearGradient>
-    <linearGradient id="roseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f43f5e" />
-      <stop offset="100%" stop-color="#be123c" />
-    </linearGradient>
-    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#10b981" />
-      <stop offset="100%" stop-color="#047857" />
-    </linearGradient>
-  </defs>
-  <rect width="800" height="450" fill="url(#bgGrad2)" rx="16" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%" role="img" aria-label="محاسبه سود و زیان کسب و کار">
+  <rect width="800" height="450" fill="#f7faf9" />
 
-  <!-- Scales of balance -->
-  <g transform="translate(400, 100)">
-    <!-- Base stand -->
-    <rect x="-10" y="0" width="20" height="240" rx="6" fill="#475569" />
-    <path d="M-60 240 L60 240 L40 220 L-40 220 Z" fill="#334155" />
-    <circle cx="0" cy="20" r="14" fill="#64748b" />
-    
-    <!-- Beam -->
-    <line x1="-180" y1="45" x2="180" y2="-5" stroke="#94a3b8" stroke-width="8" stroke-linecap="round" />
-    
-    <!-- Left Plate (Costs & Leaks) -->
-    <line x1="-160" y1="45" x2="-210" y2="140" stroke="#64748b" stroke-width="2" />
-    <line x1="-160" y1="45" x2="-110" y2="140" stroke="#64748b" stroke-width="2" />
-    <path d="M-220 140 Q -160 170 -100 140 Z" fill="url(#roseGrad)" />
-    <text x="-160" y="125" text-anchor="middle" fill="#fecdd3" font-family="sans-serif" font-size="13" font-weight="bold">هزینه‌های پنهان</text>
-    
-    <!-- Right Plate (Real Profit) -->
-    <line x1="160" y1="-5" x2="110" y2="90" stroke="#64748b" stroke-width="2" />
-    <line x1="160" y1="-5" x2="210" y2="90" stroke="#64748b" stroke-width="2" />
-    <path d="M100 90 Q 160 120 220 90 Z" fill="url(#emeraldGrad)" />
-    <text x="160" y="75" text-anchor="middle" fill="#a7f3d0" font-family="sans-serif" font-size="13" font-weight="bold">سود خالص واقعی</text>
+  <!-- backdrop shapes -->
+  <circle cx="688" cy="66" r="96" fill="#00a388" opacity="0.09" />
+  <circle cx="96" cy="386" r="72" fill="#2579ef" opacity="0.08" />
+  <g fill="#cbd5e1">
+    <circle cx="150" cy="90" r="4" />
+    <circle cx="178" cy="90" r="4" />
+    <circle cx="206" cy="90" r="4" />
+    <circle cx="150" cy="116" r="4" />
+    <circle cx="178" cy="116" r="4" />
+    <circle cx="206" cy="116" r="4" />
+  </g>
+  <!-- sparkles -->
+  <path d="M190 300 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 Z" fill="#00a388" />
+  <path d="M620 150 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 Z" fill="#2579ef" />
+  <path d="M690 250 l5 12 12 5 -12 5 -5 12 -5 -12 -12 -5 12 -5 Z" fill="#f59e0b" />
+
+  <!-- ground -->
+  <ellipse cx="400" cy="412" rx="270" ry="16" fill="#0f172a" opacity="0.07" />
+
+  <!-- banknotes fanning out -->
+  <g>
+    <g transform="translate(335, 168) rotate(-18)">
+      <rect x="-55" y="-28" width="110" height="56" rx="8" fill="#00a388" />
+      <rect x="-55" y="-10" width="110" height="20" fill="#ffffff" opacity="0.35" />
+    </g>
+    <g transform="translate(400, 160)">
+      <rect x="-55" y="-28" width="110" height="56" rx="8" fill="#2579ef" />
+      <rect x="-55" y="-10" width="110" height="20" fill="#ffffff" opacity="0.35" />
+    </g>
+    <g transform="translate(465, 168) rotate(18)">
+      <rect x="-55" y="-28" width="110" height="56" rx="8" fill="#f59e0b" />
+      <rect x="-55" y="-10" width="110" height="20" fill="#ffffff" opacity="0.35" />
+    </g>
   </g>
 
-  <!-- Warning & Alert Badges -->
-  <g transform="translate(100, 80)">
-    <rect width="180" height="46" rx="10" fill="#1e293b" stroke="#f43f5e" stroke-width="1.5" />
-    <circle cx="28" cy="23" r="10" fill="#f43f5e" />
-    <text x="28" y="28" text-anchor="middle" fill="#ffffff" font-weight="bold" font-size="14">!</text>
-    <text x="50" y="28" fill="#fecdd3" font-family="sans-serif" font-size="13" font-weight="bold">خطای مرجوعی کالا</text>
+  <!-- wallet -->
+  <g>
+    <rect x="270" y="200" width="260" height="150" rx="28" fill="#16233a" />
+    <rect x="292" y="248" width="216" height="80" rx="16" fill="#00a388" />
+    <circle cx="482" cy="288" r="10" fill="#16233a" />
+  </g>
+
+  <!-- one bill slipping out -->
+  <g>
+    <circle cx="538" cy="329" r="4" fill="#cbd5e1" />
+    <circle cx="550" cy="330" r="4" fill="#cbd5e1" />
+    <g transform="translate(602, 330) rotate(12)">
+      <rect x="-45" y="-23" width="90" height="46" rx="7" fill="#f59e0b" />
+      <rect x="-45" y="-8" width="90" height="16" fill="#ffffff" opacity="0.35" />
+    </g>
   </g>
 </svg>

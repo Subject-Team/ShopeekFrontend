@@ -168,7 +168,7 @@ export const BlogPage: React.FC = () => {
                   <img
                     src={featuredPost.featuredImage}
                     alt={featuredPost.imageAlt}
-                    className="w-full h-56 sm:h-64 object-cover"
+                    className="w-full aspect-video object-cover"
                     loading="eager"
                   />
                 </Link>
