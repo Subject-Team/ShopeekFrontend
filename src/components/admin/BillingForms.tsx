@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Loader2, CreditCard, Asterisk } from 'lucide-react';
+import { Loader2, CreditCard } from 'lucide-react';
+import { CreditIcon } from '../icons';
 import { useToast } from '../../context/ToastContext';
 import { recordAdminPayment, grantAdminCredits, adjustAdminWallet } from '../../services/api';
 import type { AdminPlanItem, BillingWallet } from '../../types';
@@ -189,7 +190,7 @@ export const BillingForms: React.FC<BillingFormsProps> = ({ userId, plans, walle
             disabled={grantSubmitting}
             className="w-full px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors flex items-center justify-center gap-1.5 disabled:opacity-60"
           >
-            {grantSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Asterisk className="w-3.5 h-3.5" />}
+            {grantSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditIcon className="w-3.5 h-3.5" />}
             اعطای اعتبار (ابتدا بدهی تسویه می‌شود)
           </button>
         </div>
@@ -220,7 +221,7 @@ export const BillingForms: React.FC<BillingFormsProps> = ({ userId, plans, walle
             disabled={walletSubmitting}
             className="w-full px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-800 dark:bg-slate-600 dark:hover:bg-slate-500 text-white text-xs font-bold transition-colors flex items-center justify-center gap-1.5 disabled:opacity-60"
           >
-            {walletSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Asterisk className="w-3.5 h-3.5" />}
+            {walletSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditIcon className="w-3.5 h-3.5" />}
             ذخیره موجودی
           </button>
         </div>

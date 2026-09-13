@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DollarSign, ShoppingBag, Users, UploadCloud, ReceiptText, Asterisk } from 'lucide-react';
+import { DollarSign, ShoppingBag, Users, UploadCloud, ReceiptText } from 'lucide-react';
+import { CreditIcon } from '../components/icons';
 import { KpiCard } from '../components/dashboard/KpiCard';
 import { RevenueChart } from '../components/dashboard/RevenueChart';
 import { AdvisoryCard } from '../components/dashboard/AdvisoryCard';
@@ -102,7 +103,7 @@ export const DashboardPage: React.FC = () => {
         <AdvisoryCard advisory={advisory} history={advisoryHistory} onRefresh={loadDashboardData} readOnly={Boolean(user?.is_read_only)} />
         {aiUsage && (
           <p className="mt-2 px-1 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
-            <Asterisk className="w-3.5 h-3.5 text-sky-500" />
+            <CreditIcon className="w-3.5 h-3.5 text-sky-500" />
             <span>
               {USAGE_LABELS['daily_ai_run_limit']}: {toGroupedPersianDigits(aiUsage.used)}
               {aiUsage.limit === null ? ' — نامحدود' : ` از ${toGroupedPersianDigits(aiUsage.limit)}`}

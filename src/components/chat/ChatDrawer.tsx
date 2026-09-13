@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { X, Sparkle, Send, User, Layers, RefreshCw, Trash2, Lock, Asterisk, Hourglass } from 'lucide-react';
+import { X, Send, User, Layers, RefreshCw, Trash2, Lock, Hourglass } from 'lucide-react';
+import { AiIcon, CreditIcon } from '../icons';
 import { usePageContext } from '../../context/PageContext';
 import { useAuth } from '../../context/AuthContext';
 import { sendChatMessage, fetchChatHistory, clearChatHistory, fetchBillingOverview } from '../../services/api';
@@ -197,7 +198,7 @@ export const ChatDrawer: React.FC = () => {
           <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/80 dark:bg-slate-800/80">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-500/20">
-                <Sparkle className="w-5 h-5" />
+                <AiIcon className="w-5 h-5" />
               </div>
               <div>
                 <h3 className="font-extrabold text-slate-900 dark:text-white text-sm">دستیار هوشمند شاپیک</h3>
@@ -237,7 +238,7 @@ export const ChatDrawer: React.FC = () => {
             {wallet && (
               <div className="flex justify-center">
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 text-[10px] text-slate-500 dark:text-slate-400 max-w-full">
-                  <Asterisk className="w-3 h-3 text-indigo-500 shrink-0" />
+                  <CreditIcon className="w-3 h-3 text-indigo-500 shrink-0" />
                   <span className="whitespace-nowrap">اعتبار مانده: {toGroupedPersianDigits(remainingCredits)}</span>
                   <span className="w-px h-3 bg-slate-300 dark:bg-slate-600" aria-hidden="true" />
                   <Hourglass className="w-3 h-3 text-amber-500 shrink-0" />
@@ -257,7 +258,7 @@ export const ChatDrawer: React.FC = () => {
                       : 'bg-indigo-600 text-white shadow-xs'
                   }`}
                 >
-                  {msg.sender === 'USER' ? <User className="w-4 h-4" /> : <Sparkle className="w-4 h-4" />}
+                  {msg.sender === 'USER' ? <User className="w-4 h-4" /> : <AiIcon className="w-4 h-4" />}
                 </div>
                 <div
                   className={`max-w-[80%] p-3.5 rounded-2xl text-xs leading-relaxed font-medium ${
@@ -307,7 +308,7 @@ export const ChatDrawer: React.FC = () => {
             {loading && (
               <div className="flex gap-3">
                 <div className="w-7 h-7 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-xs shrink-0">
-                  <Sparkle className="w-4 h-4" />
+                  <AiIcon className="w-4 h-4" />
                 </div>
                 <div className="p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 text-xs flex items-center gap-2">
                   <RefreshCw className="w-3.5 h-3.5 animate-spin text-indigo-500" />

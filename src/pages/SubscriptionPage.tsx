@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CreditCard, Asterisk } from 'lucide-react';
+import { CreditCard } from 'lucide-react';
+import { CreditIcon } from '../components/icons';
 
 import { fetchBillingOverview } from '../services/api';
 import type {
@@ -182,7 +183,7 @@ export const SubscriptionPage: React.FC = () => {
           className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
         >
           <div className="flex items-center gap-3">
-            <Asterisk className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+            <CreditIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
             <h3 className="font-bold text-slate-800 dark:text-slate-100">کیف پول اعتبار</h3>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -225,7 +226,7 @@ export const SubscriptionPage: React.FC = () => {
         className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
       >
         <div className="flex items-center gap-3">
-          <Asterisk className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+          <CreditIcon className="h-5 w-5 text-violet-600 dark:text-violet-400" />
           <h3 className="font-bold text-slate-800 dark:text-slate-100">مصرف در برابر سهمیه</h3>
         </div>
         <div className="mt-4 space-y-4">

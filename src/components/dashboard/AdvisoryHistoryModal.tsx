@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { X, Sparkle, ChevronDown, Lightbulb, Clock, History } from 'lucide-react';
+import { X, ChevronDown, Lightbulb, Clock, History } from 'lucide-react';
+import { AiIcon } from '../icons';
 import { AIAdvisory } from '../../types';
 import { utcStringToPersianDate } from "../../utils/persian/date";
 
@@ -99,7 +100,7 @@ export const AdvisoryHistoryModal: React.FC<AdvisoryHistoryModalProps> = ({
                             : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                         }`}
                       >
-                        <Sparkle className="w-4 h-4" />
+                        <AiIcon className="w-4 h-4" />
                       </div>
                       <span className="font-bold text-slate-900 dark:text-slate-100 text-xs sm:text-sm truncate">
                         {item.summary || 'پیشنهاد هوشمند'}
@@ -135,7 +136,7 @@ export const AdvisoryHistoryModal: React.FC<AdvisoryHistoryModalProps> = ({
                         {/* Title Row */}
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-300 font-bold text-xs sm:text-sm">
-                            <Sparkle className="w-4 h-4 text-indigo-500 shrink-0" />
+                            <AiIcon className="w-4 h-4 text-indigo-500 shrink-0" />
                             <span>{item.summary || 'خلاصه پیشنهاد'}</span>
                           </div>
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200/50 dark:border-indigo-800/50 shrink-0">

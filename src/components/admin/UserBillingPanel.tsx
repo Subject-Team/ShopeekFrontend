@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Loader2, CreditCard, Asterisk, ScrollText, ReceiptText } from 'lucide-react';
+import { Loader2, CreditCard, ScrollText, ReceiptText } from 'lucide-react';
+import { CreditIcon } from '../icons';
 import {
   fetchAdminUserBilling,
   fetchAdminPlans,
@@ -148,7 +149,7 @@ export const UserBillingPanel: React.FC<UserBillingPanelProps> = ({ userId, onCh
 
         <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 text-xs space-y-2">
           <p className="font-extrabold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-            <Asterisk className="w-3.5 h-3.5 text-brand-500" />
+            <CreditIcon className="w-3.5 h-3.5 text-brand-500" />
             کیف پول اعتبار
           </p>
           {wallet ? (

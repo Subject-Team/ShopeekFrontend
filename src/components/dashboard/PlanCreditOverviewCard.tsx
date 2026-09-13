@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Asterisk } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
+import { CreditIcon } from '../icons';
 import type { BillingOverview, BillingUsage } from '../../types';
 import { USAGE_LABELS, featureLabel, planLabel } from '../../config/plansDisplay';
 import { toGroupedPersianDigits, toPersianDigits } from '../../utils/persian';
@@ -101,7 +102,7 @@ export const PlanCreditOverviewCard: React.FC<PlanCreditOverviewCardProps> = ({ 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5 text-slate-800 dark:text-slate-100">
           <div className="p-2 rounded-xl bg-sky-50 dark:bg-sky-950/50 border border-sky-100 dark:border-sky-900/50 text-sky-600 dark:text-sky-400">
-            <Asterisk className="w-4 h-4" />
+            <CreditIcon className="w-4 h-4" />
           </div>
           <div>
             <h4 className="font-extrabold text-sm">طرح و اعتبار</h4>
@@ -183,7 +184,7 @@ export const PlanCreditOverviewCard: React.FC<PlanCreditOverviewCardProps> = ({ 
       {usage.length > 0 && (
         <div className="space-y-2.5">
           <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 dark:text-slate-400">
-            <Asterisk className="w-3.5 h-3.5 text-sky-500" />
+            <CreditIcon className="w-3.5 h-3.5 text-sky-500" />
             <span>مصرف سهمیه‌ها</span>
           </div>
           {usage.map((u) => (
