@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, LayoutDashboard, LogIn, MessageSquare, Shield, BarChart3, BookOpen, Tags } from 'lucide-react';
+import { Menu, X, LayoutDashboard, LogIn, MessageSquare, Shield, BarChart3, BookOpen, Tags, Zap } from 'lucide-react';
 
 export const PublicHeader: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
@@ -135,16 +135,27 @@ export const PublicHeader: React.FC = () => {
         </div>
       </header>
 
-      {/* Floating Mobile/Tablet Hamburger Button - visible only when scrolled */}
-      <button
-        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        className={`lg:hidden fixed top-3 left-4 transform z-50 p-2.5 rounded-2xl bg-white/95 border border-slate-300 shadow-xl text-slate-900 backdrop-blur-md transition-all duration-300 ${
+      {/* Floating Mobile/Tablet Action Bar (hamburger + CTA) - visible only when scrolled */}
+      <div
+        className={`lg:hidden fixed top-3 left-4 z-50 flex items-center gap-2 dir-rtl transition-all duration-300 ${
           scrolled ? 'opacity-100 translate-y-2' : 'opacity-0 -translate-y-4 pointer-events-none'
         }`}
-        aria-label="منوی شناور سایت"
       >
-        {mobileMenuOpen ? <X className="w-6 h-6 text-slate-900" /> : <Menu className="w-6 h-6 text-slate-900" />}
-      </button>
+        <Link
+          to="/login"
+          className="flex items-center gap-2 px-4 py-3.5 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-brand-500/25 whitespace-nowrap"
+        >
+          <Zap className="w-3.5 h-3.5" />
+          <span>شروع رایگان</span>
+        </Link>
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="p-2.5 rounded-2xl bg-white/95 border border-slate-300 shadow-xl text-slate-900 backdrop-blur-md"
+          aria-label="منوی شناور سایت"
+        >
+          {mobileMenuOpen ? <X className="w-6 h-6 text-slate-900" /> : <Menu className="w-6 h-6 text-slate-900" />}
+        </button>
+      </div>
 
       {/* Spacer to prevent content from hiding behind fixed header */}
       <div className={`lg:block transition-all duration-300 ${scrolled ? 'h-14' : 'h-16 sm:h-20'}`} />
