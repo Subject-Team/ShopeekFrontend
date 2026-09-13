@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
-import { Briefcase, ChevronLeft, CreditCard, ShieldCheck, User as UserIcon } from 'lucide-react';
+import { Briefcase, ChevronLeft, CreditCard, ShieldCheck, Sparkles, User as UserIcon } from 'lucide-react';
 import {
   fetchSettings,
   deleteAccountApi,
@@ -39,9 +39,9 @@ export const SettingsPage: React.FC = () => {
   const readOnly = Boolean(user?.is_read_only);
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState<'account' | 'security' | 'business_profile'>(() => {
+  const [activeTab, setActiveTab] = useState<'account' | 'security' | 'business_profile' | 'ai_data'>(() => {
     const tab = searchParams.get('tab');
-    if (tab === 'business_profile' || tab === 'security') return tab;
+    if (tab === 'business_profile' || tab === 'security' || tab === 'ai_data') return tab;
     return 'account';
   });
   const [data, setData] = useState<SettingsData | null>(null);
@@ -58,7 +58,7 @@ export const SettingsPage: React.FC = () => {
   // Sync tab with URL search params if changed externally
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab === 'business_profile' || tab === 'security' || tab === 'account') {
+    if (tab === 'business_profile' || tab === 'security' || tab === 'account' || tab === 'ai_data') {
       setActiveTab(tab);
     }
   }, [searchParams]);
@@ -72,8 +72,10 @@ export const SettingsPage: React.FC = () => {
       currentStep.id === 'settings-telegram'
     ) {
       setActiveTab('security');
-    } else if (currentStep.id === 'settings-profile' || currentStep.id === 'settings-danger-zone' || currentStep.id === 'settings-schedule') {
+    } else if (currentStep.id === 'settings-profile' || currentStep.id === 'settings-danger-zone') {
       setActiveTab('account');
+    } else if (currentStep.id === 'settings-schedule') {
+      setActiveTab('ai_data');
     } else if (currentStep.id === 'settings-business-profile') {
       setActiveTab('business_profile');
     }
@@ -172,6 +174,13 @@ export const SettingsPage: React.FC = () => {
         >
           <Briefcase className="w-4 h-4" /> اطلاعات تکمیلی
         </button>
+        <button
+          data-guide="settings-tab-ai-data"
+          onClick={() => setActiveTab('ai_data')}
+          className={tabItemClass(activeTab === 'ai_data')}
+        >
+          <Sparkles className="w-4 h-4" /> هوش مصنوعی و داده
+        </button>
         <button onClick={() => setActiveTab('security')} className={tabItemClass(activeTab === 'security')}>
           <ShieldCheck className="w-4 h-4" /> امنیت
         </button>
@@ -220,10 +229,6 @@ export const SettingsPage: React.FC = () => {
             <ChevronLeft className="w-4 h-4 text-slate-400 shrink-0" />
           </Link>
 
-          <ScheduleSettingsCard />
-
-          <DataTransferCard />
-
           <DangerZoneCard
             onDeleteClick={() => setIsDeleteModalOpen(true)}
             disabled={readOnly}
@@ -246,6 +251,14 @@ export const SettingsPage: React.FC = () => {
             setData((prev) => (prev ? { ...prev, business_profile: updated } : prev));
           }}
         />
+      )}
+
+      {activeTab === 'ai_data' && (
+        <div className="space-y-6">
+          <ScheduleSettingsCard />
+
+          <DataTransferCard />
+        </div>
       )}
 
       {activeTab === 'security' && (

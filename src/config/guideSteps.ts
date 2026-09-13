@@ -228,7 +228,7 @@ export const GUIDE_CONFIGS: Record<string, PageGuideConfig> = {
         id: 'settings-tabs',
         targetSelector: '[data-guide="settings-tabs"]',
         title: 'بخش‌های تنظیمات',
-        description: 'از طریق این تب‌ها می‌توانید بین اطلاعات حساب کاربری و تنظیمات امنیتی جابجا شوید.',
+        description: 'از طریق این تب‌ها می‌توانید بین اطلاعات حساب کاربری، اطلاعات تکمیلی کسب‌وکار، بخش هوش مصنوعی و داده و تنظیمات امنیتی جابجا شوید.',
         tips: ['با کلیک روی هر تب، فرم‌ها و ابزارهای مرتبط با آن بخش نمایش داده می‌شود.'],
         placement: 'bottom',
       },

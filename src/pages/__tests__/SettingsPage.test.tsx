@@ -118,7 +118,7 @@ describe('SettingsPage Component & Guide Integration', () => {
     expect(container.querySelector('[data-guide="settings-profile"]')).toBeInTheDocument();
   });
 
-  it('renders a link to the subscription page and the schedule card on the account tab', async () => {
+  it('renders a link to the subscription page on the account tab and the schedule card on the ai_data tab', async () => {
     const { container } = renderSettings();
 
     await waitFor(() => {
@@ -127,9 +127,36 @@ describe('SettingsPage Component & Guide Integration', () => {
 
     const subLink = screen.getByRole('link', { name: /اشتراک و پرداخت/ });
     expect(subLink).toHaveAttribute('href', '/dashboard/subscription');
-    expect(container.querySelector('[data-guide="settings-schedule-card"]')).toBeInTheDocument();
-    expect(screen.getByText('زمان‌بندی مشاوره')).toBeInTheDocument();
-    expect(screen.getByText('زمان‌بندی پیش‌بینی')).toBeInTheDocument();
+
+    // Schedule card no longer lives on the account tab
+    expect(container.querySelector('[data-guide="settings-schedule-card"]')).not.toBeInTheDocument();
+
+    // Switch to the ai_data tab to reach the schedule card
+    fireEvent.click(screen.getByRole('button', { name: /هوش مصنوعی و داده/ }));
+
+    await waitFor(() => {
+      expect(container.querySelector('[data-guide="settings-schedule-card"]')).toBeInTheDocument();
+      expect(screen.getByText('زمان‌بندی مشاوره')).toBeInTheDocument();
+      expect(screen.getByText('زمان‌بندی پیش‌بینی')).toBeInTheDocument();
+    });
+  });
+
+  it('renders the ai_data tab with the schedule and data-transfer cards', async () => {
+    const { container } = renderSettings();
+
+    await waitFor(() => {
+      expect(screen.getByText('محمد شاپیکی')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /هوش مصنوعی و داده/ }));
+
+    await waitFor(() => {
+      expect(container.querySelector('[data-guide="settings-schedule-card"]')).toBeInTheDocument();
+      expect(container.querySelector('[data-guide="settings-data-transfer"]')).toBeInTheDocument();
+      expect(screen.getByText('زمان‌بندی مشاوره')).toBeInTheDocument();
+      expect(screen.getByText('زمان‌بندی پیش‌بینی')).toBeInTheDocument();
+      expect(screen.getByText(/خروجی و ورودی داده‌ها/)).toBeInTheDocument();
+    });
   });
 
   it('renders security tab with password, sessions, and telegram guide targets', async () => {
@@ -169,6 +196,25 @@ describe('SettingsPage Component & Guide Integration', () => {
     expect(container.querySelector('[data-guide="settings-business-profile"]')).toBeInTheDocument();
   });
 
+  it('renders the ai_data tab when opened via ?tab=ai_data', async () => {
+    const { container } = render(
+      <MemoryRouter initialEntries={['/dashboard/settings?tab=ai_data']}>
+        <AuthProvider>
+          <GuideProvider>
+            <ToastProvider>
+              <SettingsPage />
+            </ToastProvider>
+          </GuideProvider>
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(container.querySelector('[data-guide="settings-schedule-card"]')).toBeInTheDocument();
+      expect(container.querySelector('[data-guide="settings-data-transfer"]')).toBeInTheDocument();
+    });
+  });
+
   it('automatically switches tab when guide advances between sections', async () => {
     // Helper component to trigger guide step changes
     const TestDriver: React.FC = () => {
@@ -180,6 +226,7 @@ describe('SettingsPage Component & Guide Integration', () => {
           <button onClick={() => goToStep(3)}>Jump to Business Profile</button>
           <button onClick={() => goToStep(4)}>Jump to Password</button>
           <button onClick={() => goToStep(1)}>Jump to Profile</button>
+          <button onClick={() => goToStep(7)}>Jump to Schedule</button>
           <SettingsPage />
         </div>
       );
@@ -233,6 +280,14 @@ describe('SettingsPage Component & Guide Integration', () => {
 
     await waitFor(() => {
       expect(container.querySelector('[data-guide="settings-profile"]')).toBeInTheDocument();
+    });
+
+    // Jump to step 7 (settings-schedule) -> should auto-switch tab to ai_data
+    fireEvent.click(screen.getByText('Jump to Schedule'));
+
+    await waitFor(() => {
+      expect(container.querySelector('[data-guide="settings-schedule-card"]')).toBeInTheDocument();
+      expect(screen.getByText('زمان‌بندی مشاوره')).toBeInTheDocument();
     });
   });
 
