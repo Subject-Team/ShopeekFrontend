@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Sparkle, X, Send, User, Layers, RefreshCw, Trash2, Lock, Hourglass } from 'lucide-react';
+import { Sparkle, X, Send, User, Layers, RefreshCw, Trash2, Lock, Hourglass, Bot } from 'lucide-react';
 import { CreditIcon } from '../icons';
 import { usePageContext } from '../../context/PageContext';
 import { useAuth } from '../../context/AuthContext';
@@ -258,7 +258,7 @@ export const ChatDrawer: React.FC = () => {
                       : 'bg-indigo-600 text-white shadow-xs'
                   }`}
                 >
-                  {msg.sender === 'USER' ? <User className="w-4 h-4" /> : <Sparkle className="w-4 h-4" />}
+                  {msg.sender === 'USER' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                 </div>
                 <div
                   className={`max-w-[80%] p-3.5 rounded-2xl text-xs leading-relaxed font-medium ${
@@ -308,7 +308,7 @@ export const ChatDrawer: React.FC = () => {
             {loading && (
               <div className="flex gap-3">
                 <div className="w-7 h-7 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-xs shrink-0">
-                  <Sparkle className="w-4 h-4" />
+                  <Bot className="w-4 h-4" />
                 </div>
                 <div className="p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 text-xs flex items-center gap-2">
                   <RefreshCw className="w-3.5 h-3.5 animate-spin text-indigo-500" />
