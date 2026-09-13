@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { RefreshCw, CheckCircle2, History } from 'lucide-react';
-import { AiIcon } from '../icons';
+import { Sparkle, RefreshCw, CheckCircle2, History } from 'lucide-react';
 import { AIAdvisory } from '../../types';
 import { triggerManualAdvisory } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
@@ -43,7 +42,7 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = 
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-3 w-full sm:w-auto flex-1">
-            <AiIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+            <Sparkle className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
             <div className="w-full">
               <h3 className="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base lg:text-lg flex flex-wrap items-center gap-2">
                 <span>توصیه اختصاصی از شاپیک</span>
@@ -81,7 +80,7 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = 
         {/* Content Card */}
         <div className="bg-white/80 dark:bg-slate-800/80 rounded-xl p-3 sm:p-4 border border-indigo-50 dark:border-indigo-950 shadow-xs space-y-2">
           <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-300 font-bold text-xs sm:text-sm">
-            <AiIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500 shrink-0" />
+            <Sparkle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500 shrink-0" />
             <span className="truncate">{advisory?.summary || 'خلاصه پیشنهاد'}</span>
           </div>
           <p className="text-slate-700 dark:text-slate-300 text-xs sm:text-sm leading-relaxed font-medium">

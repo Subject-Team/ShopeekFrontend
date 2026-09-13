@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  Sparkle,
   Building2,
   Camera,
   Check,
@@ -14,7 +15,6 @@ import {
   Trash2,
   Wrench,
 } from 'lucide-react';
-import { AiIcon } from '../icons';
 import { updateBusinessProfile } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { BUSINESS_CATEGORIES, BusinessCategoryOption } from '../../config/businessCategories';
@@ -167,7 +167,7 @@ export const BusinessProfileForm: React.FC<BusinessProfileFormProps> = ({
       {/* Informational Guidance Notice */}
       <div className="flex items-start gap-3 p-3.5 sm:p-4 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-900/60 mb-5 sm:mb-6 text-indigo-900 dark:text-indigo-200">
         <div className="p-2 rounded-xl bg-indigo-600 text-white shrink-0 shadow-xs">
-          <AiIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+          <Sparkle className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
         <div className="flex-1 min-w-0 text-xs leading-relaxed space-y-1">
           <h3 className="font-extrabold text-xs sm:text-sm text-indigo-950 dark:text-indigo-100">

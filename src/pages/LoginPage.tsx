@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { LogIn, UserPlus, AlertCircle, Home, MessageSquare } from 'lucide-react';
-import { AiIcon } from '../components/icons';
+import { Sparkle, LogIn, UserPlus, AlertCircle, Home, MessageSquare } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { MinimalFooter } from '../components/layout/MinimalFooter';
 import { useLoginPage } from '../hooks/useLoginPage';
@@ -55,7 +54,7 @@ export const LoginPage: React.FC = () => {
           {/* Brand Header */}
           <div className="text-center space-y-2">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white shadow-lg shadow-brand-500/25 mb-2">
-              <AiIcon className="w-7 h-7" />
+              <Sparkle className="w-7 h-7" />
             </div>
             <h1 className="text-2xl font-black text-slate-900 tracking-tight">
               {mode === 'login' ? 'ورود به سامانه شاپیک' : 'ثبت‌نام کاربر جدید در شاپیک'}

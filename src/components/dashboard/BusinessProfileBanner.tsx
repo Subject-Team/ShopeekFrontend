@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, X } from 'lucide-react';
-import { AiIcon } from '../icons';
+import { Sparkle, ArrowLeft, X } from 'lucide-react';
 import type { BusinessProfile } from '../../types';
 
 const DISMISS_KEY = 'shopeek_dismiss_business_profile_banner_time';
@@ -97,7 +96,7 @@ export const BusinessProfileBanner: React.FC<BusinessProfileBannerProps> = ({
     >
       <div className="flex items-start gap-3.5">
         <div className="p-2.5 rounded-xl bg-indigo-600 text-white shrink-0 shadow-md shadow-indigo-600/20">
-          <AiIcon className="w-5 h-5" />
+          <Sparkle className="w-5 h-5" />
         </div>
 
         <div className="flex-1 min-w-0 pr-1">

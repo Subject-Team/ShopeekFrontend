@@ -1,6 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, LucideIcon } from 'lucide-react';
-import { AiIcon } from '../icons';
+import { Sparkle, TrendingUp, TrendingDown, LucideIcon } from 'lucide-react';
 import { toPersianDigits, toGroupedPersianDigits } from "../../utils/persian";
 
 interface KpiCardProps {
@@ -56,7 +55,7 @@ export const KpiCard: React.FC<KpiCardProps> = ({
 
       {forecastValue != null && forecastValue > 0 && (
         <div className={`flex items-center gap-1.5 text-xs font-semibold mb-2 ${forecastColorStyles[color]}`}>
-          <AiIcon className="w-3.5 h-3.5" />
+          <Sparkle className="w-3.5 h-3.5" />
           <span>پیش‌بینی فردا: {toGroupedPersianDigits(Math.round(forecastValue))}</span>
           {forecastLabel && <span className="text-slate-400 dark:text-slate-500 font-normal">{forecastLabel}</span>}
         </div>

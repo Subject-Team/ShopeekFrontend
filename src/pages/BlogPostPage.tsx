@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import {
+  Sparkle,
   Calendar,
   Clock,
   ChevronRight,
@@ -14,7 +15,6 @@ import {
   Lightbulb,
   BookOpen,
 } from 'lucide-react';
-import { AiIcon } from '../components/icons';
 import { PublicHeader } from '../components/layout/PublicHeader';
 import { MainFooter } from '../components/layout/MainFooter';
 import { BlogSEO } from '../components/common/BlogSEO';
@@ -235,7 +235,7 @@ export const BlogPostPage: React.FC = () => {
         {/* In-Article Contextual Shopeek CTA Card */}
         <section className="bg-gradient-to-br from-slate-900 to-indigo-950 p-6 sm:p-8 rounded-3xl text-white border border-slate-800 shadow-lg space-y-4">
           <div className="flex items-center gap-2 text-brand-400 text-xs font-bold">
-            <AiIcon className="w-4 h-4" />
+            <Sparkle className="w-4 h-4" />
             <span>راهکار عملی شاپیک برای کسب‌وکار شما</span>
           </div>
 

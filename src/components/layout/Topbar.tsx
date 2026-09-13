@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
+  Sparkle,
   Menu,
   Sun,
   Moon,
@@ -9,7 +10,6 @@ import {
   User as UserIcon,
   ChevronDown,
 } from 'lucide-react';
-import { AiIcon } from '../icons';
 import { useTheme } from '../../context/ThemeContext';
 import { usePageContext } from '../../context/PageContext';
 import { useAuth } from '../../context/AuthContext';
@@ -106,7 +106,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
           className="flex items-center gap-2 p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-500/25 transition-all duration-200"
           title="دستیار هوشمند"
         >
-          <AiIcon className="w-5 h-5" />
+          <Sparkle className="w-5 h-5" />
           <span className="hidden md:inline">دستیار هوشمند</span>
         </button>
 

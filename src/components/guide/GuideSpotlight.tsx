@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
+  Sparkle,
   X,
   ChevronRight,
   ChevronLeft,
   Check,
   Lightbulb,
 } from 'lucide-react';
-import { AiIcon } from '../icons';
 import { useGuide } from '../../context/GuideContext';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { toPersianDigits } from "../../utils/persian";
@@ -268,7 +268,7 @@ export const GuideSpotlight: React.FC = () => {
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-400 flex items-center justify-center font-bold text-xs shadow-xs">
-                <AiIcon className="w-4 h-4" />
+                <Sparkle className="w-4 h-4" />
               </div>
               <div>
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
