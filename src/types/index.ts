@@ -224,6 +224,27 @@ export interface ChangePasswordResponse {
   refresh_token?: string | null;
 }
 
+export interface UserProfileUpdatePayload {
+  full_name?: string;
+  email?: string;
+  phone?: string;
+  phone_code?: string;
+}
+
+export interface PhoneOtpSendPayload {
+  phone: string;
+}
+
+export interface PhoneOtpSendResponse {
+  sent: boolean;
+  message: string;
+}
+
+export interface PhoneOtpVerifyPayload {
+  phone: string;
+  code: string;
+}
+
 export interface SalesSuggestions {
   products: { last: string | null; top3: string[]; names: string[] };
   customers: {

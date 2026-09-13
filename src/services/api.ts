@@ -36,6 +36,9 @@ export {
   fetchSampleDataApi,
   exportUserDataApi,
   importUserDataApi,
+  updateUserProfile,
+  sendPhoneOtpApi,
+  verifyPhoneOtpApi,
 } from './api/settings';
 export { fetchBillingOverview } from './api/billing';
 export { fetchPublicPlans } from './api/plans';

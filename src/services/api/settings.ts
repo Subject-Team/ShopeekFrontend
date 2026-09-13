@@ -4,6 +4,11 @@ import type {
   BusinessProfileUpdatePayload,
   DeleteAccountResponse,
   DataImportResult,
+  User,
+  UserProfileUpdatePayload,
+  PhoneOtpSendPayload,
+  PhoneOtpSendResponse,
+  PhoneOtpVerifyPayload,
 } from '../../types';
 import { authFetch, getWebSessionId } from './client';
 
@@ -115,6 +120,51 @@ export const importUserDataApi = async (file: File): Promise<DataImportResult> =
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: 'خطا در بارگذاری و بازیابی اطلاعات' }));
     throw new Error(err.detail || 'خطا در بارگذاری و بازیابی اطلاعات');
+  }
+  return res.json();
+};
+
+export const updateUserProfile = async (
+  payload: UserProfileUpdatePayload
+): Promise<User> => {
+  const res = await authFetch(`${API_BASE}/settings/profile`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در به‌روزرسانی مشخصات کاربری' }));
+    throw new Error(err.detail || 'خطا در به‌روزرسانی مشخصات کاربری');
+  }
+  return res.json();
+};
+
+export const sendPhoneOtpApi = async (
+  payload: PhoneOtpSendPayload
+): Promise<PhoneOtpSendResponse> => {
+  const res = await authFetch(`${API_BASE}/settings/phone/send-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در ارسال کد تأیید پیامکی' }));
+    throw new Error(err.detail || 'خطا در ارسال کد تأیید پیامکی');
+  }
+  return res.json();
+};
+
+export const verifyPhoneOtpApi = async (
+  payload: PhoneOtpVerifyPayload
+): Promise<User> => {
+  const res = await authFetch(`${API_BASE}/settings/phone/verify-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در تأیید کد پیامکی' }));
+    throw new Error(err.detail || 'خطا در تأیید کد پیامکی');
   }
   return res.json();
 };

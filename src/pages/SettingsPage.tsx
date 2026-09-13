@@ -22,6 +22,8 @@ import { DangerZoneCard } from '../components/settings/DangerZoneCard';
 import { DeleteAccountModal } from '../components/settings/DeleteAccountModal';
 import { ScheduleSettingsCard } from '../components/settings/ScheduleSettingsCard';
 import { DataTransferCard } from '../components/settings/DataTransferCard';
+import { UserProfileCard } from '../components/settings/UserProfileCard';
+import type { User } from '../types';
 
 const cardClass =
   'glass-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xs bg-gradient-to-br from-indigo-50/70 via-white to-blue-50/50 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60';
@@ -34,7 +36,7 @@ const tabItemClass = (active: boolean) =>
   }`;
 
 export const SettingsPage: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const readOnly = Boolean(user?.is_read_only);
   const { showToast } = useToast();
@@ -152,8 +154,15 @@ export const SettingsPage: React.FC = () => {
     }
   };
 
+  const handleProfileUpdated = (updatedUser: User) => {
+    setData((prev) => (prev ? { ...prev, profile: updatedUser } : prev));
+    updateUser(updatedUser);
+  };
+
   const webSessions = data?.web_sessions ?? [];
   const telegramSessions = data?.telegram_sessions ?? [];
+
+  const profileUser = data?.profile || user;
 
   return (
     <div className="space-y-6">
@@ -188,28 +197,13 @@ export const SettingsPage: React.FC = () => {
 
       {activeTab === 'account' && (
         <div className="space-y-6">
-          <div data-guide="settings-profile" className={cardClass}>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 sm:gap-4">
-              <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-600/25 shrink-0">
-                  <UserIcon className="w-6 h-6 sm:w-7 sm:h-7" />
-                </div>
-                <div className="min-w-0">
-                  <h2 className="font-extrabold text-slate-900 dark:text-white text-base sm:text-lg truncate">
-                    {data?.profile.full_name || user?.full_name || 'کاربر'}
-                  </h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate" dir="ltr">
-                    {data?.profile.email || user?.email || ''}
-                  </p>
-                </div>
-              </div>
-              {readOnly && (
-                <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 shrink-0 self-start sm:self-auto">
-                  دسترسی فقط‌خواندنی
-                </span>
-              )}
-            </div>
-          </div>
+          {profileUser && (
+            <UserProfileCard
+              profile={profileUser}
+              readOnly={readOnly}
+              onProfileUpdated={handleProfileUpdated}
+            />
+          )}
 
           <Link
             to="/dashboard/subscription"

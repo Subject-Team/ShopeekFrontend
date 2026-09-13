@@ -23,6 +23,7 @@ interface AuthContextType {
     payload: { phone: string; code: string; email: string; password: string; full_name: string },
     turnstileToken?: string
   ) => Promise<void>;
+  updateUser: (updated: User) => void;
   logout: () => void;
 }
 
@@ -155,6 +156,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateUser = (updated: User) => {
+    setUser(updated);
+    localStorage.setItem('shopeek_user', JSON.stringify(updated));
+  };
+
   const logout = () => {
     setToken(null);
     setUser(null);
@@ -176,6 +182,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         verifyOtp,
         loginWithPhone,
         registerWithPhone,
+        updateUser,
         logout,
       }}
     >
