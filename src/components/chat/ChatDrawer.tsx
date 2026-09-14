@@ -83,8 +83,13 @@ export const ChatDrawer: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [clearing, setClearing] = useState<boolean>(false);
   const [billing, setBilling] = useState<BillingOverview | null>(null);
+  const [historyLoading, setHistoryLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const sessionId = 'session_default_user';
+  // History rows are isolated per account server-side (user_id + session_id),
+  // so the shared key is safe — but the in-memory list must follow account
+  // switches, otherwise user B sees user A's messages after a login change.
+  const userId = user?.id ?? null;
 
   const buildWelcomeMessage = (): ChatMessage => ({
     id: 'welcome',
@@ -95,16 +100,19 @@ export const ChatDrawer: React.FC = () => {
   });
 
   useEffect(() => {
-    if (isChatOpen) {
-      fetchChatHistory(sessionId).then(data => {
-        if (data && data.length > 0) {
-          setMessages(data);
-        } else {
-          setMessages([buildWelcomeMessage()]);
-        }
+    if (!isChatOpen) return;
+    setHistoryLoading(true);
+    fetchChatHistory(sessionId)
+      .then(data => {
+        setMessages(data && data.length > 0 ? data : [buildWelcomeMessage()]);
+      })
+      .catch(() => {
+        setMessages([buildWelcomeMessage()]);
+      })
+      .finally(() => {
+        setHistoryLoading(false);
       });
-    }
-  }, [isChatOpen]);
+  }, [isChatOpen, userId]);
 
   const refreshBilling = (): void => {
     fetchBillingOverview()
@@ -277,6 +285,18 @@ export const ChatDrawer: React.FC = () => {
                 </div>
               </div>
             ))}
+
+            {historyLoading && messages.length === 0 && (
+              <div className="flex gap-3">
+                <div className="w-7 h-7 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-xs shrink-0">
+                  <Bot className="w-4 h-4" />
+                </div>
+                <div className="p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 text-xs flex items-center gap-2">
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-indigo-500" />
+                  <span>در حال بارگذاری گفتگو...</span>
+                </div>
+              </div>
+            )}
 
             {/* Recommended starter question chips if fresh chat */}
             {messages.length <= 1 && (

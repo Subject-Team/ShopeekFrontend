@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /contact
+Allow: /privacy-policy
+Allow: /blog
+Disallow: /dashboard/
+Disallow: /api/
+
+Sitemap: https://shopeekapp.ir/sitemap.txt

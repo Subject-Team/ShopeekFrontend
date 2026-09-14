@@ -3,7 +3,7 @@ import { UploadCloud, FileText, CheckCircle2, Download, Lock } from 'lucide-reac
 import { uploadSalesFile, previewSalesFile, getSampleCSV } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { toPersianDate } from "../../utils/persian/date";
-import { toPersianDigits } from "../../utils/persian";
+import { toPersianDigits, toGroupedPersianDigits } from "../../utils/persian";
 
 interface FileUploaderProps {
   onSuccess?: () => void;
@@ -267,7 +267,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
                     <tr key={idx}>
                       {preview.headers?.map((h: string) => (
                         <td key={h} className="p-2.5 text-slate-700 dark:text-slate-300">{
-                          (h === "مبلغ" || h == "تاریخ") ? toPersianDigits(toPersianDate(row[h], false, true)) : row[h]
+                          h === "تاریخ" ? toPersianDigits(toPersianDate(row[h], false, true)) : h === "مبلغ" ? toGroupedPersianDigits(row[h] ?? "") : row[h]
                         }</td>
                       ))}
                     </tr>

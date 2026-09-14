@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%" role="img" aria-label="دسته بندی مشتریان با مدل RFM">
+  <rect width="800" height="450" fill="#f7faf9" />
+
+  <!-- backdrop shapes -->
+  <circle cx="688" cy="66" r="96" fill="#00a388" opacity="0.09" />
+  <circle cx="96" cy="386" r="72" fill="#2579ef" opacity="0.08" />
+  <g fill="#cbd5e1">
+    <circle cx="150" cy="90" r="4" />
+    <circle cx="178" cy="90" r="4" />
+    <circle cx="206" cy="90" r="4" />
+    <circle cx="150" cy="116" r="4" />
+    <circle cx="178" cy="116" r="4" />
+    <circle cx="206" cy="116" r="4" />
+  </g>
+  <!-- sparkles -->
+  <path d="M200 150 l5 12 12 5 -12 5 -5 12 -5 -12 -12 -5 12 -5 Z" fill="#f59e0b" />
+  <path d="M600 150 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 Z" fill="#2579ef" />
+  <path d="M612 300 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 Z" fill="#00a388" />
+
+  <!-- ground -->
+  <ellipse cx="400" cy="412" rx="270" ry="16" fill="#0f172a" opacity="0.07" />
+
+  <!-- heart: retention -->
+  <path d="M400 142 C372 118, 356 102, 366 87 C373 77, 389 80, 400 94 C411 80, 427 77, 434 87 C444 102, 428 118, 400 142 Z" fill="#00a388" />
+
+  <!-- customer figures -->
+  <g>
+    <rect x="257" y="280" width="66" height="112" rx="22" fill="#00a388" />
+    <circle cx="290" cy="234" r="27" fill="#16233a" />
+  </g>
+  <g>
+    <rect x="367" y="262" width="66" height="130" rx="22" fill="#2579ef" />
+    <circle cx="400" cy="216" r="27" fill="#16233a" />
+  </g>
+  <g>
+    <rect x="477" y="296" width="66" height="96" rx="20" fill="#f59e0b" />
+    <circle cx="510" cy="256" r="24" fill="#16233a" />
+  </g>
+</svg>

@@ -39,10 +39,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Validate session on mount
+  // Validate session once on mount. Token refreshes sync state through the
+  // shopeek_token_refreshed listener below, so no re-validation is needed
+  // when the token state changes (that would fire a redundant fetchMeApi).
   useEffect(() => {
     const initAuth = async () => {
-      if (token) {
+      const storedToken = localStorage.getItem('shopeek_token');
+      if (storedToken) {
         try {
           const currentUser = await fetchMeApi();
           setUser(currentUser);
@@ -79,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       window.removeEventListener('shopeek_unauthorized', handleUnauthorized);
       window.removeEventListener('shopeek_token_refreshed', handleTokenRefreshed);
     };
-  }, [token]);
+  }, []);
 
   const login = async (phone: string, password: string, turnstileToken?: string) => {
     setIsLoading(true);
