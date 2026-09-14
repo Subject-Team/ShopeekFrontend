@@ -126,7 +126,13 @@ export const SubscriptionPage: React.FC = () => {
       'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700',
   };
   const planName = plan.name_fa || planLabel(plan.key);
-  const hasDebt = wallet !== null && wallet.purchased_balance < 0;
+  const walletView = wallet ?? {
+    monthly_balance: 0,
+    purchased_balance: 0,
+    pending_session_charge: 0,
+    pending_account_charge: 0,
+  };
+  const hasDebt = walletView.purchased_balance < 0;
 
   return (
     <div className="space-y-6 p-6">
@@ -177,48 +183,46 @@ export const SubscriptionPage: React.FC = () => {
       </section>
 
       {/* Wallet */}
-      {wallet && (
-        <section
-          data-guide="subscription-wallet-card"
-          className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
-        >
-          <div className="flex items-center gap-3">
-            <CreditIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-            <h3 className="font-bold text-slate-800 dark:text-slate-100">کیف پول اعتبار</h3>
+      <section
+        data-guide="subscription-wallet-card"
+        className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
+      >
+        <div className="flex items-center gap-3">
+          <CreditIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+          <h3 className="font-bold text-slate-800 dark:text-slate-100">کیف پول اعتبار</h3>
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">اعتبار دوره</p>
+            <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
+              {toGroupedPersianDigits(walletView.monthly_balance)}
+            </p>
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">اعتبار دوره</p>
-              <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
-                {toGroupedPersianDigits(wallet.monthly_balance)}
+          <div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">اعتبار خریداری‌شده</p>
+            <p className={`text-lg font-bold ${hasDebt ? 'text-rose-600 dark:text-rose-400' : 'text-slate-800 dark:text-slate-100'}`}>
+              {toGroupedPersianDigits(walletView.purchased_balance)}
+            </p>
+            {hasDebt && (
+              <p className="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400">
+                بدهی: {toGroupedPersianDigits(Math.abs(walletView.purchased_balance))} اعتبار — پرداخت آن ورود و ثبت داده را مسدود می‌کند
               </p>
-            </div>
-            <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">اعتبار خریداری‌شده</p>
-              <p className={`text-lg font-bold ${hasDebt ? 'text-rose-600 dark:text-rose-400' : 'text-slate-800 dark:text-slate-100'}`}>
-                {toGroupedPersianDigits(wallet.purchased_balance)}
-              </p>
-              {hasDebt && (
-                <p className="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400">
-                  بدهی: {toGroupedPersianDigits(Math.abs(wallet.purchased_balance))} اعتبار — پرداخت آن ورود و ثبت داده را مسدود می‌کند
-                </p>
-              )}
-            </div>
-            <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">در انتظار تسویه (نشست)</p>
-              <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
-                {toGroupedPersianDigits(wallet.pending_session_charge)}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">در انتظار تسویه (تلگرام)</p>
-              <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
-                {toGroupedPersianDigits(wallet.pending_account_charge)}
-              </p>
-            </div>
+            )}
           </div>
-        </section>
-      )}
+          <div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">در انتظار تسویه (نشست)</p>
+            <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
+              {toGroupedPersianDigits(walletView.pending_session_charge)}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">در انتظار تسویه (تلگرام)</p>
+            <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
+              {toGroupedPersianDigits(walletView.pending_account_charge)}
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Usage vs limits */}
       <section

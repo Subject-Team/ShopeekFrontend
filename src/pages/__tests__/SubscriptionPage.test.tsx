@@ -116,7 +116,8 @@ describe('SubscriptionPage', () => {
     });
     expect(screen.getByText('دسترسی مادام‌العمر')).toBeInTheDocument();
     expect(screen.queryByText('مشاهده و ارتقا طرح‌ها')).not.toBeInTheDocument();
-    expect(screen.queryByText('کیف پول اعتبار')).not.toBeInTheDocument();
+    expect(screen.getByText('کیف پول اعتبار')).toBeInTheDocument();
+    expect(screen.getAllByText('۰').length).toBeGreaterThan(0);
   });
 
   it('marks expired plans with the expired chip', async () => {
