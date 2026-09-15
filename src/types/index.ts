@@ -271,6 +271,36 @@ export interface InvoiceResult {
   transaction_date: string;
 }
 
+// --- Invoice listing (dashboard invoices tab + customer modal tab) ---
+
+export interface InvoiceListItem {
+  id: string;
+  transaction_reference: string;
+  product_name?: string | null;
+  customer_id?: string | null;
+  customer_name?: string | null;
+  total_amount: number;
+  currency: string;
+  transaction_date?: string | null;
+  created_at?: string | null;
+}
+
+export interface InvoicesResponse {
+  items: InvoiceListItem[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface FetchInvoicesParams {
+  limit?: number;
+  offset?: number;
+  customerId?: string;
+  search?: string;
+  startDate?: string; // 'YYYY-MM-DD' inclusive, empty = unbounded
+  endDate?: string; // 'YYYY-MM-DD' inclusive, empty = unbounded
+}
+
 // --- Billing overview (Plan & Payment page) ---
 
 export interface BillingPlan {

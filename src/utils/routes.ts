@@ -13,6 +13,7 @@ export const ROUTES: RouteInfo[] = [
   { path: '/dashboard/', key: 'dashboard', title: 'داشبورد اصلی' },
   { path: '/dashboard/analytics', key: 'analytics', title: 'تحلیل و آمار فروش' },
   { path: '/dashboard/customers', key: 'customers', title: 'مدیریت مشتریان (CRM)' },
+  { path: '/dashboard/invoices', key: 'invoices', title: 'فاکتورهای فروش' },
   { path: '/dashboard/ingestion', key: 'ingestion', title: 'ورود داده‌ها' },
   { path: '/dashboard/settings', key: 'settings', title: 'تنظیمات' },
   { path: '/dashboard/subscription', key: 'subscription', title: 'اشتراک و پرداخت' },

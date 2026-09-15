@@ -19,6 +19,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { CustomersPage } from './pages/CustomersPage';
 import { IngestionPage } from './pages/IngestionPage';
+import { InvoicesPage } from './pages/InvoicesPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { SubscriptionPage } from './pages/SubscriptionPage';
 import { NotFoundPage } from './pages/NotFoundPage';
@@ -55,6 +56,7 @@ const ProtectedDashboardLayout: React.FC = () => {
         <Route index element={<DashboardPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="customers" element={<CustomersPage />} />
+        <Route path="invoices" element={<InvoicesPage />} />
         <Route path="ingestion" element={<IngestionPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="subscription" element={<SubscriptionPage />} />

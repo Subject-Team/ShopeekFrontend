@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { X, Phone, Mail, MessageSquare, Send, Clock, Lock } from 'lucide-react';
+import { X, Phone, Mail, MessageSquare, Send, Clock, Lock, ReceiptText, User } from 'lucide-react';
 import { Customer } from '../../types';
 import { addCustomerInteraction } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { utcStringToPersianDate } from "../../utils/persian/date";
 import { toGroupedPersianDigits } from "../../utils/persian";
 import { ModalOverlay } from '../common/ModalOverlay';
+import { InvoiceListBrowser } from '../invoice/InvoiceListBrowser';
 
 interface CustomerModalProps {
   customer: Customer | null;
@@ -14,13 +15,23 @@ interface CustomerModalProps {
   readOnly?: boolean;
 }
 
+type CustomerModalTab = 'profile' | 'invoices';
+
 export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose, onRefresh, readOnly = false }) => {
+  const [tab, setTab] = useState<CustomerModalTab>('profile');
   const [interactionType, setInteractionType] = useState<'NOTE' | 'CALL' | 'EMAIL'>('NOTE');
   const [noteContent, setNoteContent] = useState<string>('');
   const [submitting, setSubmitting] = useState<boolean>(false);
   const { showToast } = useToast();
 
   if (!customer) return null;
+
+  const tabClass = (active: boolean) =>
+    `px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+      active
+        ? 'bg-brand-500 text-white shadow-sm shadow-brand-500/25'
+        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+    }`;
 
   const handleAddNote = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +78,31 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
 
           {/* Modal Body */}
           <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1">
+            {/* Tab Switcher */}
+            <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-800/60 p-1 rounded-xl border border-slate-200 dark:border-slate-700/60 w-fit" data-guide="customers-modal-tabs">
+              <button
+                type="button"
+                onClick={() => setTab('profile')}
+                className={tabClass(tab === 'profile')}
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>پروفایل و تعاملات</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setTab('invoices')}
+                className={tabClass(tab === 'invoices')}
+              >
+                <ReceiptText className="w-3.5 h-3.5" />
+                <span>فاکتورها</span>
+              </button>
+            </div>
+
+            {tab === 'invoices' ? (
+              /* Invoices tab: lazy-mounted on first open, paginated newest-first */
+              <InvoiceListBrowser key={customer.id} customerId={customer.id} />
+            ) : (
+              <>
             {/* Add Interaction Form - fully responsive vertical stack on mobile */}
             <div className="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-4 border border-slate-200 dark:border-slate-700/60 space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -165,6 +201,8 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose,
                 <p className="text-xs text-slate-400 text-center py-4">هنوز تعاملی ثبت نشده است.</p>
               )}
             </div>
+              </>
+            )}
           </div>
         </div>
       </div>

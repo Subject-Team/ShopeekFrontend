@@ -10,6 +10,7 @@ import * as api from '../../../services/api';
 vi.mock('../../../services/api', () => ({
   createCustomer: vi.fn(),
   addCustomerInteraction: vi.fn(),
+  fetchInvoices: vi.fn(),
 }));
 
 describe('[component] CRM Components', () => {
@@ -141,5 +142,53 @@ describe('[component] CRM Components', () => {
       expect(api.addCustomerInteraction).toHaveBeenCalledWith('c-1', 'NOTE', 'گزارش جلسه تلفنی');
       expect(onRefresh).toHaveBeenCalled();
     });
+  });
+
+  it('CustomerModal shows profile tab by default and lazy-loads invoices on tab switch', async () => {
+    (api.fetchInvoices as any).mockResolvedValue({
+      items: [
+        {
+          id: 'inv-1',
+          transaction_reference: 'INV-1001',
+          product_name: 'کیف چرمی',
+          customer_name: 'سارا احمدی',
+          total_amount: 2000000,
+          currency: 'IRR',
+          transaction_date: '2026-03-21T10:00:00',
+        },
+      ],
+      total: 1,
+      limit: 20,
+      offset: 0,
+    });
+    const onClose = vi.fn();
+    const onRefresh = vi.fn();
+
+    render(
+      <ToastProvider>
+        <CustomerModal
+          customer={mockCustomers[0] as any}
+          onClose={onClose}
+          onRefresh={onRefresh}
+        />
+      </ToastProvider>
+    );
+
+    // Profile tab is default: interaction form visible, no invoice fetch yet
+    expect(screen.getByText('ثبت یادداشت یا گزارش تماس')).toBeInTheDocument();
+    expect(api.fetchInvoices).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByText('فاکتورها'));
+
+    await waitFor(() => {
+      expect(api.fetchInvoices).toHaveBeenCalledWith(
+        expect.objectContaining({ customerId: 'c-1' })
+      );
+      expect(screen.getByText('کیف چرمی')).toBeInTheDocument();
+    });
+
+    // Switching back keeps the interaction form reachable
+    fireEvent.click(screen.getByText('پروفایل و تعاملات'));
+    expect(screen.getByText('ثبت یادداشت یا گزارش تماس')).toBeInTheDocument();
   });
 });

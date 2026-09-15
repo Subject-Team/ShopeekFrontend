@@ -175,6 +175,36 @@ export const GUIDE_CONFIGS: Record<string, PageGuideConfig> = {
     ],
   },
 
+  invoices: {
+    pageKey: 'invoices',
+    title: 'راهنمای فاکتورهای فروش',
+    steps: [
+      {
+        id: 'invoices-header',
+        targetSelector: '[data-guide="invoices-header"]',
+        title: 'فاکتورهای فروش و ثبت مستقیم',
+        description: 'تمام فاکتورهای ثبت‌شده (فایل، تلگرام و ثبت مستقیم) از جدید به قدیم در این صفحه مرور می‌شوند.',
+        tips: ['با دکمه «ثبت فاکتور مستقیم» می‌توانید بدون فایل، یک فروش را همان لحظه ثبت کنید.'],
+        placement: 'bottom',
+      },
+      {
+        id: 'invoices-filters',
+        targetSelector: '[data-guide="invoices-filters"]',
+        title: 'جستجو و بازه زمانی',
+        description: 'جستجو بر اساس نام محصول، مشتری یا شماره فاکتور و فیلتر بر اساس بازه تاریخی دلخواه.',
+        tips: ['اگر بازه تاریخی را خالی بگذارید، همه فاکتورها نمایش داده می‌شوند.'],
+        placement: 'bottom',
+      },
+      {
+        id: 'invoices-list',
+        targetSelector: '[data-guide="invoices-list"]',
+        title: 'لیست فاکتورها',
+        description: 'فهرست فاکتورها با مبلغ، مشتری و تاریخ؛ با اسکرول به پایین، صفحات بعدی به‌صورت خودکار بارگذاری می‌شود.',
+        placement: 'top',
+      },
+    ],
+  },
+
   analytics: {
     pageKey: 'analytics',
     title: 'راهنمای آمار و تحلیل فروش',

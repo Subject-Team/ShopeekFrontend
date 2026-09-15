@@ -25,6 +25,7 @@ export {
 export { uploadSalesFile, previewSalesFile, getSampleCSV } from './api/ingestion';
 export { sendChatMessage, fetchChatHistory, clearChatHistory } from './api/chat';
 export { fetchSalesSuggestions, createInvoice } from './api/sales';
+export { fetchInvoices } from './api/invoices';
 export {
   fetchSettings,
   deleteAccountApi,
