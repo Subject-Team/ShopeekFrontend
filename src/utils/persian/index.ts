@@ -7,11 +7,12 @@
  */
 
 /**
- * Converts ASCII (Latin) digits in a string or number to Persian digits (۰-۹).
+ * Converts every ASCII (Latin) digit in a string or number to Persian digits (۰-۹),
+ * leaving all other characters untouched.
  *
- * - Returns `''` for `null`/`undefined`.
- * - Leaves the input unchanged when it is not a numeric value
- *   (commas are ignored when checking, so `'1,234,567'` still converts).
+ * - Returns `''` for `null`/`undefined` and for empty input.
+ * - Safe for embedded digits: slash-separated Jalali dates (`1405/06/09` →
+ *   `۱۴۰۵/۰۶/۰۹`), prose (`دوره 30 روزه` → `دوره ۳۰ روزه`), and plain numbers.
  * - Preserves leading zeros (e.g. phone numbers like `۰۹۱۲...`).
  *
  * Use this for counts, percentages, dates and any non-monetary digits.
@@ -20,8 +21,7 @@ export const toPersianDigits = (input: string | number | null | undefined): stri
   if (input === null || input === undefined) return '';
 
   const str = String(input);
-
-  if (str.length === 0 || isNaN(Number(str.replace(/,/g, '')))) return str;
+  if (str.length === 0) return str;
 
   const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
   return str.replace(/[0-9]/g, (d) => persianDigits[Number(d)]);

@@ -7,16 +7,22 @@ import { usePageContext } from '../../context/PageContext';
 import { useAuth } from '../../context/AuthContext';
 import { sendChatMessage, fetchChatHistory, clearChatHistory, fetchBillingOverview } from '../../services/api';
 import type { ChatMessage, BillingOverview } from '../../types';
-import { toGroupedPersianDigits } from "../../utils/persian";
+import { toGroupedPersianDigits, toPersianDigits } from "../../utils/persian";
 import { formatJalaliRangeLabel } from "../../utils/persian/date";
 
+/** Converts direct string children of a markdown node to Persian digits (۰-۹). */
+const persianText = (children: React.ReactNode): React.ReactNode =>
+  React.Children.map(children, (child) =>
+    typeof child === 'string' ? toPersianDigits(child) : child
+  );
+
 const assistantMarkdownComponents: Components = {
-  p: ({ node: _node, ...props }) => <p {...props} className="my-1 first:mt-0 last:mb-0" />,
-  strong: ({ node: _node, ...props }) => <strong {...props} className="font-extrabold" />,
-  em: ({ node: _node, ...props }) => <em {...props} className="italic" />,
+  p: ({ node: _node, children, ...props }) => <p {...props} className="my-1 first:mt-0 last:mb-0">{persianText(children)}</p>,
+  strong: ({ node: _node, children, ...props }) => <strong {...props} className="font-extrabold">{persianText(children)}</strong>,
+  em: ({ node: _node, children, ...props }) => <em {...props} className="italic">{persianText(children)}</em>,
   ul: ({ node: _node, ...props }) => <ul {...props} className="list-disc ps-5 my-1 space-y-0.5" />,
   ol: ({ node: _node, ...props }) => <ol {...props} className="list-decimal ps-5 my-1 space-y-0.5" />,
-  li: ({ node: _node, ...props }) => <li {...props} className="leading-relaxed" />,
+  li: ({ node: _node, children, ...props }) => <li {...props} className="leading-relaxed">{persianText(children)}</li>,
   a: ({ node: _node, children, ...props }) => (
     <a
       {...props}
@@ -24,15 +30,15 @@ const assistantMarkdownComponents: Components = {
       rel="noopener noreferrer"
       className="text-indigo-600 dark:text-indigo-300 underline underline-offset-2 break-all"
     >
-      {children}
+      {persianText(children)}
     </a>
   ),
-  h1: ({ node: _node, ...props }) => <h1 {...props} className="text-sm font-extrabold my-1.5 first:mt-0 last:mb-0" />,
-  h2: ({ node: _node, ...props }) => <h2 {...props} className="text-[13px] font-extrabold my-1.5 first:mt-0 last:mb-0" />,
-  h3: ({ node: _node, ...props }) => <h3 {...props} className="text-xs font-extrabold my-1 first:mt-0 last:mb-0" />,
-  h4: ({ node: _node, ...props }) => <h4 {...props} className="text-xs font-extrabold my-1 first:mt-0 last:mb-0" />,
-  blockquote: ({ node: _node, ...props }) => (
-    <blockquote {...props} className="border-s-2 border-slate-300 dark:border-slate-600 ps-2 my-1 italic text-slate-500 dark:text-slate-400" />
+  h1: ({ node: _node, children, ...props }) => <h1 {...props} className="text-sm font-extrabold my-1.5 first:mt-0 last:mb-0">{persianText(children)}</h1>,
+  h2: ({ node: _node, children, ...props }) => <h2 {...props} className="text-[13px] font-extrabold my-1.5 first:mt-0 last:mb-0">{persianText(children)}</h2>,
+  h3: ({ node: _node, children, ...props }) => <h3 {...props} className="text-xs font-extrabold my-1 first:mt-0 last:mb-0">{persianText(children)}</h3>,
+  h4: ({ node: _node, children, ...props }) => <h4 {...props} className="text-xs font-extrabold my-1 first:mt-0 last:mb-0">{persianText(children)}</h4>,
+  blockquote: ({ node: _node, children, ...props }) => (
+    <blockquote {...props} className="border-s-2 border-slate-300 dark:border-slate-600 ps-2 my-1 italic text-slate-500 dark:text-slate-400">{persianText(children)}</blockquote>
   ),
   pre: ({ node: _node, children }) => (
     <pre
@@ -61,12 +67,12 @@ const assistantMarkdownComponents: Components = {
   tr: ({ node: _node, ...props }) => <tr {...props} />,
   th: ({ node: _node, children, ...props }) => (
     <th {...props} className="border border-slate-300 dark:border-slate-600 bg-slate-200/60 dark:bg-slate-700/60 px-1.5 py-1 font-bold [&>p]:my-0">
-      {children}
+      {persianText(children)}
     </th>
   ),
   td: ({ node: _node, children, ...props }) => (
     <td {...props} className="border border-slate-300 dark:border-slate-600 px-1.5 py-1 [&>p]:my-0">
-      {children}
+      {persianText(children)}
     </td>
   ),
   hr: () => <hr className="my-2 border-slate-200 dark:border-slate-700" />,

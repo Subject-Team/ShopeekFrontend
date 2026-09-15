@@ -344,7 +344,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose }) =
                   دیروز
                 </button>
                 <span className="text-sm text-slate-600 dark:text-slate-300 font-semibold self-center">
-                  تاریخ انتخابی: {formatJalaliNumeric(selectedIso)}
+                  تاریخ انتخابی: {toPersianDigits(formatJalaliNumeric(selectedIso))}
                 </span>
               </div>
 

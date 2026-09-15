@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkle, Shield, BarChart3, FileText, ArrowUpLeft, MessageSquare, Send, Camera, Mail, BookOpen } from 'lucide-react';
+import { toPersianDigits } from '../../utils/persian';
 
 export const MainFooter: React.FC = () => {
   return (
@@ -121,7 +122,7 @@ export const MainFooter: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 text-center sm:text-right">
-          <p>© {new Date().getFullYear()} شاپیک (Shopeek). تمامی حقوق محفوظ است.</p>
+          <p>© {toPersianDigits(new Date().getFullYear())} شاپیک (Shopeek). تمامی حقوق محفوظ است.</p>
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-6">
             <Link to="/blog" className="hover:text-slate-900 transition-colors">وبلاگ</Link>
             <Link to="/contact" className="hover:text-slate-900 transition-colors">تماس با ما</Link>

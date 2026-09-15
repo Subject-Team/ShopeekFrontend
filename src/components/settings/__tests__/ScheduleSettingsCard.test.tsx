@@ -50,8 +50,8 @@ describe('[component] ScheduleSettingsCard', () => {
       expect(screen.getByText('زمان‌بندی مشاوره')).toBeInTheDocument();
     });
     expect(screen.getByText('زمان‌بندی پیش‌بینی')).toBeInTheDocument();
-    expect(screen.getAllByText('09:00')).toHaveLength(2);
-    expect(screen.getAllByText('14:00')).toHaveLength(2);
+    expect(screen.getAllByText('۰۹:۰۰')).toHaveLength(2);
+    expect(screen.getAllByText('۱۴:۰۰')).toHaveLength(2);
     expect(screen.getAllByRole('button', { name: 'ذخیره زمان‌بندی' })).toHaveLength(2);
   });
 
@@ -80,13 +80,13 @@ describe('[component] ScheduleSettingsCard', () => {
     renderCard();
 
     await waitFor(() => {
-      expect(screen.getAllByText('14:00')).toHaveLength(2);
+      expect(screen.getAllByText('۱۴:۰۰')).toHaveLength(2);
     });
 
-    const forecastOffBtn = screen.getAllByText('14:00')[1];
+    const forecastOffBtn = screen.getAllByText('۱۴:۰۰')[1];
     fireEvent.click(forecastOffBtn);
 
-    const forecastOnBtn = screen.getAllByText('14:00')[1];
+    const forecastOnBtn = screen.getAllByText('۱۴:۰۰')[1];
     fireEvent.click(forecastOnBtn);
   });
 
@@ -94,7 +94,7 @@ describe('[component] ScheduleSettingsCard', () => {
     const { container } = renderCard();
 
     await waitFor(() => {
-      expect(screen.getAllByText('09:00')).toHaveLength(2);
+      expect(screen.getAllByText('۰۹:۰۰')).toHaveLength(2);
     });
 
     const timeInputs = getTimeInputs(container);
@@ -102,12 +102,12 @@ describe('[component] ScheduleSettingsCard', () => {
     fireEvent.click(screen.getAllByRole('button', { name: 'افزودن زمان دلخواه' })[0]);
 
     await waitFor(() => {
-      expect(screen.getByLabelText('حذف زمان 10:30')).toBeInTheDocument();
+      expect(screen.getByLabelText('حذف زمان ۱۰:۳۰')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByLabelText('حذف زمان 10:30'));
+    fireEvent.click(screen.getByLabelText('حذف زمان ۱۰:۳۰'));
     await waitFor(() => {
-      expect(screen.queryByLabelText('حذف زمان 10:30')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('حذف زمان ۱۰:۳۰')).not.toBeInTheDocument();
     });
   });
 
@@ -115,7 +115,7 @@ describe('[component] ScheduleSettingsCard', () => {
     const { container } = renderCard();
 
     await waitFor(() => {
-      expect(screen.getAllByText('09:00')).toHaveLength(2);
+      expect(screen.getAllByText('۰۹:۰۰')).toHaveLength(2);
     });
 
     const timeInputs = getTimeInputs(container);
@@ -129,7 +129,7 @@ describe('[component] ScheduleSettingsCard', () => {
     const { container } = renderCard();
 
     await waitFor(() => {
-      expect(screen.getAllByText('09:00')).toHaveLength(2);
+      expect(screen.getAllByText('۰۹:۰۰')).toHaveLength(2);
     });
 
     const timeInputs = getTimeInputs(container);

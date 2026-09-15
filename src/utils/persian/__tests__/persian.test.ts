@@ -31,6 +31,14 @@ describe('[unit] utils/persian formatting functions', () => {
     it('returns string fallback for non-numeric string', () => {
       expect(toPersianDigits('invalid_text')).toBe('invalid_text');
     });
+
+    it('converts digits embedded in slash-separated Jalali dates', () => {
+      expect(toPersianDigits('1405/06/09')).toBe('۱۴۰۵/۰۶/۰۹');
+    });
+
+    it('converts digits embedded in prose', () => {
+      expect(toPersianDigits('دوره 30 روزه')).toBe('دوره ۳۰ روزه');
+    });
   });
 
   describe('toGroupedPersianDigits', () => {
