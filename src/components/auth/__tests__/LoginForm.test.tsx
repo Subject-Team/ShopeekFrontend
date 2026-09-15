@@ -1,10 +1,10 @@
-import React from 'react';
+// @test-type component
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { LoginForm } from '../LoginForm';
 import { createMockLoginForm } from './mockLoginForm';
 
-describe('LoginForm', () => {
+describe('[component] LoginForm', () => {
   it('renders the method selector with both login methods', () => {
     render(<LoginForm form={createMockLoginForm()} />);
 

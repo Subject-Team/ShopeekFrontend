@@ -1,3 +1,4 @@
+// @test-type component
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
@@ -67,7 +68,7 @@ const openChat = async () => {
   await act(async () => {});
 };
 
-describe('ChatDrawer Component', () => {
+describe('[component] ChatDrawer Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (api.fetchChatHistory as any).mockResolvedValue([]);
@@ -160,7 +161,6 @@ describe('ChatDrawer Component', () => {
       makeMsg({ message_content: 'پاسخ قبلی دستیار' }),
     ]);
     (api.clearChatHistory as any).mockResolvedValue(undefined);
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
 
     await openChat();
 
@@ -169,6 +169,7 @@ describe('ChatDrawer Component', () => {
     });
 
     fireEvent.click(screen.getByRole('button', { name: 'پاک کردن گفتگو' }));
+    fireEvent.click(screen.getByRole('button', { name: 'تأیید و پاک کردن' }));
 
     await waitFor(() => {
       expect(api.clearChatHistory).toHaveBeenCalledWith('session_default_user');
@@ -181,7 +182,6 @@ describe('ChatDrawer Component', () => {
     (api.fetchChatHistory as any).mockResolvedValue([
       makeMsg({ message_content: 'پاسخ قبلی دستیار' }),
     ]);
-    vi.spyOn(window, 'confirm').mockReturnValue(false);
 
     await openChat();
 
@@ -190,6 +190,7 @@ describe('ChatDrawer Component', () => {
     });
 
     fireEvent.click(screen.getByRole('button', { name: 'پاک کردن گفتگو' }));
+    fireEvent.click(screen.getByRole('button', { name: 'انصراف' }));
 
     expect(api.clearChatHistory).not.toHaveBeenCalled();
     expect(screen.getByText('پاسخ قبلی دستیار')).toBeInTheDocument();

@@ -1,3 +1,4 @@
+// @test-type component
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ToastProvider } from '../../../context/ToastContext';
@@ -42,7 +43,7 @@ const textboxes = () => screen.getAllByRole('textbox') as HTMLInputElement[];
 
 const grantButton = () => screen.getByText('اعطای اعتبار (ابتدا بدهی تسویه می\u200cشود)');
 
-describe('BillingForms', () => {
+describe('[component] BillingForms', () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });

@@ -38,14 +38,15 @@ export const BusinessProfileBanner: React.FC<BusinessProfileBannerProps> = ({
 
   // Listen to profile updates (e.g. from Settings page form save)
   useEffect(() => {
-    const handleUpdate = (e: CustomEvent<BusinessProfile>) => {
-      if (e.detail) {
-        setProfile(e.detail);
+    const handleUpdate = (e: Event) => {
+      const detail = (e as CustomEvent<BusinessProfile>).detail;
+      if (detail) {
+        setProfile(detail);
       }
     };
-    window.addEventListener('shopeek_business_profile_updated' as any, handleUpdate);
+    window.addEventListener('shopeek_business_profile_updated', handleUpdate);
     return () =>
-      window.removeEventListener('shopeek_business_profile_updated' as any, handleUpdate);
+      window.removeEventListener('shopeek_business_profile_updated', handleUpdate);
   }, []);
 
   // Check 3-day dismissal window

@@ -1,7 +1,8 @@
+// @test-type unit
 import { describe, it, expect } from 'vitest';
 import { GUIDE_CONFIGS } from '../guideSteps';
 
-describe('guideSteps configuration validation', () => {
+describe('[unit] guideSteps configuration validation', () => {
   it('has configurations for all dashboard pages including subscription', () => {
     expect(GUIDE_CONFIGS).toHaveProperty('dashboard');
     expect(GUIDE_CONFIGS).toHaveProperty('ingestion');

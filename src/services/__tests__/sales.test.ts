@@ -1,7 +1,8 @@
+// @test-type service
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { fetchSalesSuggestions, createInvoice } from '../api';
 
-describe('sales API', () => {
+describe('[service] sales API', () => {
   const originalFetch = window.fetch;
 
   beforeEach(() => {

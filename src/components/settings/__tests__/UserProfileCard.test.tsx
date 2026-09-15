@@ -1,4 +1,4 @@
-import React from 'react';
+// @test-type component
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { UserProfileCard } from '../UserProfileCard';
@@ -36,7 +36,7 @@ const renderCard = (profile = mockUser, readOnly = false, onUpdated = vi.fn()) =
   );
 };
 
-describe('UserProfileCard & ChangePhoneModal', () => {
+describe('[component] UserProfileCard & ChangePhoneModal', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

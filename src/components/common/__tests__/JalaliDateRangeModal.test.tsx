@@ -1,9 +1,9 @@
-import React from 'react';
+// @test-type component
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { JalaliDateRangeModal } from '../JalaliDateRangeModal';
 
-describe('JalaliDateRangeModal', () => {
+describe('[component] JalaliDateRangeModal', () => {
   it('does not render when isOpen is false', () => {
     render(
       <JalaliDateRangeModal

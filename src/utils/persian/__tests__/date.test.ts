@@ -1,3 +1,4 @@
+// @test-type unit
 import { describe, it, expect } from 'vitest';
 import {
   formatJalaliRangeLabel,
@@ -17,7 +18,7 @@ import {
   utcStringToPersianTime,
 } from '../date';
 
-describe('utils/persian/date jalali calendar math', () => {
+describe('[unit] utils/persian/date jalali calendar math', () => {
   it('converts Gregorian to Jalali correctly', () => {
     // 2026-08-31 is 1405-06-09 (9 Shahrivar 1405)
     const j = gregorianToJalali(2026, 8, 31);

@@ -29,7 +29,7 @@ export const PrivacySection: React.FC = () => {
       </Section>
 
       <Section title="اطلاعاتی که جمع‌آوری می‌کنیم">
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-600 mr-2">
+        <ul className="list-disc list-inside space-y-1 text-xs text-slate-600 ms-2">
           <li><strong className="text-slate-900">اطلاعات حساب کاربری:</strong> نام، شماره موبایل، ایمیل، رمزعبور هش‌شده</li>
           <li><strong className="text-slate-900">داده‌های فروش شما:</strong> مبالغ، تاریخ، اقلام، اطلاعات مشتریان</li>
           <li><strong className="text-slate-900">تاریخچه گفتگو با دستیار هوشمند</strong> و توصیه‌های هوش مصنوعی</li>

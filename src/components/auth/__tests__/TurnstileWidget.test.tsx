@@ -1,3 +1,4 @@
+// @test-type component
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
@@ -18,7 +19,7 @@ vi.mock('@marsidev/react-turnstile', () => ({
   },
 }));
 
-describe('TurnstileWidget', () => {
+describe('[component] TurnstileWidget', () => {
   it('renders the turnstile widget and reports the token', async () => {
     const onTokenChange = vi.fn();
     const ref = React.createRef<any>();

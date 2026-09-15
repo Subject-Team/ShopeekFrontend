@@ -41,7 +41,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ form }) => {
     submitting,
     isLoading,
     hasSubmitted,
-    setHasSubmitted,
     otpCooldown,
     setOtpResendTriggered,
     passwordAnalysis,

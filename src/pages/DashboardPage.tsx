@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DollarSign, ShoppingBag, Users, UploadCloud, ReceiptText } from 'lucide-react';
 import { CreditIcon } from '../components/icons';
@@ -38,6 +38,7 @@ export const DashboardPage: React.FC = () => {
   const [businessProfile, setBusinessProfile] = useState<BusinessProfile | null>(null);
   const [billing, setBilling] = useState<BillingOverview | null>(null);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState<boolean>(false);
+  const isMountedRef = useRef(true);
 
   const aiUsage = billing?.usage.find((u) => u.feature_key === 'daily_ai_run_limit');
 
@@ -52,6 +53,7 @@ export const DashboardPage: React.FC = () => {
         fetchBusinessProfile().catch(() => null),
         fetchBillingOverview().catch(() => null),
       ]);
+      if (!isMountedRef.current) return;
       setKpi(kpiRes);
       setTrend(trendRes);
       setAdvisory(advRes);
@@ -60,12 +62,16 @@ export const DashboardPage: React.FC = () => {
       if (bizRes) setBusinessProfile(bizRes);
       if (billingRes) setBilling(billingRes);
     } catch (err) {
-      console.error(err);
+      if (isMountedRef.current) console.error(err);
     }
   };
 
   useEffect(() => {
+    isMountedRef.current = true;
     loadDashboardData();
+    return () => {
+      isMountedRef.current = false;
+    };
   }, [startDate, endDate, dateRangeDays]);
 
 

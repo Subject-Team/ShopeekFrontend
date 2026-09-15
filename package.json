@@ -8,21 +8,23 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:cov": "vitest run --coverage"
+    "test:cov": "vitest run --coverage",
+    "test:unit": "vitest run src/utils src/config",
+    "test:service": "vitest run src/services",
+    "test:component": "vitest run src/components src/context src/hooks src/__tests__",
+    "test:page": "vitest run src/pages"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.6.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@tailwindcss/vite": "^4.3.3",
-    "clsx": "^2.1.0",
     "lucide-react": "^1.41.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.18.2",
     "recharts": "^3.0.0",
-    "remark-gfm": "^4.0.1",
-    "tailwind-merge": "^3.6.0"
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^7.0.1",

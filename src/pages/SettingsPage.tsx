@@ -25,9 +25,6 @@ import { DataTransferCard } from '../components/settings/DataTransferCard';
 import { UserProfileCard } from '../components/settings/UserProfileCard';
 import type { User } from '../types';
 
-const cardClass =
-  'glass-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xs bg-gradient-to-br from-indigo-50/70 via-white to-blue-50/50 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60';
-
 const tabItemClass = (active: boolean) =>
   `flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
     active
@@ -40,7 +37,7 @@ export const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
   const readOnly = Boolean(user?.is_read_only);
   const { showToast } = useToast();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<'account' | 'security' | 'business_profile' | 'ai_data'>(() => {
     const tab = searchParams.get('tab');
     if (tab === 'business_profile' || tab === 'security' || tab === 'ai_data') return tab;

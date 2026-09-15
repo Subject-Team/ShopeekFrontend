@@ -1,4 +1,4 @@
-import React from 'react';
+// @test-type component
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -71,7 +71,7 @@ const renderComponent = () => {
   );
 };
 
-describe('DataTransferCard', () => {
+describe('[component] DataTransferCard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Mock URL.createObjectURL and URL.revokeObjectURL

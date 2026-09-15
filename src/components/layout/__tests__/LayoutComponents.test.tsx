@@ -1,3 +1,4 @@
+// @test-type component
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -13,7 +14,7 @@ import { GuideProvider } from '../../../context/GuideContext';
 import { PageContextProvider } from '../../../context/PageContext';
 import { ThemeProvider } from '../../../context/ThemeContext';
 
-describe('Layout Components', () => {
+describe('[component] Layout Components', () => {
   it('renders PublicHeader with brand and navigation links', () => {
     render(
       <MemoryRouter initialEntries={['/']}>

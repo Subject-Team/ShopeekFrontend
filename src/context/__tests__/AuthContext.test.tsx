@@ -1,3 +1,4 @@
+// @test-type component
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
@@ -11,7 +12,7 @@ vi.mock('../../services/api', () => ({
   getWebSessionId: vi.fn(() => null),
 }));
 
-describe('AuthContext', () => {
+describe('[component] AuthContext', () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();

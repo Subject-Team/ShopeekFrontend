@@ -1,7 +1,8 @@
+// @test-type service
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { uploadSalesFile, previewSalesFile, getSampleCSV } from '../api';
 
-describe('ingestion API', () => {
+describe('[service] ingestion API', () => {
   const originalFetch = window.fetch;
 
   beforeEach(() => {

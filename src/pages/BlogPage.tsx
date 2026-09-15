@@ -58,18 +58,18 @@ export const BlogPage: React.FC = () => {
         {/* Search & Category Filter Controls */}
         <section className="space-y-4 max-w-4xl mx-auto">
           <div className="relative">
-            <Search className="w-5 h-5 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2" />
+            <Search className="w-5 h-5 text-slate-400 absolute end-4 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="جستجو در عناوین، مباحث یا کلمات کلیدی مقالات..."
-              className="w-full pr-12 pl-10 py-3.5 bg-white border border-slate-200 rounded-2xl text-sm text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 shadow-xs transition-all"
+              className="w-full ps-12 pe-10 py-3.5 bg-white border border-slate-200 rounded-2xl text-sm text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 shadow-xs transition-all"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                className="absolute start-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
                 aria-label="پاک کردن جستجو"
               >
                 <X className="w-4 h-4" />
@@ -79,7 +79,7 @@ export const BlogPage: React.FC = () => {
 
           {/* Categories Pill Bar */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 shrink-0 ml-2">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 shrink-0 me-2">
               <Filter className="w-3.5 h-3.5" />
               <span>دسته‌بندی:</span>
             </div>
@@ -114,7 +114,7 @@ export const BlogPage: React.FC = () => {
         {/* Featured Post Banner (Visible when no specific search is active) */}
         {!searchQuery && selectedCategory === 'all' && featuredPost && (
           <section className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden border border-slate-800">
-            <div className="absolute -top-24 -left-24 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -top-24 -start-24 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-7 space-y-4">
                 <div className="flex flex-wrap items-center gap-3 text-xs">
@@ -221,7 +221,7 @@ export const BlogPage: React.FC = () => {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       loading="lazy"
                     />
-                    <span className="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-slate-900/80 backdrop-blur-xs text-white text-[11px] font-bold">
+                    <span className="absolute top-3 start-3 px-2.5 py-1 rounded-lg bg-slate-900/80 backdrop-blur-xs text-white text-[11px] font-bold">
                       {post.category}
                     </span>
                   </Link>
@@ -269,7 +269,7 @@ export const BlogPage: React.FC = () => {
         </section>
 
         {/* Bottom CTA Banner */}
-        <section className="bg-gradient-to-r from-brand-600 via-indigo-600 to-indigo-700 rounded-3xl p-8 sm:p-12 text-white text-center sm:text-right flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+        <section className="bg-gradient-to-r from-brand-600 via-indigo-600 to-indigo-700 rounded-3xl p-8 sm:p-12 text-white text-center sm:text-start flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
           <div className="space-y-2 max-w-2xl">
             <h2 className="text-xl sm:text-2xl font-black text-white">
               می‌خواهید داده‌های فروش کسب‌وکارتان را هوشمندانه تحلیل کنید؟

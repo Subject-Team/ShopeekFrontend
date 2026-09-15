@@ -1,3 +1,4 @@
+// @test-type component
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { AdvisoryHistoryModal } from '../AdvisoryHistoryModal';
@@ -26,7 +27,7 @@ const renderModal = (history: AIAdvisory[] = HISTORY) => {
   return { onClose };
 };
 
-describe('AdvisoryHistoryModal Component', () => {
+describe('[component] AdvisoryHistoryModal Component', () => {
   it('renders nothing when closed', () => {
     render(<AdvisoryHistoryModal isOpen={false} onClose={vi.fn()} history={HISTORY} />);
     expect(screen.queryByText(/پیشنهادات قبلی هوش مصنوعی/i)).not.toBeInTheDocument();

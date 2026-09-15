@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CustomerList } from '../components/crm/CustomerList';
 import { CustomerModal } from '../components/crm/CustomerModal';
 import { CreateCustomerModal } from '../components/crm/CreateCustomerModal';
@@ -13,25 +13,31 @@ export const CustomersPage: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+  const isMountedRef = useRef(true);
 
   const loadCustomers = async () => {
     try {
       const data = await fetchCustomers();
+      if (!isMountedRef.current) return;
       setCustomers(data);
-    } catch (err: any) {
-      console.error(err);
+    } catch (err: unknown) {
+      if (isMountedRef.current) console.error(err);
     }
   };
 
   useEffect(() => {
+    isMountedRef.current = true;
     loadCustomers();
+    return () => {
+      isMountedRef.current = false;
+    };
   }, []);
 
   const handleSelectCustomer = async (cust: Customer) => {
     try {
       const fullDetail = await fetchCustomerDetail(cust.id);
       setSelectedCustomer(fullDetail);
-    } catch (err: any) {
+    } catch {
       setSelectedCustomer(cust);
     }
   };

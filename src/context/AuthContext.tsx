@@ -29,11 +29,21 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Read the persisted user from localStorage defensively: a corrupt value must
+// never crash the app on boot — fall back to null and clear the bad key.
+const readStoredUser = (): User | null => {
+  const savedUser = localStorage.getItem('shopeek_user');
+  if (!savedUser) return null;
+  try {
+    return JSON.parse(savedUser) as User;
+  } catch {
+    localStorage.removeItem('shopeek_user');
+    return null;
+  }
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(() => {
-    const savedUser = localStorage.getItem('shopeek_user');
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
+  const [user, setUser] = useState<User | null>(() => readStoredUser());
   const [token, setToken] = useState<string | null>(() => {
     return localStorage.getItem('shopeek_token');
   });
@@ -43,14 +53,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // shopeek_token_refreshed listener below, so no re-validation is needed
   // when the token state changes (that would fire a redundant fetchMeApi).
   useEffect(() => {
+    let active = true;
     const initAuth = async () => {
       const storedToken = localStorage.getItem('shopeek_token');
       if (storedToken) {
         try {
           const currentUser = await fetchMeApi();
+          if (!active) return;
           setUser(currentUser);
           localStorage.setItem('shopeek_user', JSON.stringify(currentUser));
         } catch (error) {
+          if (!active) return;
           // Only treat the session as dead when the tokens were conclusively
           // rejected (authFetch cleared storage + dispatched shopeek_unauthorized).
           // Transient/network/rate-limit errors must NOT log read-only users out.
@@ -60,9 +73,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
       } else {
+        if (!active) return;
         setUser(null);
       }
-      setIsLoading(false);
+      if (active) setIsLoading(false);
     };
 
     initAuth();
@@ -73,12 +87,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     const handleTokenRefreshed = () => {
       setToken(localStorage.getItem('shopeek_token'));
-      const savedUser = localStorage.getItem('shopeek_user');
-      if (savedUser) setUser(JSON.parse(savedUser));
+      setUser(readStoredUser());
     };
     window.addEventListener('shopeek_unauthorized', handleUnauthorized);
     window.addEventListener('shopeek_token_refreshed', handleTokenRefreshed);
     return () => {
+      active = false;
       window.removeEventListener('shopeek_unauthorized', handleUnauthorized);
       window.removeEventListener('shopeek_token_refreshed', handleTokenRefreshed);
     };

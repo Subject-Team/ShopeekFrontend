@@ -1,3 +1,4 @@
+// @test-type component
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -13,7 +14,7 @@ const baseUser = (overrides: Partial<User>): User => ({
   ...overrides,
 });
 
-describe('RestrictionBanner', () => {
+describe('[component] RestrictionBanner', () => {
   const renderBanner = (user: User | null, debt?: number) =>
     render(
       <MemoryRouter>

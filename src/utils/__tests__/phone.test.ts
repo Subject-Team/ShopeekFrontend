@@ -1,7 +1,8 @@
+// @test-type unit
 import { describe, it, expect } from 'vitest';
 import { normalizePhoneNumber, toAsciiDigits, PHONE_REGEX } from '../phone';
 
-describe('phone utilities', () => {
+describe('[unit] phone utilities', () => {
   describe('toAsciiDigits', () => {
     it('converts Persian digits to ASCII', () => {
       expect(toAsciiDigits('۰۱۲۳۴۵۶۷۸۹')).toBe('0123456789');

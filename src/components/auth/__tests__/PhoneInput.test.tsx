@@ -1,9 +1,9 @@
-import React from 'react';
+// @test-type component
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { PhoneInput } from '../PhoneInput';
 
-describe('PhoneInput', () => {
+describe('[component] PhoneInput', () => {
   it('renders label, input and placeholder', () => {
     render(<PhoneInput value="" onChange={vi.fn()} hasError={false} />);
 

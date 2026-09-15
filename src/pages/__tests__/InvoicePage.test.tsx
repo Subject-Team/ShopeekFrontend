@@ -1,3 +1,4 @@
+// @test-type page
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
@@ -41,7 +42,7 @@ const suggestionsFixture = {
   },
 };
 
-describe('InvoiceModal (ثبت فاکتور)', () => {
+describe('[page] InvoiceModal (ثبت فاکتور)', () => {
   beforeEach(() => {
     localStorage.clear();
     localStorage.setItem('shopeek_token', 'mock-valid-token');

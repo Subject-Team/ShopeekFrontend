@@ -1,3 +1,4 @@
+// @test-type component
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -17,7 +18,7 @@ const renderModal = (props: Partial<React.ComponentProps<typeof DeleteAccountMod
   return { onClose, onConfirm };
 };
 
-describe('DeleteAccountModal', () => {
+describe('[component] DeleteAccountModal', () => {
   it('renders nothing when closed', () => {
     render(<DeleteAccountModal isOpen={false} onClose={vi.fn()} onConfirm={vi.fn()} />);
 

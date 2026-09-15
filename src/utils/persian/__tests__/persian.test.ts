@@ -1,3 +1,4 @@
+// @test-type unit
 import { describe, it, expect } from 'vitest';
 import {
   toPersianDigits,
@@ -8,7 +9,7 @@ import {
   shortTomaanWithUnit,
 } from '..';
 
-describe('utils/persian formatting functions', () => {
+describe('[unit] utils/persian formatting functions', () => {
   describe('toPersianDigits', () => {
     it('returns empty string for null or undefined', () => {
       expect(toPersianDigits(null)).toBe('');

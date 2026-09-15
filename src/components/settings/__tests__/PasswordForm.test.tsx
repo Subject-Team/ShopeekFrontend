@@ -1,4 +1,4 @@
-import React from 'react';
+// @test-type component
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { PasswordForm } from '../PasswordForm';
@@ -27,7 +27,7 @@ const fillValidForm = (container: HTMLElement) => {
   fireEvent.change(inputs[2], { target: { value: 'NewPass123!' } });
 };
 
-describe('PasswordForm', () => {
+describe('[component] PasswordForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

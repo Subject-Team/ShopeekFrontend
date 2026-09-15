@@ -235,7 +235,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose }) =
         ) : (
           <div className="space-y-6">
             {/* Product */}
-            <div data-guide="invoice-product" className="space-y-2">
+            <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-200">
                 <Package className="w-4 h-4 text-brand-500" />
                 <span>محصول</span>
@@ -255,7 +255,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose }) =
             </div>
 
             {/* Customer */}
-            <div data-guide="invoice-customer" className="space-y-2">
+            <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-200">
                 <User className="w-4 h-4 text-brand-500" />
                 <span>مشتری</span>
@@ -271,7 +271,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose }) =
               {customerNames.length > 0 && renderSuggestChips(suggestions?.customers.last ?? null, suggestions?.customers.top3 ?? [], handleCustomerSelect)}
 
               {showEmail && (
-                <div data-guide="invoice-customer-email" className="pt-1">
+                <div className="pt-1">
                   <input
                     type="email"
                     value={customerEmail}
@@ -286,7 +286,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose }) =
             </div>
 
             {/* Amount */}
-            <div data-guide="invoice-amount" className="space-y-2">
+            <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-200">
                 <Coins className="w-4 h-4 text-brand-500" />
                 <span>مبلغ (هزار تومان)</span>
@@ -300,10 +300,10 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose }) =
                   onChange={e => setAmount(e.target.value)}
                   placeholder="مثلاً 2000"
                   disabled={readOnly}
-                  className={`${inputClass} pl-24`}
+                  className={`${inputClass} pe-24`}
                   dir="ltr"
                 />
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
+                <span className="absolute start-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">
                   هزار تومان
                 </span>
               </div>
@@ -321,7 +321,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose }) =
             </div>
 
             {/* Date */}
-            <div data-guide="invoice-date" className="space-y-3">
+            <div className="space-y-3">
               <label className="flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-200">
                 <Calendar className="w-4 h-4 text-brand-500" />
                 <span>تاریخ فاکتور</span>
@@ -389,7 +389,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose }) =
             </div>
 
             {/* Submit */}
-            <div className="pt-2" data-guide="invoice-submit">
+            <div className="pt-2">
               <button
                 type="button"
                 onClick={handleSubmit}

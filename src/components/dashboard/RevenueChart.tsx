@@ -11,7 +11,7 @@ import {
 import { RevenuePoint } from '../../types';
 import { shortTomaanWithUnit } from "../../utils/persian";
 import { toPersianDate } from "../../utils/persian/date";
-import { toPersianDigits, toGroupedPersianDigits } from "../../utils/persian";
+import { toGroupedPersianDigits } from "../../utils/persian";
 import { useIsMobile } from '../../hooks/useIsMobile';
 
 interface RevenueChartProps {

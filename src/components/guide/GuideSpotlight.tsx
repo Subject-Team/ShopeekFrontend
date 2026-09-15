@@ -80,7 +80,7 @@ export const GuideSpotlight: React.FC = () => {
     return () => clearTimeout(timer);
   }, [isGuideOpen, currentStep, isMobile, updateRect]);
 
-  // Track window scroll, resize, element resize, and DOM mutations
+  // Track window scroll, resize, target element resize, and target DOM mutations
   useEffect(() => {
     if (!isGuideOpen || !currentStep) return;
 
@@ -91,45 +91,47 @@ export const GuideSpotlight: React.FC = () => {
     window.addEventListener('resize', handleScrollOrResize);
     window.addEventListener('scroll', handleScrollOrResize, true);
 
-    // ResizeObserver for target element and body
+    const targetEl = document.querySelector(currentStep.targetSelector);
+
+    // ResizeObserver for the target element only
     let resizeObserver: ResizeObserver | null = null;
-    if (typeof ResizeObserver !== 'undefined') {
+    if (typeof ResizeObserver !== 'undefined' && targetEl) {
       resizeObserver = new ResizeObserver(() => {
         updateRect();
       });
-      const el = document.querySelector(currentStep.targetSelector);
-      if (el) {
-        resizeObserver.observe(el);
-      }
-      if (document.body) {
-        resizeObserver.observe(document.body);
-      }
+      resizeObserver.observe(targetEl);
     }
 
-    // MutationObserver to detect DOM additions or target element insertions
+    // MutationObserver scoped to the target element's subtree
     let mutationObserver: MutationObserver | null = null;
-    if (typeof MutationObserver !== 'undefined') {
+    if (typeof MutationObserver !== 'undefined' && targetEl) {
       mutationObserver = new MutationObserver(() => {
         updateRect();
       });
-      mutationObserver.observe(document.body, {
+      mutationObserver.observe(targetEl, {
         childList: true,
         subtree: true,
         attributes: true,
       });
     }
 
-    // Periodic check for first 2 seconds to handle async API delays smoothly
-    const interval = setInterval(updateRect, 200);
-    const stopTimer = setTimeout(() => clearInterval(interval), 2000);
+    // Poll briefly only while the target element is missing (async-rendered targets)
+    let interval: ReturnType<typeof setInterval> | null = null;
+    let stopTimer: ReturnType<typeof setTimeout> | null = null;
+    if (!targetEl) {
+      interval = setInterval(updateRect, 200);
+      stopTimer = setTimeout(() => {
+        if (interval) clearInterval(interval);
+      }, 2000);
+    }
 
     return () => {
       window.removeEventListener('resize', handleScrollOrResize);
       window.removeEventListener('scroll', handleScrollOrResize, true);
       if (resizeObserver) resizeObserver.disconnect();
       if (mutationObserver) mutationObserver.disconnect();
-      clearInterval(interval);
-      clearTimeout(stopTimer);
+      if (interval) clearInterval(interval);
+      if (stopTimer) clearTimeout(stopTimer);
     };
   }, [isGuideOpen, currentStep, updateRect]);
 

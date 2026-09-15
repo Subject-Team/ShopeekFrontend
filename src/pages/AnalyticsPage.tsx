@@ -14,15 +14,20 @@ export const AnalyticsPage: React.FC = () => {
   const [kpi, setKpi] = useState<KPISummary | null>(null);
 
   useEffect(() => {
+    let active = true;
     Promise.all([
       fetchRevenueTrend(dateRangeDays, startDate, endDate),
       fetchKPISummary(dateRangeDays, startDate, endDate)
     ]).then(([trendData, kpiData]) => {
+      if (!active) return;
       setTrend(trendData);
       setKpi(kpiData);
-    }).catch((err: any) => {
-      console.error(err);
+    }).catch((err: unknown) => {
+      if (active) console.error(err);
     });
+    return () => {
+      active = false;
+    };
   }, [startDate, endDate, dateRangeDays]);
 
   return (

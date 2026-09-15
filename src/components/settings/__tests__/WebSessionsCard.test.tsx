@@ -1,3 +1,4 @@
+// @test-type component
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -44,7 +45,7 @@ const renderCard = (props: Partial<React.ComponentProps<typeof WebSessionsCard>>
   return { onRevokeSession, onRevokeAll };
 };
 
-describe('WebSessionsCard', () => {
+describe('[component] WebSessionsCard', () => {
   it('renders the card title', () => {
     renderCard();
 

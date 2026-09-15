@@ -224,7 +224,7 @@ const LedgerRow: React.FC<{ tx: BillingCreditTransaction }> = ({ tx }) => {
           {sourceLabels[tx.source] || tx.source}
         </span>
         {(tx.feature_key || tx.ref) && (
-          <span className="text-slate-400 mr-2 truncate">
+          <span className="text-slate-400 ms-2 truncate">
             {tx.feature_key ? `(${tx.feature_key})` : ''} {tx.ref || ''}
           </span>
         )}
@@ -250,7 +250,7 @@ const PaymentRow: React.FC<{ payment: AdminPayment }> = ({ payment }) => (
       <span className="font-bold text-slate-800 dark:text-slate-200">
         {payment.plan_key} — {toPersianDigits(payment.duration_months)} ماه
       </span>
-      {payment.note && <span className="text-slate-400 mr-2 truncate">{payment.note}</span>}
+      {payment.note && <span className="text-slate-400 ms-2 truncate">{payment.note}</span>}
     </div>
     <div className="flex items-center gap-2 shrink-0">
       <span className="font-extrabold text-slate-700 dark:text-slate-300">

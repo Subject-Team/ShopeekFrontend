@@ -1,4 +1,4 @@
-import React from 'react';
+// @test-type component
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -14,7 +14,7 @@ const renderRegister = (form: ReturnType<typeof createMockLoginForm>) => {
   );
 };
 
-describe('RegisterForm', () => {
+describe('[component] RegisterForm', () => {
   it('renders the step indicator', () => {
     renderRegister(createMockLoginForm());
 

@@ -1,3 +1,4 @@
+// @test-type component
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -15,7 +16,7 @@ vi.mock('../../../services/api', () => ({
   triggerManualAdvisory: vi.fn(),
 }));
 
-describe('Dashboard Components', () => {
+describe('[component] Dashboard Components', () => {
   it('renders KpiCard with title, value, and change percentage', () => {
     render(
       <KpiCard

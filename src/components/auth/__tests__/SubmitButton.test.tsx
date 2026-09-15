@@ -1,9 +1,9 @@
-import React from 'react';
+// @test-type component
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { SubmitButton } from '../SubmitButton';
 
-describe('SubmitButton', () => {
+describe('[component] SubmitButton', () => {
   it('renders children with submit type by default', () => {
     render(
       <SubmitButton disabled={false} submitting={false}>

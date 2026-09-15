@@ -1,3 +1,4 @@
+// @test-type component
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ToastProvider } from '../../../context/ToastContext';
@@ -60,7 +61,7 @@ const renderPanel = (onChanged?: () => void) =>
     </ToastProvider>
   );
 
-describe('UserBillingPanel', () => {
+describe('[component] UserBillingPanel', () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });

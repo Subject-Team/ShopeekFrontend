@@ -1,10 +1,11 @@
+// @test-type page
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen, fireEvent, within, waitFor, act } from '@testing-library/react';
+import { screen, fireEvent, within, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthProvider } from '../../context/AuthContext';
 import { ToastProvider } from '../../context/ToastContext';
 import * as api from '../../services/api';
-import { AdminGuard } from '../AdminPage';
+import { AdminGuard } from '../admin/AdminGuard';
 import type { AdminUserItem, AdminTransaction } from '../../types/admin';
 
 vi.mock('../../services/api', () => ({
@@ -160,7 +161,7 @@ const openUserModal = async (
 
 const modal = () => document.querySelector('.fixed.inset-0') as HTMLElement;
 
-describe('AdminGuard', () => {
+describe('[page] AdminGuard', () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
@@ -345,7 +346,7 @@ describe('UsersTab', () => {
     fireEvent.change(screen.getByPlaceholderText('جستجو بر اساس نام، ایمیل یا تلفن...'), { target: { value: 'ali' } });
     await vi.waitFor(() => expect(api.fetchAdminUsers).toHaveBeenCalledWith('ali', 1, 15), { timeout: 2000 });
 
-    const clearBtn = document.querySelector('button.absolute.left-3') as HTMLElement;
+    const clearBtn = document.querySelector('button.absolute.start-3') as HTMLElement;
     fireEvent.click(clearBtn);
 
     await vi.waitFor(() => expect(api.fetchAdminUsers).toHaveBeenCalledWith('', 1, 15), { timeout: 2000 });

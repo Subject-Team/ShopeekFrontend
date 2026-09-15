@@ -1,3 +1,4 @@
+// @test-type component
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -25,7 +26,7 @@ const renderCard = (props: Partial<React.ComponentProps<typeof TelegramSessionsC
   return { onUnlinkTelegram };
 };
 
-describe('TelegramSessionsCard', () => {
+describe('[component] TelegramSessionsCard', () => {
   it('renders the card title', () => {
     renderCard();
 

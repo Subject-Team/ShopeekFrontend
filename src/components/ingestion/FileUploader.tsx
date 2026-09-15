@@ -10,6 +10,12 @@ interface FileUploaderProps {
   readOnly?: boolean;
 }
 
+interface FilePreview {
+  detected_mapping: Record<string, string>;
+  headers: string[];
+  sample_rows: Record<string, unknown>[];
+}
+
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 
 const validateFileSecurity = async (file: File): Promise<{ valid: boolean; error?: string }> => {
@@ -36,6 +42,13 @@ const validateFileSecurity = async (file: File): Promise<{ valid: boolean; error
     const filename = file.name.toLowerCase();
     const isExcel = filename.endsWith('.xlsx') || filename.endsWith('.xlsm') || filename.endsWith('.xltx');
     const isCsv = filename.endsWith('.csv');
+
+    if (!isExcel && !isCsv) {
+      return {
+        valid: false,
+        error: 'فرمت فایل پشتیبانی نمی‌شود. فقط فایل‌های .xlsx، .xlsm، .xltx و .csv مجاز هستند.',
+      };
+    }
 
     if (isExcel) {
       // OpenXML files start with PK (0x50 0x4B 0x03 0x04 or 0x50 0x4B 0x05 0x06 or 0x50 0x4B 0x07 0x08)
@@ -76,7 +89,7 @@ const validateFileSecurity = async (file: File): Promise<{ valid: boolean; error
 
 export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly = false }) => {
   const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<any | null>(null);
+  const [preview, setPreview] = useState<FilePreview | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [processing, setProcessing] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -96,8 +109,8 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
       const prevData = await previewSalesFile(selectedFile);
       setPreview(prevData);
       showToast('ستون‌ها و سربرگ‌های فایل با موفقیت شناسایی شدند.', 'info');
-    } catch (err: any) {
-      showToast(err.message || 'خطا در پیش‌نمایش فایل', 'error');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'خطا در پیش‌نمایش فایل', 'error');
       setFile(null);
       setPreview(null);
     } finally {
@@ -132,8 +145,8 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
       setFile(null);
       setPreview(null);
       if (onSuccess) onSuccess();
-    } catch (err: any) {
-      showToast(err.message || 'خطا در ورود داده‌ها', 'error');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'خطا در ورود داده‌ها', 'error');
     } finally {
       setProcessing(false);
     }
@@ -145,7 +158,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
       const blob = new Blob([sample.content], { type: 'text/csv;charset=utf-8;' });
       const sampleFile = new File([blob], sample.filename, { type: 'text/csv' });
       await handleFileChange(sampleFile);
-    } catch (err: any) {
+    } catch {
       showToast('خطا در دریافت داده نمونه', 'error');
     }
   };
@@ -241,7 +254,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
           <div className="space-y-2">
             <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300">نگاشت ستون‌های شناسايی شده:</h4>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {Object.entries(preview.detected_mapping || {}).map(([key, val]: [string, any]) => (
+              {Object.entries(preview.detected_mapping || {}).map(([key, val]: [string, string]) => (
                 <div key={key} className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs space-y-1">
                   <span className="text-slate-400 block text-[10px]">{key}</span>
                   <span className="font-bold text-slate-900 dark:text-white truncate block">{String(val)}</span>
@@ -263,11 +276,11 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {preview.sample_rows?.map((row: any, idx: number) => (
+                  {preview.sample_rows?.map((row: Record<string, unknown>, idx: number) => (
                     <tr key={idx}>
                       {preview.headers?.map((h: string) => (
                         <td key={h} className="p-2.5 text-slate-700 dark:text-slate-300">{
-                          h === "تاریخ" ? toPersianDigits(toPersianDate(row[h], false, true)) : h === "مبلغ" ? toGroupedPersianDigits(row[h] ?? "") : row[h]
+                          h === "تاریخ" ? toPersianDigits(toPersianDate(row[h] as string | undefined, false, true)) : h === "مبلغ" ? toGroupedPersianDigits(row[h] as string | number ?? "") : String(row[h] ?? '')
                         }</td>
                       ))}
                     </tr>

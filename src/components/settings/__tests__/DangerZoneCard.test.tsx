@@ -1,9 +1,9 @@
-import React from 'react';
+// @test-type component
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { DangerZoneCard } from '../DangerZoneCard';
 
-describe('DangerZoneCard', () => {
+describe('[component] DangerZoneCard', () => {
   it('renders the danger zone title and description', () => {
     render(<DangerZoneCard onDeleteClick={vi.fn()} />);
 

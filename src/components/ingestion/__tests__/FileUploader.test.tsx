@@ -1,3 +1,4 @@
+// @test-type component
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { FileUploader } from '../FileUploader';
@@ -20,7 +21,7 @@ const makeFile = (parts: BlobPart[], name: string, size?: number) => {
 
 const VALID_CSV = makeFile([new TextEncoder().encode('col1,col2\nval1,val2')], 'sales.csv');
 
-describe('FileUploader Component', () => {
+describe('[component] FileUploader Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (api.previewSalesFile as any).mockResolvedValue({
@@ -122,6 +123,31 @@ describe('FileUploader Component', () => {
 
     expect(await screen.findByText(/ساختار فایل اکسل نامعتبر است/i)).toBeInTheDocument();
     expect(api.previewSalesFile).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['text file', 'notes.txt'],
+    ['pdf document', 'report.pdf'],
+    ['executable', 'setup.exe'],
+    ['archive', 'data.zip'],
+    ['no extension', 'README'],
+    ['double extension', 'sales.csv.exe'],
+  ])('rejects %s with a disallowed extension', async (_label, name) => {
+    const { container } = renderComponent();
+
+    await pickFile(container, makeFile(['col1,col2\nval1,val2'], name));
+
+    expect(await screen.findByText(/فرمت فایل پشتیبانی نمی‌شود/i)).toBeInTheDocument();
+    expect(api.previewSalesFile).not.toHaveBeenCalled();
+  });
+
+  it.each(['.xlsm', '.xltx'])('accepts a zip-magic %s file', async (ext) => {
+    const { container } = renderComponent();
+
+    await pickFile(container, makeFile([bytes(0x50, 0x4b, 0x03, 0x04, 0x00, 0x00)], `report${ext}`));
+
+    expect(await screen.findByText(/نگاشت ستون‌های شناسايی شده/i)).toBeInTheDocument();
+    expect(api.previewSalesFile).toHaveBeenCalledTimes(1);
   });
 
   it('shows column mapping and sample rows after a successful preview', async () => {

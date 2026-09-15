@@ -1,4 +1,4 @@
-import React from 'react';
+// @test-type component
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ScheduleSettingsCard } from '../ScheduleSettingsCard';
@@ -30,7 +30,7 @@ const renderCard = () => {
 const getTimeInputs = (container: HTMLElement) =>
   Array.from(container.querySelectorAll('input[type="time"]')) as HTMLInputElement[];
 
-describe('ScheduleSettingsCard', () => {
+describe('[component] ScheduleSettingsCard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (api.fetchSchedulePrefs as any).mockResolvedValue(mockPrefs);

@@ -90,7 +90,7 @@ export const TermsSection: React.FC = () => {
 
       <Section title="استفاده مجاز">
         <p className="text-slate-600 text-xs leading-relaxed mb-2">موارد زیر ممنوع است:</p>
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-600 mr-2">
+        <ul className="list-disc list-inside space-y-1 text-xs text-slate-600 ms-2">
           <li>دسترسی غیرمجاز به حساب دیگران یا بخش‌های مدیریتی سامانه</li>
           <li>بارگذاری محتوای غیرقانونی یا ناقض حقوق دیگران</li>
           <li>استفاده از ربات یا اسکریپت برای استخراج داده یا ایجاد بار اضافی</li>
@@ -124,7 +124,7 @@ export const TermsSection: React.FC = () => {
 
       <Section title="تعلیق حساب">
         <p className="text-slate-600 text-xs leading-relaxed mb-2">شاپیک می‌تواند در این موارد حساب را معلق یا مسدود کند:</p>
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-600 mr-2">
+        <ul className="list-disc list-inside space-y-1 text-xs text-slate-600 ms-2">
           <li>نقض این شرایط یا «سیاست حفظ حریم خصوصی»</li>
           <li>فعالیت مشکوک به کلاهبرداری یا سوءاستفاده</li>
           <li>بدهی معوق و عدم تسویه پس از اطلاع‌رسانی</li>
@@ -158,7 +158,7 @@ export const TermsSection: React.FC = () => {
       </Section>
 
       <Section title="تماس با پشتیبانی">
-        <ul className="list-disc list-inside space-y-1 text-xs text-slate-600 mr-2">
+        <ul className="list-disc list-inside space-y-1 text-xs text-slate-600 ms-2">
           <li>
             ایمیل:{' '}
             <a href="mailto:support@shopeekapp.ir" className="text-brand-600 hover:text-brand-700 font-semibold underline underline-offset-2" dir="ltr">

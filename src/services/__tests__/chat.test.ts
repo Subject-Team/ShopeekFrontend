@@ -1,7 +1,8 @@
+// @test-type service
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { sendChatMessage, fetchChatHistory, clearChatHistory } from '../api';
 
-describe('chat API', () => {
+describe('[service] chat API', () => {
   const originalFetch = window.fetch;
 
   beforeEach(() => {
@@ -13,7 +14,6 @@ describe('chat API', () => {
     window.fetch = originalFetch;
   });
 
-  const okJson = (data: unknown) => ({ ok: true, status: 200, json: async () => data });
   const errJson = (status: number, body: unknown) => ({
     ok: false,
     status,

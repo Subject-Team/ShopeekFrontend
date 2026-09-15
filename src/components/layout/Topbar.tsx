@@ -112,7 +112,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
 
         {/* Theme Toggle Button */}
         <button
-          data-guide="theme-toggle"
+          
           onClick={toggleTheme}
           className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/60 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200"
           title={theme === 'light' ? 'تغییر به حالت تاریک' : 'تغییر به حالت روشن'}

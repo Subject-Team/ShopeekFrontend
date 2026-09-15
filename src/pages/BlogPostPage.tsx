@@ -174,7 +174,7 @@ export const BlogPostPage: React.FC = () => {
         <article className="space-y-10 text-slate-800 text-sm sm:text-base leading-relaxed">
           {post.sections.map((section) => (
             <section key={section.id} id={section.id} className="space-y-4 scroll-mt-24">
-              <h2 className="text-lg sm:text-2xl font-black text-slate-900 leading-snug tracking-tight border-r-4 border-brand-500 pr-3">
+              <h2 className="text-lg sm:text-2xl font-black text-slate-900 leading-snug tracking-tight border-s-4 border-brand-500 ps-3">
                 {section.title}
               </h2>
 

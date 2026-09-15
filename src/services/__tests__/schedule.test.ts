@@ -1,7 +1,8 @@
+// @test-type service
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { fetchSchedulePrefs, updateSchedulePrefs } from '../api';
 
-describe('schedule API', () => {
+describe('[service] schedule API', () => {
   const originalFetch = window.fetch;
 
   beforeEach(() => {

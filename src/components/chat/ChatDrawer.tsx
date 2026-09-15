@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Sparkle, X, Send, User, Layers, RefreshCw, Trash2, Lock, Hourglass, Bot } from 'lucide-react';
@@ -73,6 +73,9 @@ const assistantMarkdownComponents: Components = {
   img: ({ node: _node, ...props }) => <img {...props} className="max-w-full rounded-lg my-1" alt="" />,
 };
 
+// Leading+trailing throttle: one immediate fetch, then one coalesced trailing fetch per window.
+const BILLING_REFRESH_THROTTLE_MS = 500;
+
 export const ChatDrawer: React.FC = () => {
   const { isChatOpen, setIsChatOpen, activePage, dateRangeDays, startDate, endDate, isHistorical } = usePageContext();
   const { user } = useAuth();
@@ -84,7 +87,10 @@ export const ChatDrawer: React.FC = () => {
   const [clearing, setClearing] = useState<boolean>(false);
   const [billing, setBilling] = useState<BillingOverview | null>(null);
   const [historyLoading, setHistoryLoading] = useState<boolean>(false);
+  const [showClearConfirm, setShowClearConfirm] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const lastBillingFetchRef = useRef(0);
+  const billingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sessionId = 'session_default_user';
   // History rows are isolated per account server-side (user_id + session_id),
   // so the shared key is safe — but the in-memory list must follow account
@@ -114,13 +120,35 @@ export const ChatDrawer: React.FC = () => {
       });
   }, [isChatOpen, userId]);
 
-  const refreshBilling = (): void => {
-    fetchBillingOverview()
-      .then(data => setBilling(data))
-      .catch(() => {
-        // Silent fallback: keep stale values or nothing; never break the chat.
-      });
-  };
+  const refreshBilling = useCallback((): void => {
+    const now = Date.now();
+    if (now - lastBillingFetchRef.current >= BILLING_REFRESH_THROTTLE_MS) {
+      lastBillingFetchRef.current = now;
+      fetchBillingOverview()
+        .then(data => setBilling(data))
+        .catch((err: unknown) => {
+          console.error('Failed to load billing overview', err);
+          // Silent fallback: keep stale values or nothing; never break the chat.
+        });
+      return;
+    }
+    if (billingTimerRef.current) return;
+    billingTimerRef.current = setTimeout(() => {
+      billingTimerRef.current = null;
+      lastBillingFetchRef.current = Date.now();
+      fetchBillingOverview()
+        .then(data => setBilling(data))
+        .catch((err: unknown) => {
+          console.error('Failed to load billing overview', err);
+        });
+    }, BILLING_REFRESH_THROTTLE_MS);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (billingTimerRef.current) clearTimeout(billingTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (isChatOpen) {
@@ -140,7 +168,7 @@ export const ChatDrawer: React.FC = () => {
     setInput('');
 
     const tempUserMsg: ChatMessage = {
-      id: Math.random().toString(),
+      id: crypto.randomUUID(),
       session_id: sessionId,
       sender: 'USER',
       message_content: userText,
@@ -157,9 +185,10 @@ export const ChatDrawer: React.FC = () => {
     try {
       const response = await sendChatMessage(sessionId, userText, contextHints);
       setMessages(prev => [...prev, response]);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      console.error('Failed to send chat message', err instanceof Error ? err.message : err);
       const errorMsg: ChatMessage = {
-        id: Math.random().toString(),
+        id: crypto.randomUUID(),
         session_id: sessionId,
         sender: 'ASSISTANT',
         message_content: 'دستیار هوشمند شاپیک در حال حاضر در دسترس نیست. لطفاً چند دقیقه دیگر دوباره تلاش کنید.',
@@ -172,14 +201,18 @@ export const ChatDrawer: React.FC = () => {
     }
   };
 
-  const handleClearChat = async () => {
+  const handleClearChat = (): void => {
     if (readOnly || clearing || loading) return;
-    if (!window.confirm('آیا از پاک کردن کامل گفتگو مطمئن هستید؟ این عمل قابل بازگشت نیست.')) return;
+    setShowClearConfirm(true);
+  };
+
+  const confirmClearChat = async (): Promise<void> => {
+    setShowClearConfirm(false);
     setClearing(true);
     try {
       await clearChatHistory(sessionId);
       setMessages([buildWelcomeMessage()]);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Failed to clear chat history', err);
     } finally {
       setClearing(false);
@@ -199,8 +232,8 @@ export const ChatDrawer: React.FC = () => {
         onClick={() => setIsChatOpen(false)}
       />
 
-      <div className="absolute inset-y-0 left-0 max-w-full flex pl-0 h-full">
-        <div className="w-screen max-w-md h-full max-h-[100dvh] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col justify-between">
+      <div className="absolute inset-y-0 right-0 max-w-full flex pr-0 h-full">
+        <div className="w-screen max-w-md h-full max-h-[100dvh] bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col justify-between">
 
           {/* Header */}
           <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/80 dark:bg-slate-800/80">
@@ -316,7 +349,7 @@ export const ChatDrawer: React.FC = () => {
                       type="button"
                       disabled={readOnly}
                       onClick={() => setInput(suggested)}
-                      className="text-right text-[11px] px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800/80 font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="text-start text-[11px] px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800/80 font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       💡 {suggested}
                     </button>
@@ -367,6 +400,50 @@ export const ChatDrawer: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Clear-chat confirmation modal */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 dir-rtl font-vazir">
+          <div
+            className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs"
+            onClick={() => setShowClearConfirm(false)}
+            aria-hidden="true"
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="clear-chat-confirm-title"
+            className="relative w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-6 space-y-4"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400">
+                <Trash2 className="w-4 h-4" />
+              </div>
+              <h4 id="clear-chat-confirm-title" className="font-extrabold text-slate-900 dark:text-white text-sm">
+                پاک کردن گفتگو
+              </h4>
+            </div>
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              آیا از پاک کردن کامل گفتگو مطمئن هستید؟ این عمل قابل بازگشت نیست.
+            </p>
+            <div className="flex justify-end gap-2 pt-1">
+              <button
+                onClick={() => setShowClearConfirm(false)}
+                className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                انصراف
+              </button>
+              <button
+                onClick={confirmClearChat}
+                disabled={clearing}
+                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow-md shadow-rose-500/25 transition-all disabled:opacity-50"
+              >
+                {clearing ? 'در حال پاک کردن...' : 'تأیید و پاک کردن'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

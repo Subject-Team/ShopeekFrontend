@@ -6,6 +6,7 @@ import { PageContextProvider } from './context/PageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { GuideProvider } from './context/GuideContext';
 import { ScrollToTop } from './components/common/ScrollToTop';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { Shell } from './components/layout/Shell';
 import { LandingPage } from './pages/LandingPage';
 import { LegalPage } from './pages/LegalPage';
@@ -21,7 +22,7 @@ import { IngestionPage } from './pages/IngestionPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { SubscriptionPage } from './pages/SubscriptionPage';
 import { NotFoundPage } from './pages/NotFoundPage';
-import { AdminGuard } from './pages/AdminPage';
+import { AdminGuard } from './pages/admin/AdminGuard';
 
 const ProtectedDashboardLayout: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -101,20 +102,22 @@ const AppRoutes: React.FC = () => {
 
 export function App() {
   return (
-    <ThemeProvider>
-      <ToastProvider>
-        <AuthProvider>
-          <PageContextProvider>
-            <BrowserRouter>
-              <GuideProvider>
-                <ScrollToTop />
-                <AppRoutes />
-              </GuideProvider>
-            </BrowserRouter>
-          </PageContextProvider>
-        </AuthProvider>
-      </ToastProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <PageContextProvider>
+              <BrowserRouter>
+                <GuideProvider>
+                  <ScrollToTop />
+                  <AppRoutes />
+                </GuideProvider>
+              </BrowserRouter>
+            </PageContextProvider>
+          </AuthProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 

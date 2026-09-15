@@ -1,3 +1,4 @@
+// @test-type service
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   fetchAdminStats,
@@ -15,7 +16,7 @@ import {
   adjustAdminWallet,
 } from '../api';
 
-describe('admin API', () => {
+describe('[service] admin API', () => {
   const originalFetch = window.fetch;
 
   beforeEach(() => {

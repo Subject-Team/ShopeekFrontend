@@ -1,3 +1,4 @@
+// @test-type page
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -9,7 +10,7 @@ import { NotFoundPage } from '../NotFoundPage';
 import { AuthProvider } from '../../context/AuthContext';
 import { ToastProvider } from '../../context/ToastContext';
 
-describe('Public Pages', () => {
+describe('[page] Public Pages', () => {
   it('renders LandingPage with single H1 and hero title', () => {
     render(
       <MemoryRouter>

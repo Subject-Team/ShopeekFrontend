@@ -1,3 +1,4 @@
+// @test-type page
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
@@ -16,7 +17,7 @@ vi.mock('../../services/api', () => ({
   getWebSessionId: vi.fn(),
 }));
 
-describe('LoginPage Comprehensive Tests', () => {
+describe('[page] LoginPage Comprehensive Tests', () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();

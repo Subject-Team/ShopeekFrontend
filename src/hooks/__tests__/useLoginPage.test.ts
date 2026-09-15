@@ -1,3 +1,4 @@
+// @test-type component
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { act, screen } from '@testing-library/react';
 import { renderHookWithProviders } from '../../test/testUtils';
@@ -18,7 +19,7 @@ const preventDefault = vi.fn();
 
 const renderHook = () => renderHookWithProviders(() => useLoginPage());
 
-describe('useLoginPage', () => {
+describe('[component] useLoginPage', () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();

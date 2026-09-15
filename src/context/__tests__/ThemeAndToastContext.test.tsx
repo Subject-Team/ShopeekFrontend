@@ -1,3 +1,4 @@
+// @test-type component
 import React from 'react';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, act, render, screen } from '@testing-library/react';
@@ -5,7 +6,7 @@ import { ThemeProvider, useTheme } from '../ThemeContext';
 import { ToastProvider, useToast } from '../ToastContext';
 import { PageContextProvider, usePageContext } from '../PageContext';
 
-describe('ThemeContext', () => {
+describe('[component] ThemeContext', () => {
   beforeEach(() => {
     localStorage.clear();
     document.documentElement.classList.remove('dark');

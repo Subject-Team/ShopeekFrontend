@@ -1,8 +1,9 @@
+// @test-type component
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { GuideSpotlight } from '../GuideSpotlight';
-import { GuideProvider, useGuide } from '../../../context/GuideContext';
+import { useGuide } from '../../../context/GuideContext';
 import { renderWithProviders } from '../../../test/testUtils';
 
 const { MOCK_USER } = vi.hoisted(() => ({
@@ -28,7 +29,7 @@ const TestApp: React.FC = () => {
   );
 };
 
-describe('GuideSpotlight Component', () => {
+describe('[component] GuideSpotlight Component', () => {
   beforeEach(() => {
     localStorage.clear();
     localStorage.setItem('shopeek_token', 'mock-valid-token');

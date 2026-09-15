@@ -41,4 +41,5 @@ De-facto conventions for `frontend/`. No formatter or linter is enforced — typ
 ## Tests
 
 - Colocated `__tests__/*.test.tsx`, vitest + React Testing Library (`describe` / `it`); globals mocked in `src/test/setup.ts` (recharts, `@marsidev/react-turnstile`); provider trees via `renderWithProviders` from `src/test/testUtils.tsx`. Tests must run warning-free — async state updates flushed inside `act`, no unhandled console noise.
+- Every test file is type-tagged: `// @test-type <unit|service|component|page>` on line 1 plus a `[<type>] ` prefix on the top-level `describe`. Mapping: `unit` = `utils/`, `config/` (pure, no DOM); `service` = `services/` (mocked `fetch`, no DOM); `component` = `components/`, `context/`, `hooks/`, root `App`; `page` = `pages/`. Filter with `npm run test:unit|test:service|test:component|test:page` (path-based) or `npx vitest run -t '\[<type>\]'` (name-based). Colocation stays — never restructure test dirs to encode types.
 - Import `React` only when the file references it directly.

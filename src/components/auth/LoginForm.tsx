@@ -36,7 +36,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ form }) => {
     otpCooldown,
     setOtpResendTriggered,
     isPhoneValid,
-    isOtpCodeValid,
     setMode,
     setRegisterStep,
     handlePhonePasswordLogin,

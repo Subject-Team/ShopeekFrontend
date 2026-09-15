@@ -1,4 +1,4 @@
-import React from 'react';
+// @test-type component
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { OtpCodeInput } from '../OtpCodeInput';
@@ -14,7 +14,7 @@ const { mockCredentialsGet } = vi.hoisted(() => {
   return { mockCredentialsGet };
 });
 
-describe('OtpCodeInput', () => {
+describe('[component] OtpCodeInput', () => {
   beforeEach(() => {
     mockCredentialsGet.mockReset();
     mockCredentialsGet.mockResolvedValue(null);

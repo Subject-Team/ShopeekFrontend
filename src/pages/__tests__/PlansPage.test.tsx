@@ -1,4 +1,4 @@
-import React from 'react';
+// @test-type page
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -55,7 +55,7 @@ const renderPage = () =>
     </MemoryRouter>
   );
 
-describe('PlansPage', () => {
+describe('[page] PlansPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     document.head.innerHTML = '';

@@ -1,4 +1,4 @@
-import React from 'react';
+// @test-type component
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BusinessProfileForm } from '../BusinessProfileForm';
@@ -22,7 +22,7 @@ const mockProfile: BusinessProfile = {
   is_completed: true,
 };
 
-describe('BusinessProfileForm Component', () => {
+describe('[component] BusinessProfileForm Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

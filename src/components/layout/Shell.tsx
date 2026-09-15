@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { MinimalFooter } from './MinimalFooter';
@@ -6,6 +6,8 @@ import { ChatDrawer } from '../chat/ChatDrawer';
 import { GuideSpotlight } from '../guide/GuideSpotlight';
 import { RestrictionBanner } from '../dashboard/RestrictionBanner';
 import { useAuth } from '../../context/AuthContext';
+import { fetchBillingOverview } from '../../services/api';
+import type { BillingOverview } from '../../types';
 
 interface ShellProps {
   children: React.ReactNode;
@@ -13,7 +15,22 @@ interface ShellProps {
 
 export const Shell: React.FC<ShellProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [billing, setBilling] = useState<BillingOverview | null>(null);
   const { user } = useAuth();
+
+  useEffect(() => {
+    let active = true;
+    fetchBillingOverview()
+      .then((data) => {
+        if (active) setBilling(data);
+      })
+      .catch(() => null);
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const debt = billing?.wallet ? Math.max(0, -billing.wallet.purchased_balance) : 0;
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex transition-colors duration-200">
@@ -24,10 +41,10 @@ export const Shell: React.FC<ShellProps> = ({ children }) => {
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 
       {/* Main Content Viewport */}
-      <div className="flex-1 flex flex-col min-w-0 lg:mr-64 transition-all duration-300 min-h-screen">
+      <div className="flex-1 flex flex-col min-w-0 lg:ms-64 transition-all duration-300 min-h-screen">
         <Topbar onMenuClick={() => setSidebarOpen(true)} />
         <main className="flex-1 p-4 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
-          <RestrictionBanner user={user} />
+          <RestrictionBanner user={user} debt={debt} />
           {children}
         </main>
         {/* Short Dashboard Footer */}

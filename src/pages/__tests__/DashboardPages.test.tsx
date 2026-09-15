@@ -1,3 +1,4 @@
+// @test-type page
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
@@ -65,7 +66,7 @@ const expiredBillingOverview = {
   },
 };
 
-describe('Dashboard Pages', () => {
+describe('[page] Dashboard Pages', () => {
   beforeEach(() => {
     localStorage.clear();
     localStorage.setItem('shopeek_token', 'mock-valid-token');

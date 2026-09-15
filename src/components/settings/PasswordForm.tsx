@@ -81,7 +81,7 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({ readOnly }) => {
           <div>
             <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1.5">کلمه عبور فعلی</label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+              <Lock className="w-4 h-4 text-slate-400 absolute start-3 top-1/2 -translate-y-1/2" />
               <input
                 type={showCurrent ? 'text' : 'password'}
                 value={currentPassword}
@@ -92,7 +92,7 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({ readOnly }) => {
               <button
                 type="button"
                 onClick={() => setShowCurrent((v) => !v)}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute end-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 aria-label={showCurrent ? 'پنهان کردن کلمه عبور' : 'نمایش کلمه عبور'}
               >
                 {showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -103,7 +103,7 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({ readOnly }) => {
           <div>
             <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1.5">کلمه عبور جدید</label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+              <Lock className="w-4 h-4 text-slate-400 absolute start-3 top-1/2 -translate-y-1/2" />
               <input
                 type={showNew ? 'text' : 'password'}
                 value={newPassword}
@@ -114,7 +114,7 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({ readOnly }) => {
               <button
                 type="button"
                 onClick={() => setShowNew((v) => !v)}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute end-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 aria-label={showNew ? 'پنهان کردن کلمه عبور' : 'نمایش کلمه عبور'}
               >
                 {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -129,7 +129,7 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({ readOnly }) => {
           <div>
             <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1.5">تکرار کلمه عبور جدید</label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+              <Lock className="w-4 h-4 text-slate-400 absolute start-3 top-1/2 -translate-y-1/2" />
               <input
                 type={showConfirm ? 'text' : 'password'}
                 value={confirmNewPassword}
@@ -140,7 +140,7 @@ export const PasswordForm: React.FC<PasswordFormProps> = ({ readOnly }) => {
               <button
                 type="button"
                 onClick={() => setShowConfirm((v) => !v)}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute end-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 aria-label={showConfirm ? 'پنهان کردن کلمه عبور' : 'نمایش کلمه عبور'}
               >
                 {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

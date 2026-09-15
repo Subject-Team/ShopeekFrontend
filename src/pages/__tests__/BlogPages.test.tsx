@@ -1,3 +1,4 @@
+// @test-type page
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
@@ -5,7 +6,7 @@ import { BlogPage } from '../BlogPage';
 import { BlogPostPage } from '../BlogPostPage';
 import { BLOG_POSTS } from '../../data/blog/posts';
 
-describe('Blog Pages', () => {
+describe('[page] Blog Pages', () => {
   beforeEach(() => {
     // Clean up any injected ld+json script before each test
     const script = document.getElementById('blog-jsonld-schema');

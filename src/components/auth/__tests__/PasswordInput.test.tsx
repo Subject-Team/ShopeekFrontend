@@ -1,4 +1,4 @@
-import React from 'react';
+// @test-type component
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { PasswordInput } from '../PasswordInput';
@@ -16,7 +16,7 @@ const baseProps = {
   toggleAriaLabel: 'نمایش کلمه عبور',
 };
 
-describe('PasswordInput', () => {
+describe('[component] PasswordInput', () => {
   it('renders label, password input and toggle button', () => {
     render(<PasswordInput {...baseProps} />);
 

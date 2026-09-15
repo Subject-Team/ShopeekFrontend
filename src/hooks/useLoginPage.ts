@@ -72,7 +72,7 @@ export interface LoginPageForm {
 }
 
 export const useLoginPage = (): LoginPageForm => {
-  const { login, sendOtp, verifyOtp, loginWithPhone, registerWithPhone, isLoading, isAuthenticated } =
+  const { sendOtp, verifyOtp, loginWithPhone, registerWithPhone, isLoading, isAuthenticated } =
     useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -182,8 +182,8 @@ export const useLoginPage = (): LoginPageForm => {
       await loginWithPhone(cleanPhone, password, turnstileToken);
       showToast('ورود با موفقیت انجام شد. خوش آمدید!', 'success');
       navigate('/dashboard');
-    } catch (err: any) {
-      const msg = err.message || 'خطا در برقراری ارتباط با سرور';
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'خطا در برقراری ارتباط با سرور';
       if (msg.includes('حذف شده است')) {
         setIsPreviousAccountDeleted(true);
       }
@@ -226,8 +226,8 @@ export const useLoginPage = (): LoginPageForm => {
       showToast('کد تأیید با موفقیت ارسال شد.', 'success');
       setLoginOtpStep('verify');
       setOtpResendTriggered(true);
-    } catch (err: any) {
-      const msg = err.message || 'خطا در ارسال کد تأیید';
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'خطا در ارسال کد تأیید';
       setErrorMessage(msg);
       showToast(msg, 'error');
       setTurnstileToken(null);
@@ -271,8 +271,8 @@ export const useLoginPage = (): LoginPageForm => {
       setLoginMethod('phone-password');
       setOtpCode('');
       setOtpResendTriggered(false);
-    } catch (err: any) {
-      const msg = err.message || 'خطا در تأیید کد';
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'خطا در تأیید کد';
       setErrorMessage(msg);
       showToast(msg, 'error');
       setTurnstileToken(null);
@@ -311,8 +311,8 @@ export const useLoginPage = (): LoginPageForm => {
       showToast('کد تأیید با موفقیت ارسال شد.', 'success');
       setRegisterStep('verify');
       setOtpResendTriggered(true);
-    } catch (err: any) {
-      const msg = err.message || 'خطا در ارسال کد تأیید';
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'خطا در ارسال کد تأیید';
       setErrorMessage(msg);
       showToast(msg, 'error');
       setTurnstileToken(null);
@@ -352,8 +352,8 @@ export const useLoginPage = (): LoginPageForm => {
       showToast('شماره تلفن شما تأیید شد. اکنون اطلاعات حساب خود را تکمیل کنید.', 'success');
       setHasSubmitted(false);
       setRegisterStep('details');
-    } catch (err: any) {
-      const msg = err.message || 'خطا در تأیید کد';
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'خطا در تأیید کد';
       setErrorMessage(msg);
       showToast(msg, 'error');
       setTurnstileToken(null);
@@ -420,8 +420,8 @@ export const useLoginPage = (): LoginPageForm => {
       });
       showToast('حساب کاربری شما با موفقیت ایجاد شد.', 'success');
       navigate('/dashboard');
-    } catch (err: any) {
-      const msg = err.message || 'خطا در ایجاد حساب کاربری';
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'خطا در ایجاد حساب کاربری';
       setErrorMessage(msg);
       showToast(msg, 'error');
       setTurnstileToken(null);

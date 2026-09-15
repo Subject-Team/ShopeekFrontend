@@ -1,3 +1,4 @@
+// @test-type component
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { CustomerList } from '../CustomerList';
@@ -11,7 +12,7 @@ vi.mock('../../../services/api', () => ({
   addCustomerInteraction: vi.fn(),
 }));
 
-describe('CRM Components', () => {
+describe('[component] CRM Components', () => {
   const mockCustomers = [
     {
       id: 'c-1',
