@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkle, RefreshCw, CheckCircle2, History } from 'lucide-react';
+import { Sparkle, RefreshCw, CheckCircle2, History, AlertTriangle } from 'lucide-react';
 import { AIAdvisory } from '../../types';
 import { triggerManualAdvisory } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
@@ -11,9 +11,11 @@ interface AdvisoryCardProps {
   history?: AIAdvisory[];
   onRefresh?: () => void;
   readOnly?: boolean;
+  status?: 'loading' | 'loaded' | 'failed';
+  onRetry?: () => void;
 }
 
-export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = [], onRefresh, readOnly = false }) => {
+export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = [], onRefresh, readOnly = false, status = 'loaded', onRetry }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false);
   const { showToast } = useToast();
@@ -79,13 +81,38 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = 
 
         {/* Content Card */}
         <div className="bg-white/80 dark:bg-slate-800/80 rounded-xl p-3 sm:p-4 border border-indigo-50 dark:border-indigo-950 shadow-xs space-y-2">
-          <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-300 font-bold text-xs sm:text-sm">
-            <Sparkle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500 shrink-0" />
-            <span className="truncate">{advisory?.summary || 'خلاصه پیشنهاد'}</span>
-          </div>
-          <p className="text-slate-700 dark:text-slate-300 text-xs sm:text-sm leading-relaxed font-medium">
-            {advisory?.recommendation_text || 'در حال تحلیل داده‌های اخیر فروش برای ارائه پیشنهادات کاربردی...'}
-          </p>
+          {status === 'failed' && !advisory ? (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <p className="text-amber-700 dark:text-amber-400 text-xs sm:text-sm font-semibold flex items-center gap-2" role="alert">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                بارگذاری توصیه هوشمند با خطا مواجه شد.
+              </p>
+              {onRetry && (
+                <button
+                  type="button"
+                  onClick={onRetry}
+                  className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/70 dark:hover:bg-indigo-900/80 text-indigo-700 dark:text-indigo-300 text-[11px] sm:text-xs font-bold border border-indigo-200/70 dark:border-indigo-800/70 transition-colors shrink-0"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  تلاش دوباره
+                </button>
+              )}
+            </div>
+          ) : status === 'loaded' && !advisory ? (
+            <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm leading-relaxed font-medium">
+              هنوز توصیه‌ای تولید نشده است. برای دریافت توصیه، دکمه بروزرسانی دستی را بزنید.
+            </p>
+          ) : (
+            <>
+              <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-300 font-bold text-xs sm:text-sm">
+                <Sparkle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500 shrink-0" />
+                <span className="truncate">{advisory?.summary || 'خلاصه پیشنهاد'}</span>
+              </div>
+              <p className="text-slate-700 dark:text-slate-300 text-xs sm:text-sm leading-relaxed font-medium">
+                {advisory?.recommendation_text || 'در حال تحلیل داده‌های اخیر فروش برای ارائه پیشنهادات کاربردی...'}
+              </p>
+            </>
+          )}
         </div>
 
         {/* Footer & Actions */}
