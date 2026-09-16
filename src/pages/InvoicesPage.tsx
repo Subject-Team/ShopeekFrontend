@@ -52,10 +52,8 @@ export const InvoicesPage: React.FC = () => {
 
       <InvoiceModal
         isOpen={invoiceModalOpen}
-        onClose={() => {
-          setInvoiceModalOpen(false);
-          setRefreshKey((k) => k + 1);
-        }}
+        onClose={() => setInvoiceModalOpen(false)}
+        onCreated={() => setRefreshKey((k) => k + 1)}
       />
     </div>
   );

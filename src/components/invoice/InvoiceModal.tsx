@@ -38,9 +38,10 @@ const chipClass = (active: boolean) =>
 interface InvoiceModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onCreated?: () => void;
 }
 
-export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose }) => {
+export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose, onCreated }) => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const readOnly = Boolean(user?.is_read_only);
@@ -130,6 +131,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose }) =
       }
       await createInvoice(payload);
       showToast('فاکتور با موفقیت ثبت شد', 'success');
+      onCreated?.();
       setProduct('');
       setCustomer('');
       setCustomerEmail('');
