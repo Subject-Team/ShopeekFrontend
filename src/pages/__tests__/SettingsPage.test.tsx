@@ -87,8 +87,7 @@ describe('[page] SettingsPage Component & Guide Integration', () => {
       predefined_slots: ['08:00', '12:00', '16:00', '20:00'],
       can_customize: false,
       max_slots: null,
-      advisory_slots: null,
-      forecast_slots: null,
+      slots: null,
     });
   });
 
@@ -137,8 +136,7 @@ describe('[page] SettingsPage Component & Guide Integration', () => {
 
     await waitFor(() => {
       expect(container.querySelector('[data-guide="settings-schedule-card"]')).toBeInTheDocument();
-      expect(screen.getByText('زمان‌بندی مشاوره')).toBeInTheDocument();
-      expect(screen.getByText('زمان‌بندی پیش‌بینی')).toBeInTheDocument();
+      expect(screen.getByText('زمان‌بندی تولید هوشمند')).toBeInTheDocument();
     });
   });
 
@@ -154,8 +152,7 @@ describe('[page] SettingsPage Component & Guide Integration', () => {
     await waitFor(() => {
       expect(container.querySelector('[data-guide="settings-schedule-card"]')).toBeInTheDocument();
       expect(container.querySelector('[data-guide="settings-data-transfer"]')).toBeInTheDocument();
-      expect(screen.getByText('زمان‌بندی مشاوره')).toBeInTheDocument();
-      expect(screen.getByText('زمان‌بندی پیش‌بینی')).toBeInTheDocument();
+      expect(screen.getByText('زمان‌بندی تولید هوشمند')).toBeInTheDocument();
       expect(screen.getByText(/خروجی و ورودی داده‌ها/)).toBeInTheDocument();
     });
   });
@@ -273,7 +270,7 @@ describe('[page] SettingsPage Component & Guide Integration', () => {
 
     await waitFor(() => {
       expect(container.querySelector('[data-guide="settings-schedule-card"]')).toBeInTheDocument();
-      expect(screen.getByText('زمان‌بندی مشاوره')).toBeInTheDocument();
+      expect(screen.getByText('زمان‌بندی تولید هوشمند')).toBeInTheDocument();
     });
 
     // Jump to step 6 (settings-password) -> should auto-switch tab to security

@@ -22,7 +22,6 @@ export const FEATURE_LABELS: Record<string, string> = {
   web_sessions: 'نشست وب فعال',
   telegram_accounts: 'حساب تلگرام',
   advisory_scheduling: 'زمان‌بندی مشاوره',
-  forecast_scheduling: 'زمان‌بندی پیش‌بینی',
   custom_scheduling: 'زمان‌بندی دلخواه',
   import_export: 'خروجی/ورودی داده',
   forecast_lookback_days: 'بازه داده پیش‌بینی',

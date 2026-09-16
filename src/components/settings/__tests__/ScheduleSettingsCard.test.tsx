@@ -15,8 +15,7 @@ const mockPrefs: SchedulePrefs = {
   predefined_slots: ['09:00', '14:00'],
   can_customize: true,
   max_slots: 3,
-  advisory_slots: ['09:00'],
-  forecast_slots: ['14:00'],
+  slots: ['09:00'],
 };
 
 const renderCard = () => {
@@ -43,16 +42,15 @@ describe('[component] ScheduleSettingsCard', () => {
     expect(screen.getByText('در حال دریافت زمان‌بندی...')).toBeInTheDocument();
   });
 
-  it('renders both schedule sections with predefined slots', async () => {
+  it('renders the unified schedule section with predefined slots', async () => {
     renderCard();
 
     await waitFor(() => {
-      expect(screen.getByText('زمان‌بندی مشاوره')).toBeInTheDocument();
+      expect(screen.getByText('زمان‌بندی تولید هوشمند')).toBeInTheDocument();
     });
-    expect(screen.getByText('زمان‌بندی پیش‌بینی')).toBeInTheDocument();
-    expect(screen.getAllByText('۰۹:۰۰')).toHaveLength(2);
-    expect(screen.getAllByText('۱۴:۰۰')).toHaveLength(2);
-    expect(screen.getAllByRole('button', { name: 'ذخیره زمان‌بندی' })).toHaveLength(2);
+    expect(screen.getByText('۰۹:۰۰')).toBeInTheDocument();
+    expect(screen.getByText('۱۴:۰۰')).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'ذخیره زمان‌بندی' })).toHaveLength(1);
   });
 
   it('shows the disabled message when prefs are forbidden', async () => {
@@ -63,7 +61,7 @@ describe('[component] ScheduleSettingsCard', () => {
     await waitFor(() => {
       expect(screen.getByText('طرح شما اجازه نمی‌دهد.')).toBeInTheDocument();
     });
-    expect(screen.queryByText('زمان‌بندی مشاوره')).not.toBeInTheDocument();
+    expect(screen.queryByText('زمان‌بندی تولید هوشمند')).not.toBeInTheDocument();
   });
 
   it('shows a load error when fetching fails', async () => {
@@ -80,26 +78,23 @@ describe('[component] ScheduleSettingsCard', () => {
     renderCard();
 
     await waitFor(() => {
-      expect(screen.getAllByText('۱۴:۰۰')).toHaveLength(2);
+      expect(screen.getByText('۱۴:۰۰')).toBeInTheDocument();
     });
 
-    const forecastOffBtn = screen.getAllByText('۱۴:۰۰')[1];
-    fireEvent.click(forecastOffBtn);
-
-    const forecastOnBtn = screen.getAllByText('۱۴:۰۰')[1];
-    fireEvent.click(forecastOnBtn);
+    fireEvent.click(screen.getByText('۱۴:۰۰'));
+    fireEvent.click(screen.getByText('۱۴:۰۰'));
   });
 
   it('adds a custom slot and removes it', async () => {
     const { container } = renderCard();
 
     await waitFor(() => {
-      expect(screen.getAllByText('۰۹:۰۰')).toHaveLength(2);
+      expect(screen.getByText('۰۹:۰۰')).toBeInTheDocument();
     });
 
     const timeInputs = getTimeInputs(container);
     fireEvent.change(timeInputs[0], { target: { value: '10:30' } });
-    fireEvent.click(screen.getAllByRole('button', { name: 'افزودن زمان دلخواه' })[0]);
+    fireEvent.click(screen.getByRole('button', { name: 'افزودن زمان دلخواه' }));
 
     await waitFor(() => {
       expect(screen.getByLabelText('حذف زمان ۱۰:۳۰')).toBeInTheDocument();
@@ -115,12 +110,12 @@ describe('[component] ScheduleSettingsCard', () => {
     const { container } = renderCard();
 
     await waitFor(() => {
-      expect(screen.getAllByText('۰۹:۰۰')).toHaveLength(2);
+      expect(screen.getByText('۰۹:۰۰')).toBeInTheDocument();
     });
 
     const timeInputs = getTimeInputs(container);
     fireEvent.change(timeInputs[0], { target: { value: '09:00:00' } });
-    fireEvent.click(screen.getAllByRole('button', { name: 'افزودن زمان دلخواه' })[0]);
+    fireEvent.click(screen.getByRole('button', { name: 'افزودن زمان دلخواه' }));
 
     expect(screen.getByText('زمان باید با فرمت HH:MM وارد شود.')).toBeInTheDocument();
   });
@@ -129,12 +124,12 @@ describe('[component] ScheduleSettingsCard', () => {
     const { container } = renderCard();
 
     await waitFor(() => {
-      expect(screen.getAllByText('۰۹:۰۰')).toHaveLength(2);
+      expect(screen.getByText('۰۹:۰۰')).toBeInTheDocument();
     });
 
     const timeInputs = getTimeInputs(container);
     fireEvent.change(timeInputs[0], { target: { value: '09:00' } });
-    fireEvent.click(screen.getAllByRole('button', { name: 'افزودن زمان دلخواه' })[0]);
+    fireEvent.click(screen.getByRole('button', { name: 'افزودن زمان دلخواه' }));
 
     expect(screen.getByText('این زمان قبلاً انتخاب شده است.')).toBeInTheDocument();
   });
@@ -143,14 +138,13 @@ describe('[component] ScheduleSettingsCard', () => {
     (api.fetchSchedulePrefs as any).mockResolvedValue({
       ...mockPrefs,
       max_slots: 1,
-      advisory_slots: ['09:00'],
-      forecast_slots: ['09:00'],
+      slots: ['09:00'],
     });
 
     const { container } = renderCard();
 
     await waitFor(() => {
-      expect(screen.getAllByText('حداکثر ۱ زمان قابل انتخاب است.')).toHaveLength(2);
+      expect(screen.getByText('حداکثر ۱ زمان قابل انتخاب است.')).toBeInTheDocument();
     });
 
     const timeInputs = getTimeInputs(container);
@@ -163,24 +157,24 @@ describe('[component] ScheduleSettingsCard', () => {
     renderCard();
 
     await waitFor(() => {
-      expect(screen.getByText('زمان‌بندی مشاوره')).toBeInTheDocument();
+      expect(screen.getByText('زمان‌بندی تولید هوشمند')).toBeInTheDocument();
     });
     expect(screen.queryByRole('button', { name: 'افزودن زمان دلخواه' })).not.toBeInTheDocument();
   });
 
-  it('saves the advisory schedule and shows a success toast', async () => {
+  it('saves the unified schedule and shows a success toast', async () => {
     (api.updateSchedulePrefs as any).mockResolvedValue(mockPrefs);
 
     renderCard();
 
     await waitFor(() => {
-      expect(screen.getAllByRole('button', { name: 'ذخیره زمان‌بندی' })).toHaveLength(2);
+      expect(screen.getByRole('button', { name: 'ذخیره زمان‌بندی' })).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getAllByRole('button', { name: 'ذخیره زمان‌بندی' })[0]);
+    fireEvent.click(screen.getByRole('button', { name: 'ذخیره زمان‌بندی' }));
 
     await waitFor(() => {
-      expect(api.updateSchedulePrefs).toHaveBeenCalledWith({ advisory_slots: ['09:00'] });
+      expect(api.updateSchedulePrefs).toHaveBeenCalledWith({ slots: ['09:00'] });
     });
     expect(screen.getByText('زمان‌بندی با موفقیت ذخیره شد.')).toBeInTheDocument();
   });
@@ -191,10 +185,10 @@ describe('[component] ScheduleSettingsCard', () => {
     renderCard();
 
     await waitFor(() => {
-      expect(screen.getAllByRole('button', { name: 'ذخیره زمان‌بندی' })).toHaveLength(2);
+      expect(screen.getByRole('button', { name: 'ذخیره زمان‌بندی' })).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getAllByRole('button', { name: 'ذخیره زمان‌بندی' })[1]);
+    fireEvent.click(screen.getByRole('button', { name: 'ذخیره زمان‌بندی' }));
 
     await waitFor(() => {
       expect(screen.getByText('خطا در ذخیره زمان‌بندی')).toBeInTheDocument();

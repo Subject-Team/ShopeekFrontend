@@ -166,9 +166,8 @@ export const ScheduleSettingsCard: React.FC = () => {
   const [disabled, setDisabled] = useState<boolean>(false);
   const [disabledMessage, setDisabledMessage] = useState<string>('');
   const [loadError, setLoadError] = useState<string>('');
-  const [advisorySlots, setAdvisorySlots] = useState<string[]>([]);
-  const [forecastSlots, setForecastSlots] = useState<string[]>([]);
-  const [saving, setSaving] = useState<'advisory' | 'forecast' | null>(null);
+  const [slots, setSlots] = useState<string[]>([]);
+  const [saving, setSaving] = useState<boolean>(false);
 
   useEffect(() => {
     let active = true;
@@ -177,8 +176,7 @@ export const ScheduleSettingsCard: React.FC = () => {
         const data = await fetchSchedulePrefs();
         if (!active) return;
         setPrefs(data);
-        setAdvisorySlots(data.advisory_slots ?? data.predefined_slots);
-        setForecastSlots(data.forecast_slots ?? data.predefined_slots);
+        setSlots(data.slots ?? data.predefined_slots);
       } catch (err: any) {
         if (!active) return;
         if (err?.status === 403) {
@@ -197,40 +195,32 @@ export const ScheduleSettingsCard: React.FC = () => {
     };
   }, []);
 
-  const handleSave = async (section: 'advisory' | 'forecast') => {
-    setSaving(section);
+  const handleSave = async () => {
+    setSaving(true);
     try {
-      const payload =
-        section === 'advisory'
-          ? { advisory_slots: advisorySlots }
-          : { forecast_slots: forecastSlots };
-      const updated = await updateSchedulePrefs(payload);
+      const updated = await updateSchedulePrefs({ slots });
       if (updated && Array.isArray(updated.predefined_slots)) {
         setPrefs(updated);
-        setAdvisorySlots(updated.advisory_slots ?? updated.predefined_slots);
-        setForecastSlots(updated.forecast_slots ?? updated.predefined_slots);
+        setSlots(updated.slots ?? updated.predefined_slots);
       }
       showToast('زمان‌بندی با موفقیت ذخیره شد.', 'success');
     } catch (err: any) {
       showToast(err.message || 'خطا در ذخیره زمان‌بندی', 'error');
     } finally {
-      setSaving(null);
+      setSaving(false);
     }
   };
 
-  const toggleSlot = (section: 'advisory' | 'forecast', slot: string) => {
-    const setter = section === 'advisory' ? setAdvisorySlots : setForecastSlots;
-    setter((prev) => (prev.includes(slot) ? prev.filter((s) => s !== slot) : [...prev, slot]));
+  const toggleSlot = (slot: string) => {
+    setSlots((prev) => (prev.includes(slot) ? prev.filter((s) => s !== slot) : [...prev, slot]));
   };
 
-  const addCustom = (section: 'advisory' | 'forecast', slot: string) => {
-    const setter = section === 'advisory' ? setAdvisorySlots : setForecastSlots;
-    setter((prev) => (prev.includes(slot) ? prev : [...prev, slot]));
+  const addCustom = (slot: string) => {
+    setSlots((prev) => (prev.includes(slot) ? prev : [...prev, slot]));
   };
 
-  const removeCustom = (section: 'advisory' | 'forecast', slot: string) => {
-    const setter = section === 'advisory' ? setAdvisorySlots : setForecastSlots;
-    setter((prev) => prev.filter((s) => s !== slot));
+  const removeCustom = (slot: string) => {
+    setSlots((prev) => prev.filter((s) => s !== slot));
   };
 
   return (
@@ -245,7 +235,7 @@ export const ScheduleSettingsCard: React.FC = () => {
         <div>
           <h2 className="font-extrabold text-slate-900 dark:text-white text-base">زمان‌بندی هوشمند</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            ساعت‌های ارسال خودکار پیشنهادات مشاوره و پیش‌بینی فروش
+            ساعت‌های تولید خودکار پیشنهادات مشاوره و به‌روزرسانی پیش‌بینی فروش
           </p>
         </div>
       </div>
@@ -265,35 +255,19 @@ export const ScheduleSettingsCard: React.FC = () => {
       )}
 
       {!loading && !disabled && !loadError && prefs && (
-        <div className="space-y-6">
-          <ScheduleSection
-            title="زمان‌بندی مشاوره"
-            description="ساعت‌هایی که پیشنهادات هوشمند به‌صورت خودکار برای شما تولید می‌شود."
-            predefinedSlots={prefs.predefined_slots}
-            enabledSlots={advisorySlots}
-            canCustomize={prefs.can_customize}
-            maxSlots={prefs.max_slots}
-            saving={saving === 'advisory'}
-            onToggle={(slot) => toggleSlot('advisory', slot)}
-            onAddCustom={(slot) => addCustom('advisory', slot)}
-            onRemoveCustom={(slot) => removeCustom('advisory', slot)}
-            onSave={() => handleSave('advisory')}
-          />
-          <div className="border-t border-indigo-100 dark:border-indigo-900/60" />
-          <ScheduleSection
-            title="زمان‌بندی پیش‌بینی"
-            description="ساعت‌هایی که پیش‌بینی فروش به‌صورت خودکار به‌روزرسانی می‌شود."
-            predefinedSlots={prefs.predefined_slots}
-            enabledSlots={forecastSlots}
-            canCustomize={prefs.can_customize}
-            maxSlots={prefs.max_slots}
-            saving={saving === 'forecast'}
-            onToggle={(slot) => toggleSlot('forecast', slot)}
-            onAddCustom={(slot) => addCustom('forecast', slot)}
-            onRemoveCustom={(slot) => removeCustom('forecast', slot)}
-            onSave={() => handleSave('forecast')}
-          />
-        </div>
+        <ScheduleSection
+          title="زمان‌بندی تولید هوشمند"
+          description="ساعت‌هایی که مشاوره هوشمند و پیش‌بینی فروش به‌صورت خودکار برای شما تولید می‌شود."
+          predefinedSlots={prefs.predefined_slots}
+          enabledSlots={slots}
+          canCustomize={prefs.can_customize}
+          maxSlots={prefs.max_slots}
+          saving={saving}
+          onToggle={toggleSlot}
+          onAddCustom={addCustom}
+          onRemoveCustom={removeCustom}
+          onSave={handleSave}
+        />
       )}
     </div>
   );

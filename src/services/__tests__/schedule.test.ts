@@ -34,13 +34,12 @@ describe('[service] schedule API', () => {
         predefined_slots: ['09:00'],
         can_customize: true,
         max_slots: 4,
-        advisory_slots: ['09:00'],
-        forecast_slots: null,
+        slots: ['09:00'],
       })
     );
     const res = await fetchSchedulePrefs();
     expect(res.can_customize).toBe(true);
-    expect(res.advisory_slots).toEqual(['09:00']);
+    expect(res.slots).toEqual(['09:00']);
   });
 
   it('fetchSchedulePrefs throws the backend detail with the status attached', async () => {
@@ -63,26 +62,25 @@ describe('[service] schedule API', () => {
         predefined_slots: ['09:00'],
         can_customize: true,
         max_slots: 4,
-        advisory_slots: ['10:00'],
-        forecast_slots: null,
+        slots: ['10:00'],
       })
     );
     window.fetch = fetchMock;
 
-    const res = await updateSchedulePrefs({ advisory_slots: ['10:00'] });
-    expect(res.advisory_slots).toEqual(['10:00']);
+    const res = await updateSchedulePrefs({ slots: ['10:00'] });
+    expect(res.slots).toEqual(['10:00']);
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/v1/settings/schedule',
       expect.objectContaining({
         method: 'PUT',
-        body: JSON.stringify({ advisory_slots: ['10:00'] }),
+        body: JSON.stringify({ slots: ['10:00'] }),
       })
     );
   });
 
   it('updateSchedulePrefs throws the backend detail on failure', async () => {
     window.fetch = vi.fn().mockResolvedValue(errJson(400, { detail: 'اسلات نامعتبر' }));
-    await expect(updateSchedulePrefs({ forecast_slots: ['25:00'] })).rejects.toThrow('اسلات نامعتبر');
+    await expect(updateSchedulePrefs({ slots: ['25:00'] })).rejects.toThrow('اسلات نامعتبر');
   });
 
   it('updateSchedulePrefs falls back to the default message on a non-JSON error body', async () => {

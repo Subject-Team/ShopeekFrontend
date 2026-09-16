@@ -429,11 +429,9 @@ export interface SchedulePrefs {
   predefined_slots: string[];
   can_customize: boolean;
   max_slots: number | null;
-  advisory_slots: string[] | null;
-  forecast_slots: string[] | null;
+  slots: string[] | null;
 }
 
 export interface SchedulePrefsUpdatePayload {
-  advisory_slots?: string[] | null;
-  forecast_slots?: string[] | null;
+  slots?: string[] | null;
 }
