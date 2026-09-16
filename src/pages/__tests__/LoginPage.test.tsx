@@ -192,7 +192,11 @@ describe('[page] LoginPage Comprehensive Tests', () => {
     expect(registerName).toHaveAttribute('name', 'name');
     expect(registerName).toHaveAttribute('id', 'auth-fullname');
 
-    expect(registerEmail).toHaveAttribute('autocomplete', 'username');
+    const registerUsername = document.getElementById('auth-username');
+    expect(registerUsername).toHaveAttribute('autocomplete', 'username');
+    expect(registerUsername).toHaveAttribute('name', 'username');
+
+    expect(registerEmail).toHaveAttribute('autocomplete', 'email');
     expect(registerEmail).toHaveAttribute('name', 'email');
     expect(registerEmail).toHaveAttribute('id', 'auth-email');
 

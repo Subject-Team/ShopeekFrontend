@@ -172,6 +172,18 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ form }) => {
           {/* Step C: Account Details */}
           {registerStep === 'details' && (
             <form onSubmit={handleRegisterDetails} noValidate className="space-y-4">
+              {/* Password managers treat the verified phone as the username. */}
+              <input
+                type="tel"
+                id="auth-username"
+                name="username"
+                autoComplete="username"
+                value={phone}
+                readOnly
+                tabIndex={-1}
+                aria-hidden="true"
+                className="sr-only"
+              />
               {isPreviousAccountDeleted && (
                 <div
                   data-testid="deleted-account-warning"
@@ -252,7 +264,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ form }) => {
                     id="auth-email"
                     name="email"
                     type="email"
-                    autoComplete="username"
+                    autoComplete="email"
                     placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}

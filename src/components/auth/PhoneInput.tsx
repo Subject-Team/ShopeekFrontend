@@ -33,6 +33,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({ value, onChange, hasErro
           id="auth-phone"
           name="phone"
           type="tel"
+          autoComplete="username"
           dir="ltr"
           data-testid="otp-phone"
           placeholder="09123456789"
