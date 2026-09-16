@@ -5,6 +5,8 @@ const API_BASE = '/api/v1';
 
 export const fetchLatestAdvisory = async (): Promise<AIAdvisory | null> => {
   const res = await authFetch(`${API_BASE}/advisory/latest`);
+  // API contract: 404 = "no advisory generated yet" (empty state), not a failure.
+  if (res.status === 404) return null;
   if (!res.ok) throw new Error('خطا در دریافت پیشنهادات هوشمند');
   return res.json();
 };
