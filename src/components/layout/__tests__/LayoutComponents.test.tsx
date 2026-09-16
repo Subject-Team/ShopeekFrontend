@@ -67,16 +67,18 @@ describe('[component] Layout Components', () => {
     expect(screen.getByText(/شاپیک/i)).toBeInTheDocument();
   });
 
-  it('renders Sidebar with navigation items and guide launcher', () => {
+  it('renders Sidebar with navigation items, guide launcher, theme toggle, and user controls', () => {
     render(
       <MemoryRouter initialEntries={['/dashboard']}>
-        <AuthProvider>
-          <GuideProvider>
-            <PageContextProvider>
-              <Sidebar isOpen={true} setIsOpen={vi.fn()} />
-            </PageContextProvider>
-          </GuideProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <GuideProvider>
+              <PageContextProvider>
+                <Sidebar isOpen={true} setIsOpen={vi.fn()} />
+              </PageContextProvider>
+            </GuideProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </MemoryRouter>
     );
 
@@ -85,9 +87,10 @@ describe('[component] Layout Components', () => {
     expect(screen.getByText(/مدیریت مشتریان/i)).toBeInTheDocument();
     expect(screen.getByText(/ورود داده‌ها/i)).toBeInTheDocument();
     expect(screen.getByText('راهنمای سامانه')).toBeInTheDocument();
+    expect(screen.getByTitle(/تغییر به حالت/i)).toBeInTheDocument();
   });
 
-  it('renders Topbar with user profile, date filter, theme toggle, and chat launcher', () => {
+  it('renders Topbar with subscription plan, remaining credits, date filter, and chat launcher', () => {
     const onMenu = vi.fn();
     render(
       <MemoryRouter initialEntries={['/dashboard']}>
@@ -102,6 +105,10 @@ describe('[component] Layout Components', () => {
         </AuthProvider>
       </MemoryRouter>
     );
+
+    // Subscription plan card and Remaining credits card are rendered
+    expect(screen.getByTitle(/طرح اشتراک/i)).toHaveAttribute('href', '/dashboard/subscription');
+    expect(screen.getByTitle('اعتبار باقی‌مانده')).toHaveAttribute('href', '/dashboard/subscription');
 
     // Date filter trigger button is rendered
     const dateBtn = screen.getByTitle(/انتخاب بازه زمانی/i);
@@ -118,11 +125,6 @@ describe('[component] Layout Components', () => {
     // Click 14-day preset and apply
     fireEvent.click(screen.getByText('۱۴ روز اخیر'));
     fireEvent.click(screen.getByText('تأیید و اعمال بازه'));
-
-
-    // Click theme toggle
-    const themeBtn = screen.getByTitle(/تغییر به حالت/i);
-    fireEvent.click(themeBtn);
 
     // Click chat launcher
     const chatBtn = screen.getByTitle('دستیار هوشمند');

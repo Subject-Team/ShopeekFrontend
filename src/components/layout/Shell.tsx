@@ -42,7 +42,7 @@ export const Shell: React.FC<ShellProps> = ({ children }) => {
 
       {/* Main Content Viewport */}
       <div className="flex-1 flex flex-col min-w-0 lg:ms-64 transition-all duration-300 min-h-screen">
-        <Topbar onMenuClick={() => setSidebarOpen(true)} />
+        <Topbar onMenuClick={() => setSidebarOpen(true)} billing={billing} />
         <main className="flex-1 p-4 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
           <RestrictionBanner user={user} debt={debt} />
           {children}

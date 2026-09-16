@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Sparkle,
   LayoutDashboard,
   TrendingUp,
   Users,
@@ -13,9 +12,14 @@ import {
   Home,
   HelpCircle,
   Headphones,
+  Sun,
+  Moon,
+  LogOut,
+  User as UserIcon,
 } from 'lucide-react';
-import { usePageContext } from '../../context/PageContext';
 import { useGuide } from '../../context/GuideContext';
+import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -23,8 +27,9 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
-  const { setIsChatOpen } = usePageContext();
   const { startGuide, isGuideOpen } = useGuide();
+  const { theme, toggleTheme } = useTheme();
+  const { user, logout } = useAuth();
   const location = useLocation();
 
   const navItems = [
@@ -52,7 +57,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'
         }`}
       >
-        <div>
+        <div className="overflow-y-auto">
           {/* Logo Brand Header */}
           <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100 dark:border-slate-800">
             <button
@@ -129,7 +134,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             <div className="pt-2 border-t border-slate-100 dark:border-slate-800 mt-3 space-y-1">
               <Link
                 to="/contact"
-                
                 onClick={() => setIsOpen(false)}
                 className="w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl font-medium text-xs text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100 transition-all"
               >
@@ -148,27 +152,62 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           </nav>
         </div>
 
-        {/* AI Assistant Callout Box */}
-        <div  className="p-4 border-t border-slate-100 dark:border-slate-800">
-          <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50 to-emerald-50 dark:from-indigo-950/40 dark:to-emerald-950/40 border border-indigo-100 dark:border-indigo-900/50 relative overflow-hidden">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkle className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-              <span className="font-bold text-xs text-indigo-900 dark:text-indigo-200">دستیار هوشمند شاپیک</span>
+        {/* User Profile, Theme Toggle & Logout Controls */}
+        <div className="p-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+          {user ? (
+            <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/60 shadow-xs">
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                <div className="w-8 h-8 rounded-lg bg-brand-500/15 text-brand-600 dark:text-brand-400 flex items-center justify-center font-bold text-xs shrink-0">
+                  <UserIcon className="w-4 h-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block truncate" title={user.full_name}>
+                    {user.full_name}
+                  </span>
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 block truncate">
+                    {user.email || user.phone || ''}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  onClick={toggleTheme}
+                  className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                  title={theme === 'light' ? 'تغییر به حالت تاریک' : 'تغییر به حالت روشن'}
+                  aria-label="تغییر تم"
+                >
+                  {theme === 'light' ? (
+                    <Moon className="w-4 h-4" />
+                  ) : (
+                    <Sun className="w-4 h-4 text-amber-400" />
+                  )}
+                </button>
+                <button
+                  onClick={logout}
+                  className="p-1.5 rounded-lg text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+                  title="خروج از حساب کاربری"
+                  aria-label="خروج از حساب کاربری"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-3">
-              پاسخ‌گویی سریع به سوالات شما درباره روند فروش و آمار.
-            </p>
-            <button
-              onClick={() => {
-                setIsChatOpen(true);
-                setIsOpen(false);
-              }}
-              className="w-full py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-colors flex items-center justify-center gap-2"
-            >
-              <Sparkle className="w-3.5 h-3.5" />
-              <span>گفتگو با دستیار</span>
-            </button>
-          </div>
+          ) : (
+            <div className="flex items-center justify-end p-1">
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                title={theme === 'light' ? 'تغییر به حالت تاریک' : 'تغییر به حالت روشن'}
+                aria-label="تغییر تم"
+              >
+                {theme === 'light' ? (
+                  <Moon className="w-4 h-4" />
+                ) : (
+                  <Sun className="w-4 h-4 text-amber-400" />
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </aside>
     </>
