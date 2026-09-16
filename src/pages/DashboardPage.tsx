@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DollarSign, ShoppingBag, Users, UploadCloud, ReceiptText, AlertTriangle, RefreshCw } from 'lucide-react';
+import { DollarSign, ShoppingBag, Users, UploadCloud, ReceiptText, AlertTriangle, RefreshCw, Medal } from 'lucide-react';
 import { CreditIcon } from '../components/icons';
 import { KpiCard } from '../components/dashboard/KpiCard';
 import { RevenueChart } from '../components/dashboard/RevenueChart';
@@ -119,7 +119,7 @@ export const DashboardPage: React.FC = () => {
   const loadKpi = () => loadWidget('kpi', () => fetchKPISummary(dateRangeDays, startDate, endDate), setKpi);
   const loadTrend = () => loadWidget('trend', () => fetchRevenueTrend(dateRangeDays, startDate, endDate), setTrend);
   const loadAdvisoryWidget = () => loadWidget('advisory', fetchLatestAdvisory, setAdvisory);
-  const loadCustomersWidget = () => loadWidget('customers', fetchCustomers, (v) => setTopCustomers(v.slice(0, 5)));
+  const loadCustomersWidget = () => loadWidget('customers', fetchCustomers, (v) => setTopCustomers(v.slice(0, 3)));
 
   const loadDashboardData = async () => {
     await Promise.all([loadKpi(), loadTrend(), loadAdvisoryWidget(), loadCustomersWidget()]);
@@ -301,22 +301,35 @@ export const DashboardPage: React.FC = () => {
               ) : topCustomers.length === 0 ? (
                 <p className="text-xs text-slate-400 py-3 text-center">داده‌ای یافت نشد.</p>
               ) : (
-                topCustomers.map(c => (
-                  <div
-                    key={c.id}
-                    className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-xs"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 font-bold flex items-center justify-center text-xs">
-                        {c.name.charAt(0)}
+                topCustomers.map((c, i) => {
+                  const medalStyles = [
+                    { ring: 'bg-amber-100 dark:bg-amber-950 text-amber-500 dark:text-amber-400' },
+                    { ring: 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-300' },
+                    { ring: 'bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400' },
+                  ][i];
+                  return (
+                    <div
+                      key={c.id}
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-xs"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        {medalStyles ? (
+                          <div className={`w-7 h-7 rounded-full font-bold flex items-center justify-center ${medalStyles.ring}`}>
+                            <Medal className="w-4 h-4" />
+                          </div>
+                        ) : (
+                          <div className="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 font-bold flex items-center justify-center text-xs">
+                            {c.name.charAt(0)}
+                          </div>
+                        )}
+                        <span className="font-bold text-slate-800 dark:text-slate-200">{c.name}</span>
                       </div>
-                      <span className="font-bold text-slate-800 dark:text-slate-200">{c.name}</span>
+                      <span className="font-extrabold text-emerald-600 dark:text-emerald-400">
+                        {toGroupedPersianDigits(c.total_lifetime_value)} ت
+                      </span>
                     </div>
-                    <span className="font-extrabold text-emerald-600 dark:text-emerald-400">
-                      {toGroupedPersianDigits(c.total_lifetime_value)} ت
-                    </span>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>
