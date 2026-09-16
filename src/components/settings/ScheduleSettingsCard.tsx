@@ -1,163 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Ban, CalendarClock, Clock, Plus, Save, X } from 'lucide-react';
+import { Ban, CalendarClock, Plus, Save, X } from 'lucide-react';
 import { fetchSchedulePrefs, updateSchedulePrefs } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import type { SchedulePrefs } from '../../types';
 import { toPersianDigits } from '../../utils/persian';
 
 const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
-
-interface ScheduleSectionProps {
-  title: string;
-  description: string;
-  predefinedSlots: string[];
-  enabledSlots: string[];
-  canCustomize: boolean;
-  maxSlots: number | null;
-  saving: boolean;
-  onToggle: (slot: string) => void;
-  onAddCustom: (slot: string) => void;
-  onRemoveCustom: (slot: string) => void;
-  onSave: () => void;
-}
-
-const ScheduleSection: React.FC<ScheduleSectionProps> = ({
-  title,
-  description,
-  predefinedSlots,
-  enabledSlots,
-  canCustomize,
-  maxSlots,
-  saving,
-  onToggle,
-  onAddCustom,
-  onRemoveCustom,
-  onSave,
-}) => {
-  const [customInput, setCustomInput] = useState<string>('');
-  const [inputError, setInputError] = useState<string>('');
-
-  const atCap = maxSlots !== null && enabledSlots.length >= maxSlots;
-
-  const handleAdd = () => {
-    const value = customInput.trim();
-    if (!TIME_PATTERN.test(value)) {
-      setInputError('زمان باید با فرمت HH:MM وارد شود.');
-      return;
-    }
-    if (enabledSlots.includes(value)) {
-      setInputError('این زمان قبلاً انتخاب شده است.');
-      return;
-    }
-    onAddCustom(value);
-    setCustomInput('');
-    setInputError('');
-  };
-
-  return (
-    <div className="space-y-3.5">
-      <div className="flex items-start gap-2.5">
-        <div className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 shrink-0">
-          <Clock className="w-4 h-4" />
-        </div>
-        <div>
-          <h3 className="font-extrabold text-slate-900 dark:text-white text-sm">{title}</h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">{description}</p>
-        </div>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {enabledSlots.length === 0 && (
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-dashed border-slate-300 dark:border-slate-600">
-            <Ban className="w-3.5 h-3.5" />
-            زمان‌بندی غیرفعال شد
-          </span>
-        )}
-        {predefinedSlots.map((slot) => {
-          const isOn = enabledSlots.includes(slot);
-          return (
-            <button
-              key={slot}
-              type="button"
-              onClick={() => onToggle(slot)}
-              disabled={saving}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all border disabled:opacity-50 disabled:cursor-not-allowed ${
-                isOn
-                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/25'
-                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-700'
-              }`}
-            >
-              {toPersianDigits(slot)}
-            </button>
-          );
-        })}
-        {enabledSlots
-          .filter((slot) => !predefinedSlots.includes(slot))
-          .map((slot) => (
-            <span
-              key={slot}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800"
-            >
-              {toPersianDigits(slot)}
-              <button
-                type="button"
-                onClick={() => onRemoveCustom(slot)}
-                disabled={saving}
-                aria-label={`حذف زمان ${toPersianDigits(slot)}`}
-                className="text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-200 transition-colors disabled:opacity-50"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            </span>
-          ))}
-      </div>
-
-      {canCustomize && (
-        <div className="space-y-2">
-          <div className="flex flex-col sm:flex-row gap-2">
-            <input
-              type="time"
-              value={customInput}
-              onChange={(e) => {
-                setCustomInput(e.target.value);
-                setInputError('');
-              }}
-              disabled={atCap || saving}
-              className="w-full sm:w-40 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 disabled:opacity-50"
-            />
-            <button
-              type="button"
-              onClick={handleAdd}
-              disabled={atCap || saving || customInput.trim() === ''}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 text-xs font-bold hover:bg-indigo-100 dark:hover:bg-indigo-950 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              افزودن زمان دلخواه
-            </button>
-          </div>
-          {atCap && (
-            <p className="text-[11px] font-bold text-amber-700 dark:text-amber-400">
-              حداکثر {toPersianDigits(maxSlots ?? 0)} زمان قابل انتخاب است.
-            </p>
-          )}
-          {inputError && <p className="text-[11px] font-bold text-rose-600 dark:text-rose-400">{inputError}</p>}
-        </div>
-      )}
-
-      <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={onSave}
-          disabled={saving}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Save className="w-3.5 h-3.5" />
-          {saving ? 'در حال ذخیره...' : 'ذخیره زمان‌بندی'}
-        </button>
-      </div>
-    </div>
-  );
-};
 
 export const ScheduleSettingsCard: React.FC = () => {
   const { showToast } = useToast();
@@ -168,6 +16,8 @@ export const ScheduleSettingsCard: React.FC = () => {
   const [loadError, setLoadError] = useState<string>('');
   const [slots, setSlots] = useState<string[]>([]);
   const [saving, setSaving] = useState<boolean>(false);
+  const [customInput, setCustomInput] = useState<string>('');
+  const [inputError, setInputError] = useState<string>('');
 
   useEffect(() => {
     let active = true;
@@ -215,12 +65,25 @@ export const ScheduleSettingsCard: React.FC = () => {
     setSlots((prev) => (prev.includes(slot) ? prev.filter((s) => s !== slot) : [...prev, slot]));
   };
 
-  const addCustom = (slot: string) => {
-    setSlots((prev) => (prev.includes(slot) ? prev : [...prev, slot]));
-  };
-
   const removeCustom = (slot: string) => {
     setSlots((prev) => prev.filter((s) => s !== slot));
+  };
+
+  const atCap = prefs?.max_slots !== null && prefs !== null && slots.length >= (prefs.max_slots ?? 0);
+
+  const handleAdd = () => {
+    const value = customInput.trim();
+    if (!TIME_PATTERN.test(value)) {
+      setInputError('زمان باید با فرمت HH:MM وارد شود.');
+      return;
+    }
+    if (slots.includes(value)) {
+      setInputError('این زمان قبلاً انتخاب شده است.');
+      return;
+    }
+    setSlots((prev) => (prev.includes(value) ? prev : [...prev, value]));
+    setCustomInput('');
+    setInputError('');
   };
 
   return (
@@ -255,19 +118,97 @@ export const ScheduleSettingsCard: React.FC = () => {
       )}
 
       {!loading && !disabled && !loadError && prefs && (
-        <ScheduleSection
-          title="زمان‌بندی تولید هوشمند"
-          description="ساعت‌هایی که مشاوره هوشمند و پیش‌بینی فروش به‌صورت خودکار برای شما تولید می‌شود."
-          predefinedSlots={prefs.predefined_slots}
-          enabledSlots={slots}
-          canCustomize={prefs.can_customize}
-          maxSlots={prefs.max_slots}
-          saving={saving}
-          onToggle={toggleSlot}
-          onAddCustom={addCustom}
-          onRemoveCustom={removeCustom}
-          onSave={handleSave}
-        />
+        <div className="space-y-3.5">
+          <div className="flex flex-wrap gap-2">
+            {slots.length === 0 && (
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-dashed border-slate-300 dark:border-slate-600">
+                <Ban className="w-3.5 h-3.5" />
+                زمان‌بندی غیرفعال شد
+              </span>
+            )}
+            {prefs.predefined_slots.map((slot) => {
+              const isOn = slots.includes(slot);
+              return (
+                <button
+                  key={slot}
+                  type="button"
+                  onClick={() => toggleSlot(slot)}
+                  disabled={saving}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all border disabled:opacity-50 disabled:cursor-not-allowed ${
+                    isOn
+                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/25'
+                      : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-700'
+                  }`}
+                >
+                  {toPersianDigits(slot)}
+                </button>
+              );
+            })}
+            {slots
+              .filter((slot) => !prefs.predefined_slots.includes(slot))
+              .map((slot) => (
+                <span
+                  key={slot}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800"
+                >
+                  {toPersianDigits(slot)}
+                  <button
+                    type="button"
+                    onClick={() => removeCustom(slot)}
+                    disabled={saving}
+                    aria-label={`حذف زمان ${toPersianDigits(slot)}`}
+                    className="text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-200 transition-colors disabled:opacity-50"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </span>
+              ))}
+          </div>
+
+          {prefs.can_customize && (
+            <div className="space-y-2">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="time"
+                  value={customInput}
+                  onChange={(e) => {
+                    setCustomInput(e.target.value);
+                    setInputError('');
+                  }}
+                  disabled={atCap || saving}
+                  className="w-full sm:w-40 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 disabled:opacity-50"
+                />
+                <button
+                  type="button"
+                  onClick={handleAdd}
+                  disabled={atCap || saving || customInput.trim() === ''}
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 text-xs font-bold hover:bg-indigo-100 dark:hover:bg-indigo-950 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  افزودن زمان دلخواه
+                </button>
+              </div>
+              {atCap && (
+                <p className="text-[11px] font-bold text-amber-700 dark:text-amber-400">
+                  حداکثر {toPersianDigits(prefs.max_slots ?? 0)} زمان قابل انتخاب است.
+                </p>
+              )}
+              {inputError && <p className="text-[11px] font-bold text-rose-600 dark:text-rose-400">{inputError}</p>}
+            </div>
+          )}
+
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Save className="w-3.5 h-3.5" />
+              {saving ? 'در حال ذخیره...' : 'ذخیره زمان‌بندی'}
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

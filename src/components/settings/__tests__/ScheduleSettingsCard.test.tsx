@@ -46,7 +46,7 @@ describe('[component] ScheduleSettingsCard', () => {
     renderCard();
 
     await waitFor(() => {
-      expect(screen.getByText('زمان‌بندی تولید هوشمند')).toBeInTheDocument();
+      expect(screen.getByText('زمان‌بندی هوشمند')).toBeInTheDocument();
     });
     expect(screen.getByText('۰۹:۰۰')).toBeInTheDocument();
     expect(screen.getByText('۱۴:۰۰')).toBeInTheDocument();
@@ -61,7 +61,7 @@ describe('[component] ScheduleSettingsCard', () => {
     await waitFor(() => {
       expect(screen.getByText('طرح شما اجازه نمی‌دهد.')).toBeInTheDocument();
     });
-    expect(screen.queryByText('زمان‌بندی تولید هوشمند')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'ذخیره زمان‌بندی' })).not.toBeInTheDocument();
   });
 
   it('shows a load error when fetching fails', async () => {
@@ -157,7 +157,7 @@ describe('[component] ScheduleSettingsCard', () => {
     renderCard();
 
     await waitFor(() => {
-      expect(screen.getByText('زمان‌بندی تولید هوشمند')).toBeInTheDocument();
+      expect(screen.getByText('زمان‌بندی هوشمند')).toBeInTheDocument();
     });
     expect(screen.queryByRole('button', { name: 'افزودن زمان دلخواه' })).not.toBeInTheDocument();
   });

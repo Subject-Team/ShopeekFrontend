@@ -136,7 +136,7 @@ describe('[page] SettingsPage Component & Guide Integration', () => {
 
     await waitFor(() => {
       expect(container.querySelector('[data-guide="settings-schedule-card"]')).toBeInTheDocument();
-      expect(screen.getByText('زمان‌بندی تولید هوشمند')).toBeInTheDocument();
+      expect(screen.getByText('زمان‌بندی هوشمند')).toBeInTheDocument();
     });
   });
 
@@ -152,7 +152,7 @@ describe('[page] SettingsPage Component & Guide Integration', () => {
     await waitFor(() => {
       expect(container.querySelector('[data-guide="settings-schedule-card"]')).toBeInTheDocument();
       expect(container.querySelector('[data-guide="settings-data-transfer"]')).toBeInTheDocument();
-      expect(screen.getByText('زمان‌بندی تولید هوشمند')).toBeInTheDocument();
+      expect(screen.getByText('زمان‌بندی هوشمند')).toBeInTheDocument();
       expect(screen.getByText(/خروجی و ورودی داده‌ها/)).toBeInTheDocument();
     });
   });
@@ -270,7 +270,7 @@ describe('[page] SettingsPage Component & Guide Integration', () => {
 
     await waitFor(() => {
       expect(container.querySelector('[data-guide="settings-schedule-card"]')).toBeInTheDocument();
-      expect(screen.getByText('زمان‌بندی تولید هوشمند')).toBeInTheDocument();
+      expect(screen.getByText('زمان‌بندی هوشمند')).toBeInTheDocument();
     });
 
     // Jump to step 6 (settings-password) -> should auto-switch tab to security
