@@ -166,11 +166,10 @@ export const ChatDrawer: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (readOnly || !input.trim() || loading) return;
+  const sendMessage = async (rawText: string) => {
+    const userText = rawText.trim();
+    if (readOnly || !userText || loading) return;
 
-    const userText = input.trim();
     setInput('');
 
     const tempUserMsg: ChatMessage = {
@@ -205,6 +204,11 @@ export const ChatDrawer: React.FC = () => {
       setLoading(false);
       refreshBilling();
     }
+  };
+
+  const handleSend = (e: React.FormEvent) => {
+    e.preventDefault();
+    void sendMessage(input);
   };
 
   const handleClearChat = (): void => {
@@ -353,8 +357,8 @@ export const ChatDrawer: React.FC = () => {
                     <button
                       key={sIdx}
                       type="button"
-                      disabled={readOnly}
-                      onClick={() => setInput(suggested)}
+                      disabled={readOnly || loading}
+                      onClick={() => void sendMessage(suggested)}
                       className="text-start text-[11px] px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800/80 font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       💡 {suggested}

@@ -97,6 +97,31 @@ describe('[component] ChatDrawer Component', () => {
     });
   });
 
+  it('sends recommended starter message directly on chip click', async () => {
+    (api.fetchChatHistory as any).mockResolvedValue([]);
+    (api.sendChatMessage as any).mockResolvedValue(
+      makeMsg({ message_content: 'پاسخ هوش مصنوعی به سوال شما' })
+    );
+
+    await openChat();
+
+    await waitFor(() => {
+      expect(screen.getByText(/سلام! من دستیار هوشمند شاپیک هستم/i)).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: '💡 پرفروش‌ترین روزهای دوره کدام بودند؟' }));
+
+    await waitFor(() => {
+      expect(api.sendChatMessage).toHaveBeenCalledWith(
+        'session_default_user',
+        'پرفروش‌ترین روزهای دوره کدام بودند؟',
+        expect.objectContaining({ active_page: expect.any(String) })
+      );
+      expect(screen.getByText('پرفروش‌ترین روزهای دوره کدام بودند؟')).toBeInTheDocument();
+      expect(screen.getByText('پاسخ هوش مصنوعی به سوال شما')).toBeInTheDocument();
+    });
+  });
+
   it('renders markdown in assistant messages only', async () => {
     (api.fetchChatHistory as any).mockResolvedValue([
       makeMsg({
