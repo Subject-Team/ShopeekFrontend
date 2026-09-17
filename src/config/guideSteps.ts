@@ -73,6 +73,13 @@ export const GUIDE_CONFIGS: Record<string, PageGuideConfig> = {
         placement: 'top',
       },
       {
+        id: 'dashboard-latest-article',
+        targetSelector: '[data-guide="dashboard-latest-article"]',
+        title: 'آخرین مقاله وبلاگ',
+        description: 'جدیدترین مقاله آموزشی شاپیک درباره تحلیل فروش و مدیریت کسب‌وکار؛ با کلیک روی تصویر، عنوان یا دکمه «ادامه مطلب» به متن کامل مقاله هدایت می‌شوید.',
+        placement: 'top',
+      },
+      {
         id: 'date-filter',
         targetSelector: '[data-guide="date-filter"]',
         title: 'تنظیم بازه زمانی گزارشات',

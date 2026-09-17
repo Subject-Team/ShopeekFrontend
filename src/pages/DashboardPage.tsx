@@ -7,6 +7,7 @@ import { RevenueChart } from '../components/dashboard/RevenueChart';
 import { AdvisoryCard } from '../components/dashboard/AdvisoryCard';
 import { SubscriptionWarningBanner } from '../components/dashboard/SubscriptionWarningBanner';
 import { PlanCreditOverviewCard } from '../components/dashboard/PlanCreditOverviewCard';
+import { LatestArticleCard } from '../components/dashboard/LatestArticleCard';
 import { BusinessProfileBanner } from '../components/dashboard/BusinessProfileBanner';
 import { usePageContext } from '../context/PageContext';
 import { useAuth } from '../context/AuthContext';
@@ -336,6 +337,11 @@ export const DashboardPage: React.FC = () => {
 
           {/* Plan & Credit Overview Card (Under Data Entry Section) */}
           <PlanCreditOverviewCard overview={billing} />
+
+          {/* Latest Blog Article Card */}
+          <div data-guide="dashboard-latest-article">
+            <LatestArticleCard />
+          </div>
         </div>
       </div>
 
