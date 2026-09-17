@@ -1,14 +1,17 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Sparkle, X, Send, User, Layers, RefreshCw, Trash2, Lock, Hourglass, Bot } from 'lucide-react';
+import { Sparkle, X, Send, User, Layers, RefreshCw, Trash2, Lock, Bot, Gauge } from 'lucide-react';
 import { CreditIcon } from '../icons';
 import { usePageContext } from '../../context/PageContext';
 import { useAuth } from '../../context/AuthContext';
-import { sendChatMessage, fetchChatHistory, clearChatHistory, fetchBillingOverview } from '../../services/api';
-import type { ChatMessage, BillingOverview } from '../../types';
+import { useBillingContext } from '../../context/BillingContext';
+import { sendChatMessage, fetchChatHistory, clearChatHistory } from '../../services/api';
+import type { ChatMessage } from '../../types';
 import { toGroupedPersianDigits, toPersianDigits } from "../../utils/persian";
 import { formatJalaliRangeLabel } from "../../utils/persian/date";
+import { CreditSpendConfirmModal } from '../credits/CreditSpendConfirmModal';
+import { LOW_CREDIT_THRESHOLD, PAYG_COSTS } from '../../config/credits';
 
 /** Converts direct string children of a markdown node to Persian digits (۰-۹). */
 const persianText = (children: React.ReactNode): React.ReactNode =>
@@ -79,29 +82,45 @@ const assistantMarkdownComponents: Components = {
   img: ({ node: _node, ...props }) => <img {...props} className="max-w-full rounded-lg my-1" alt="" />,
 };
 
-// Leading+trailing throttle: one immediate fetch, then one coalesced trailing fetch per window.
-const BILLING_REFRESH_THROTTLE_MS = 500;
-
 export const ChatDrawer: React.FC = () => {
   const { isChatOpen, setIsChatOpen, activePage, dateRangeDays, startDate, endDate, isHistorical } = usePageContext();
   const { user } = useAuth();
+  const { billing, refreshBilling, isSiteSuppressed, suppressSite } = useBillingContext();
 
   const readOnly = Boolean(user?.is_read_only);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [clearing, setClearing] = useState<boolean>(false);
-  const [billing, setBilling] = useState<BillingOverview | null>(null);
   const [historyLoading, setHistoryLoading] = useState<boolean>(false);
   const [showClearConfirm, setShowClearConfirm] = useState<boolean>(false);
+  const [pendingSend, setPendingSend] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const lastBillingFetchRef = useRef(0);
-  const billingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sessionId = 'session_default_user';
   // History rows are isolated per account server-side (user_id + session_id),
   // so the shared key is safe — but the in-memory list must follow account
   // switches, otherwise user B sees user A's messages after a login change.
   const userId = user?.id ?? null;
+
+  const wallet = billing?.wallet ?? null;
+  const aiUsage = billing?.usage?.find(u => u.feature_key === 'daily_ai_run_limit') ?? null;
+  const remainingCredits = wallet ? wallet.purchased_balance + wallet.monthly_balance : 0;
+  const creditState: 'normal' | 'low' | 'debt' =
+    (wallet?.purchased_balance ?? 0) < 0
+      ? 'debt'
+      : wallet !== null && remainingCredits <= LOW_CREDIT_THRESHOLD
+        ? 'low'
+        : 'normal';
+
+  const paygCost = aiUsage?.payg_cost ?? PAYG_COSTS.daily_ai_run_limit ?? 3;
+  const quotaLimit = aiUsage?.limit ?? null;
+  const quotaLeft = quotaLimit === null
+    ? null
+    : aiUsage?.remaining !== undefined && aiUsage?.remaining !== null
+      ? aiUsage.remaining
+      : Math.max(0, quotaLimit - (aiUsage?.used ?? 0));
+  const overQuota = quotaLimit !== null && quotaLeft !== null && quotaLeft <= 0;
+  const blocked = overQuota && remainingCredits < paygCost;
 
   const buildWelcomeMessage = (): ChatMessage => ({
     id: 'welcome',
@@ -126,41 +145,11 @@ export const ChatDrawer: React.FC = () => {
       });
   }, [isChatOpen, userId]);
 
-  const refreshBilling = useCallback((): void => {
-    const now = Date.now();
-    if (now - lastBillingFetchRef.current >= BILLING_REFRESH_THROTTLE_MS) {
-      lastBillingFetchRef.current = now;
-      fetchBillingOverview()
-        .then(data => setBilling(data))
-        .catch((err: unknown) => {
-          console.error('Failed to load billing overview', err);
-          // Silent fallback: keep stale values or nothing; never break the chat.
-        });
-      return;
-    }
-    if (billingTimerRef.current) return;
-    billingTimerRef.current = setTimeout(() => {
-      billingTimerRef.current = null;
-      lastBillingFetchRef.current = Date.now();
-      fetchBillingOverview()
-        .then(data => setBilling(data))
-        .catch((err: unknown) => {
-          console.error('Failed to load billing overview', err);
-        });
-    }, BILLING_REFRESH_THROTTLE_MS);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (billingTimerRef.current) clearTimeout(billingTimerRef.current);
-    };
-  }, []);
-
   useEffect(() => {
     if (isChatOpen) {
-      refreshBilling();
+      void refreshBilling();
     }
-  }, [isChatOpen]);
+  }, [isChatOpen, refreshBilling]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -202,13 +191,57 @@ export const ChatDrawer: React.FC = () => {
       setMessages(prev => [...prev, errorMsg]);
     } finally {
       setLoading(false);
-      refreshBilling();
+      void refreshBilling();
     }
   };
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
-    void sendMessage(input);
+    if (readOnly || loading || blocked || !input.trim()) return;
+    const text = input;
+    if (!overQuota) {
+      setInput('');
+      void sendMessage(text);
+      return;
+    }
+    if (isSiteSuppressed('chat') && remainingCredits >= paygCost) {
+      setInput('');
+      void sendMessage(text);
+      return;
+    }
+    setPendingSend(text);
+  };
+
+  const handleSuggestedClick = (suggested: string) => {
+    if (readOnly || loading || blocked) return;
+    if (!overQuota) {
+      void sendMessage(suggested);
+      return;
+    }
+    if (isSiteSuppressed('chat') && remainingCredits >= paygCost) {
+      void sendMessage(suggested);
+      return;
+    }
+    setPendingSend(suggested);
+  };
+
+  const confirmSend = () => {
+    if (!pendingSend) return;
+    const text = pendingSend;
+    setPendingSend(null);
+    setInput('');
+    void sendMessage(text);
+  };
+
+  const handleDontShowAgain = async () => {
+    if (!pendingSend) return;
+    const text = pendingSend;
+    setPendingSend(null);
+    await suppressSite('chat');
+    if (remainingCredits >= paygCost) {
+      setInput('');
+      void sendMessage(text);
+    }
   };
 
   const handleClearChat = (): void => {
@@ -230,10 +263,6 @@ export const ChatDrawer: React.FC = () => {
   };
 
   if (!isChatOpen) return null;
-
-  const wallet = billing?.wallet;
-  const remainingCredits = wallet ? wallet.purchased_balance + wallet.monthly_balance : 0;
-  const inReviewCredits = wallet ? wallet.pending_session_charge + wallet.pending_account_charge : 0;
 
   return (
     <div className="fixed inset-0 h-[100dvh] z-50 overflow-hidden">
@@ -264,8 +293,45 @@ export const ChatDrawer: React.FC = () => {
               </div>
             </div>
 
-
             <div className="flex items-center gap-1">
+              {!overQuota ? (
+                <span
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400"
+                  title="سهمیه پیام امروز"
+                >
+                  <Gauge size={12} className="shrink-0" />
+                  <span>
+                    {quotaLeft === null
+                      ? 'نامحدود'
+                      : `${toGroupedPersianDigits(quotaLeft)} از ${toGroupedPersianDigits(quotaLimit ?? 0)}`}
+                  </span>
+                </span>
+              ) : (
+                wallet && (
+                  <span
+                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold transition-colors ${
+                      creditState === 'debt'
+                        ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400'
+                        : creditState === 'low'
+                          ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
+                    }`}
+                    title="اعتبار باقی‌مانده"
+                  >
+                    <CreditIcon
+                      size={12}
+                      className={`shrink-0 ${
+                        creditState === 'debt'
+                          ? 'text-rose-500'
+                          : creditState === 'low'
+                            ? 'text-amber-500'
+                            : 'text-indigo-500'
+                      }`}
+                    />
+                    <span>{toGroupedPersianDigits(remainingCredits)}</span>
+                  </span>
+                )
+              )}
               <button
                 onClick={handleClearChat}
                 disabled={clearing || loading || readOnly}
@@ -286,17 +352,6 @@ export const ChatDrawer: React.FC = () => {
 
           {/* Messages Body */}
           <div className="flex-1 p-4 overflow-y-auto space-y-4">
-            {wallet && (
-              <div className="flex justify-center">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 text-[10px] text-slate-500 dark:text-slate-400 max-w-full">
-                  <CreditIcon className="w-3 h-3 text-indigo-500 shrink-0" />
-                  <span className="whitespace-nowrap">اعتبار مانده: {toGroupedPersianDigits(remainingCredits)}</span>
-                  <span className="w-px h-3 bg-slate-300 dark:bg-slate-600" aria-hidden="true" />
-                  <Hourglass className="w-3 h-3 text-amber-500 shrink-0" />
-                  <span className="whitespace-nowrap">در حال بررسی: {toGroupedPersianDigits(inReviewCredits)}</span>
-                </div>
-              </div>
-            )}
             {messages.map(msg => (
               <div
                 key={msg.id}
@@ -357,8 +412,8 @@ export const ChatDrawer: React.FC = () => {
                     <button
                       key={sIdx}
                       type="button"
-                      disabled={readOnly || loading}
-                      onClick={() => void sendMessage(suggested)}
+                      disabled={readOnly || loading || blocked}
+                      onClick={() => handleSuggestedClick(suggested)}
                       className="text-start text-[11px] px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800/80 font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       💡 {suggested}
@@ -401,7 +456,8 @@ export const ChatDrawer: React.FC = () => {
               />
               <button
                 type="submit"
-                disabled={loading || readOnly || !input.trim()}
+                disabled={loading || readOnly || blocked || !input.trim()}
+                title={blocked ? 'اعتبار کافی نیست — برای ارسال، اعتبار شارژ کنید' : undefined}
                 className="p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition-all disabled:opacity-50"
               >
                 <Send className="w-4 h-4" />
@@ -454,6 +510,18 @@ export const ChatDrawer: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Pre-usage credit confirmation modal */}
+      <CreditSpendConfirmModal
+        open={pendingSend !== null}
+        cost={paygCost}
+        remaining={remainingCredits}
+        actionLabel="ارسال پیام به دستیار هوشمند"
+        quotaExhausted={overQuota}
+        onCancel={() => setPendingSend(null)}
+        onConfirm={confirmSend}
+        onDontShowAgain={handleDontShowAgain}
+      />
     </div>
   );
 };

@@ -106,7 +106,7 @@ describe('[component] UserBillingPanel', () => {
     expect(screen.getByText('روزهای باقی\u200cمانده')).toBeTruthy();
     expect(screen.getByText('۳۰')).toBeTruthy();
     expect(screen.getByText('فعال')).toBeTruthy();
-    expect(screen.getAllByText('اعتبار دوره').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('اعتبار ماهانه').length).toBeGreaterThan(0);
     expect(screen.getByText('۱۰۰')).toBeTruthy();
     expect(screen.getByText('هدیه مدیر')).toBeTruthy();
     expect(screen.getByText('کسر اعتبار')).toBeTruthy();

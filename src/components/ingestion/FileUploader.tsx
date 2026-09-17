@@ -27,8 +27,14 @@ interface FilePreview {
   detected_mapping: Record<string, string>;
   headers: string[];
   sample_rows: Record<string, unknown>[];
+  total_rows?: number;
   duplicates?: FilePreviewDuplicates;
 }
+
+import { useBillingContext } from '../../context/BillingContext';
+import { CreditSpendConfirmModal } from '../credits/CreditSpendConfirmModal';
+import { QuotaOrCreditInfo } from '../credits/QuotaOrCreditInfo';
+import { PAYG_COSTS } from '../../config/credits';
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 
@@ -108,7 +114,43 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
   const [processing, setProcessing] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [showDupModal, setShowDupModal] = useState<boolean>(false);
+  const [pendingStrategy, setPendingStrategy] = useState<DuplicateStrategy | 'none' | null>(null);
   const { showToast } = useToast();
+  const { billing, isSiteSuppressed, suppressSite, refreshBilling } = useBillingContext();
+
+  const units = preview?.total_rows ?? preview?.sample_rows?.length ?? 1;
+  const wallet = billing?.wallet ?? null;
+  const remainingCredits = wallet ? wallet.purchased_balance + wallet.monthly_balance : 0;
+  const dailyUsage = billing?.usage?.find(u => u.feature_key === 'invoice_daily_limit') ?? null;
+  const monthlyUsage = billing?.usage?.find(u => u.feature_key === 'invoice_monthly_limit') ?? null;
+
+  const dailyPayg = dailyUsage?.payg_cost ?? PAYG_COSTS.invoice_daily_limit ?? 2;
+  const monthlyPayg = monthlyUsage?.payg_cost ?? PAYG_COSTS.invoice_monthly_limit ?? 2;
+
+  const dailyLimit = dailyUsage?.limit ?? null;
+  const monthlyLimit = monthlyUsage?.limit ?? null;
+
+  const dailyLeft = dailyLimit === null
+    ? null
+    : dailyUsage?.remaining !== undefined && dailyUsage?.remaining !== null
+      ? dailyUsage.remaining
+      : Math.max(0, dailyLimit - (dailyUsage?.used ?? 0));
+
+  const monthlyLeft = monthlyLimit === null
+    ? null
+    : monthlyUsage?.remaining !== undefined && monthlyUsage?.remaining !== null
+      ? monthlyUsage.remaining
+      : Math.max(0, monthlyLimit - (monthlyUsage?.used ?? 0));
+
+  const dailyFree = dailyLeft === null ? units : Math.min(units, dailyLeft);
+  const monthlyFree = monthlyLeft === null ? units : Math.min(units, monthlyLeft);
+  const freeBatchUnits = Math.min(dailyFree, monthlyFree);
+
+  const dailyOver = dailyLeft === null ? 0 : Math.max(0, units - dailyLeft);
+  const monthlyOver = monthlyLeft === null ? 0 : Math.max(0, units - monthlyLeft);
+
+  const batchCost = dailyOver * dailyPayg + monthlyOver * monthlyPayg;
+  const batchBlocked = batchCost > 0 && remainingCredits < batchCost;
 
   const handleFileChange = async (selectedFile: File) => {
     if (readOnly) return;
@@ -156,7 +198,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
     }
   };
 
-  const handleUploadSubmit = async (duplicateStrategy?: DuplicateStrategy) => {
+  const doUploadSubmit = async (duplicateStrategy?: DuplicateStrategy) => {
     if (readOnly || !file) return;
     setProcessing(true);
     try {
@@ -170,6 +212,35 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
       showToast(err instanceof Error ? err.message : 'خطا در ورود داده‌ها', 'error');
     } finally {
       setProcessing(false);
+      void refreshBilling();
+    }
+  };
+
+  const handleUploadSubmit = async (duplicateStrategy?: DuplicateStrategy) => {
+    if (readOnly || !file || processing || batchBlocked) return;
+    if (batchCost <= 0) {
+      await doUploadSubmit(duplicateStrategy);
+      return;
+    }
+    if (isSiteSuppressed('invoice_batch') && remainingCredits >= batchCost) {
+      await doUploadSubmit(duplicateStrategy);
+      return;
+    }
+    setPendingStrategy(duplicateStrategy ?? 'none');
+  };
+
+  const confirmBatchUpload = async () => {
+    const strat = pendingStrategy === 'none' ? undefined : (pendingStrategy as DuplicateStrategy | undefined);
+    setPendingStrategy(null);
+    await doUploadSubmit(strat);
+  };
+
+  const handleDontShowAgain = async () => {
+    const strat = pendingStrategy === 'none' ? undefined : (pendingStrategy as DuplicateStrategy | undefined);
+    setPendingStrategy(null);
+    await suppressSite('invoice_batch');
+    if (remainingCredits >= batchCost) {
+      await doUploadSubmit(strat);
     }
   };
 
@@ -319,10 +390,12 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
           </div>
 
           {/* Final Process Button */}
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4">
+            <QuotaOrCreditInfo usage={dailyUsage} units={units} featureKey="invoice_daily_limit" />
             <button
               onClick={() => handleUploadSubmit()}
-              disabled={processing || readOnly}
+              disabled={processing || readOnly || batchBlocked}
+              title={batchBlocked ? 'اعتبار کافی نیست' : undefined}
               className="px-6 py-3 rounded-2xl bg-brand-500 hover:bg-brand-600 text-white font-extrabold text-xs shadow-lg shadow-brand-500/25 transition-all flex items-center gap-2 disabled:opacity-50"
             >
               <CheckCircle2 className="w-4 h-4" />
@@ -384,6 +457,18 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
           </div>
         </ModalOverlay>
       )}
+
+      <CreditSpendConfirmModal
+        open={pendingStrategy !== null}
+        cost={batchCost}
+        remaining={remainingCredits}
+        actionLabel="بارگذاری دسته‌ای فاکتور"
+        quotaExhausted={freeBatchUnits <= 0}
+        freeUnits={freeBatchUnits > 0 ? freeBatchUnits : undefined}
+        onCancel={() => setPendingStrategy(null)}
+        onConfirm={confirmBatchUpload}
+        onDontShowAgain={handleDontShowAgain}
+      />
     </div>
   );
 };

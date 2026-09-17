@@ -326,3 +326,14 @@ export const toPersianTime = (timeStr: string): string => {
 export const utcStringToPersianTime = (timeStr: string): string => {
   return toPersianTime(timeStr.endsWith('Z') ? timeStr : timeStr + 'Z');
 };
+
+export const relativeJalaliDayLabel = (isoDateTime: string): string => {
+  if (!isoDateTime) return '—';
+  const datePart = isoDateTime.slice(0, 10);
+  const todayIso = toIsoDate(new Date());
+  const diff = getDayDifference(datePart, todayIso);
+  if (diff <= 0) return 'امروز';
+  if (diff === 1) return 'دیروز';
+  return toPersianDigits(formatJalaliNumeric(isoDateTime));
+};
+

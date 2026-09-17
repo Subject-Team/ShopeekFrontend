@@ -95,7 +95,7 @@ export const UserBillingPanel: React.FC<UserBillingPanelProps> = ({ userId, onCh
       billing.plan.remaining_days != null ? toPersianDigits(billing.plan.remaining_days) : 'نامحدود',
     ],
     [
-      'سررسید بعدی',
+      'پایان اشتراک',
       billing.plan.next_payment_due ? utcStringToPersianDate(billing.plan.next_payment_due) : '—',
     ],
     [
@@ -107,7 +107,7 @@ export const UserBillingPanel: React.FC<UserBillingPanelProps> = ({ userId, onCh
   ];
   const walletRows: [string, number][] = wallet
     ? [
-        ['اعتبار دوره', wallet.monthly_balance],
+        ['اعتبار ماهانه', wallet.monthly_balance],
         ['اعتبار خریداری‌شده', wallet.purchased_balance],
         ['در انتظار تسویه (نشست)', wallet.pending_session_charge],
         ['در انتظار تسویه (تلگرام)', wallet.pending_account_charge],

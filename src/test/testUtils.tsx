@@ -2,6 +2,7 @@ import React from 'react';
 import { render, renderHook, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthProvider } from '../context/AuthContext';
+import { BillingContextProvider } from '../context/BillingContext';
 import { GuideProvider } from '../context/GuideContext';
 import { PageContextProvider } from '../context/PageContext';
 import { ToastProvider } from '../context/ToastContext';
@@ -35,7 +36,11 @@ const createWrapper = (options: RenderWithProvidersOptions = {}) => {
     if (withPageContext) tree = <PageContextProvider>{tree}</PageContextProvider>;
     if (withGuide) tree = <GuideProvider>{tree}</GuideProvider>;
     if (withTheme) tree = <ThemeProvider>{tree}</ThemeProvider>;
-    tree = <AuthProvider>{tree}</AuthProvider>;
+    tree = (
+      <AuthProvider>
+        <BillingContextProvider>{tree}</BillingContextProvider>
+      </AuthProvider>
+    );
     return <MemoryRouter initialEntries={initialEntries}>{tree}</MemoryRouter>;
   };
 

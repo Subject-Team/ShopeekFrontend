@@ -4,6 +4,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider, useToast } from './context/ToastContext';
 import { PageContextProvider } from './context/PageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { BillingContextProvider } from './context/BillingContext';
 import { GuideProvider } from './context/GuideContext';
 import { ScrollToTop } from './components/common/ScrollToTop';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
@@ -108,14 +109,16 @@ export function App() {
       <ThemeProvider>
         <ToastProvider>
           <AuthProvider>
-            <PageContextProvider>
-              <BrowserRouter>
-                <GuideProvider>
-                  <ScrollToTop />
-                  <AppRoutes />
-                </GuideProvider>
-              </BrowserRouter>
-            </PageContextProvider>
+            <BillingContextProvider>
+              <PageContextProvider>
+                <BrowserRouter>
+                  <GuideProvider>
+                    <ScrollToTop />
+                    <AppRoutes />
+                  </GuideProvider>
+                </BrowserRouter>
+              </PageContextProvider>
+            </BillingContextProvider>
           </AuthProvider>
         </ToastProvider>
       </ThemeProvider>

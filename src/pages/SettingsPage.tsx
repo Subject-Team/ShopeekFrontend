@@ -23,6 +23,8 @@ import { DeleteAccountModal } from '../components/settings/DeleteAccountModal';
 import { ScheduleSettingsCard } from '../components/settings/ScheduleSettingsCard';
 import { DataTransferCard } from '../components/settings/DataTransferCard';
 import { UserProfileCard } from '../components/settings/UserProfileCard';
+import { CreditAlertSettingsRow } from '../components/settings/CreditAlertSettingsRow';
+import { useBillingContext } from '../context/BillingContext';
 import type { User } from '../types';
 
 const tabItemClass = (active: boolean) =>
@@ -34,6 +36,7 @@ const tabItemClass = (active: boolean) =>
 
 export const SettingsPage: React.FC = () => {
   const { user, logout, updateUser } = useAuth();
+  const { suppressedSites, resetAllAlerts, toggleSiteAlert } = useBillingContext();
   const navigate = useNavigate();
   const readOnly = Boolean(user?.is_read_only);
   const { showToast } = useToast();
@@ -219,6 +222,12 @@ export const SettingsPage: React.FC = () => {
             </div>
             <ChevronLeft className="w-4 h-4 text-slate-400 shrink-0" />
           </Link>
+
+          <CreditAlertSettingsRow
+            suppressedSites={suppressedSites}
+            onResetAll={resetAllAlerts}
+            onToggleSite={toggleSiteAlert}
+          />
 
           <DangerZoneCard
             onDeleteClick={() => setIsDeleteModalOpen(true)}

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { useBillingContext } from '../../context/BillingContext';
 import { fetchSalesSuggestions, createInvoice } from '../../services/api';
 import type { SalesSuggestions } from '../../types';
 import { toGroupedPersianDigits } from "../../utils/persian";
@@ -24,6 +25,9 @@ import { PERSIAN_MONTH_NAMES } from "../../utils/persian/date";
 import { SuggestionDropdown } from '../common/SuggestionDropdown';
 import { JalaliCalendar } from '../common/JalaliCalendar';
 import { ModalOverlay } from '../common/ModalOverlay';
+import { CreditSpendConfirmModal } from '../credits/CreditSpendConfirmModal';
+import { QuotaOrCreditInfo } from '../credits/QuotaOrCreditInfo';
+import { PAYG_COSTS } from '../../config/credits';
 
 const inputClass =
   'w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500 transition-all disabled:opacity-60 disabled:cursor-not-allowed';
@@ -43,6 +47,21 @@ interface InvoiceModalProps {
 
 export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose, onCreated }) => {
   const { user } = useAuth();
+  const { billing, isSiteSuppressed, suppressSite, refreshBilling } = useBillingContext();
+  const [showCreditConfirm, setShowCreditConfirm] = useState(false);
+
+  const wallet = billing?.wallet ?? null;
+  const remainingCredits = wallet ? wallet.purchased_balance + wallet.monthly_balance : 0;
+  const invoiceUsage = billing?.usage?.find(u => u.feature_key === 'invoice_daily_limit') ?? null;
+  const paygCost = invoiceUsage?.payg_cost ?? PAYG_COSTS.invoice_daily_limit ?? 2;
+  const quotaLimit = invoiceUsage?.limit ?? null;
+  const quotaLeft = quotaLimit === null
+    ? null
+    : invoiceUsage?.remaining !== undefined && invoiceUsage?.remaining !== null
+      ? invoiceUsage.remaining
+      : Math.max(0, quotaLimit - (invoiceUsage?.used ?? 0));
+  const overQuota = quotaLimit !== null && quotaLeft !== null && quotaLeft <= 0;
+  const blocked = overQuota && remainingCredits < paygCost;
   const { showToast } = useToast();
   const readOnly = Boolean(user?.is_read_only);
 
@@ -116,8 +135,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose, onC
     customer.trim().length > 0 &&
     realValue > 0;
 
-  const handleSubmit = async () => {
-    if (!canSubmit) return;
+  const doSubmit = async () => {
     setSubmitting(true);
     try {
       const payload: { product_name: string; customer_name: string; total_amount: number; customer_email?: string; transaction_date?: string } = {
@@ -141,6 +159,33 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose, onC
       showToast(err instanceof Error ? err.message : 'خطا در ثبت فاکتور', 'error');
     } finally {
       setSubmitting(false);
+      void refreshBilling();
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!canSubmit || blocked) return;
+    if (!overQuota) {
+      await doSubmit();
+      return;
+    }
+    if (isSiteSuppressed('invoice_direct') && remainingCredits >= paygCost) {
+      await doSubmit();
+      return;
+    }
+    setShowCreditConfirm(true);
+  };
+
+  const confirmSubmit = async () => {
+    setShowCreditConfirm(false);
+    await doSubmit();
+  };
+
+  const handleDontShowAgain = async () => {
+    setShowCreditConfirm(false);
+    await suppressSite('invoice_direct');
+    if (remainingCredits >= paygCost) {
+      await doSubmit();
     }
   };
 
@@ -391,22 +436,35 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose, onC
             </div>
 
             {/* Submit */}
-            <div className="pt-2">
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={!canSubmit || submitting}
+                disabled={!canSubmit || submitting || blocked}
+                title={blocked ? 'اعتبار کافی نیست' : undefined}
                 className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold shadow-md shadow-brand-500/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-brand-500"
               >
                 {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ReceiptText className="w-4 h-4" />}
                 <span>{submitting ? 'ثبت در حال انجام...' : 'ثبت فاکتور'}</span>
               </button>
+              <QuotaOrCreditInfo usage={invoiceUsage} units={1} featureKey="invoice_daily_limit" />
             </div>
           </div>
         )}
           </div>
         </div>
       </div>
+
+      <CreditSpendConfirmModal
+        open={showCreditConfirm}
+        cost={paygCost}
+        remaining={remainingCredits}
+        actionLabel="ثبت فاکتور مستقیم"
+        quotaExhausted={overQuota}
+        onCancel={() => setShowCreditConfirm(false)}
+        onConfirm={confirmSubmit}
+        onDontShowAgain={handleDontShowAgain}
+      />
     </ModalOverlay>
   );
 };

@@ -9,14 +9,11 @@ import type {
   BillingOverview,
   BillingUsage,
 } from '../types';
-import {
-  featureLabel,
-  planLabel,
-  SOURCE_LABELS,
-  USAGE_LABELS,
-} from '../config/plansDisplay';
+import { planLabel, USAGE_LABELS, SOURCE_LABELS, featureLabel } from '../config/plansDisplay';
+import { LOW_CREDIT_THRESHOLD, usageStateOf, USAGE_BAR_CLASSES, USAGE_TEXT_CLASSES } from '../config/credits';
+import { useBillingContext } from '../context/BillingContext';
 import { toGroupedPersianDigits, toPersianDigits } from '../utils/persian';
-import { formatJalaliNumeric } from '../utils/persian/date';
+import { formatJalaliNumeric, relativeJalaliDayLabel } from '../utils/persian/date';
 
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
   active: {
@@ -37,30 +34,29 @@ const STATUS_LABELS: Record<string, { label: string; className: string }> = {
   exempt: {
     label: 'دسترسی کامل',
     className:
-      'bg-violet-100 text-violet-700 dark:bg-violet-950/80 dark:text-violet-300 border border-violet-200 dark:border-violet-800',
+      'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800',
   },
 };
 
 const UsageRow: React.FC<{ usage: BillingUsage }> = ({ usage }) => {
-  const percent =
-    usage.limit && usage.limit > 0
-      ? Math.min(100, Math.round((usage.used / usage.limit) * 100))
-      : 0;
+  const state = usageStateOf(usage.used, usage.limit);
+  const isUnlimited = usage.limit === null;
+  const limitLabel = usage.limit === null ? null : toGroupedPersianDigits(usage.limit);
   return (
     <div data-guide="subscription-usage-row">
       <div className="flex items-center justify-between text-sm">
         <span className="text-slate-600 dark:text-slate-400">{USAGE_LABELS[usage.feature_key] || usage.feature_key}</span>
-        <span className="font-medium text-slate-800 dark:text-slate-200">
+        <span className={`font-medium ${isUnlimited ? 'text-slate-800 dark:text-slate-200' : USAGE_TEXT_CLASSES[state]}`}>
           {toGroupedPersianDigits(usage.used)}
           {' / '}
-          {usage.limit === null ? 'نامحدود' : toGroupedPersianDigits(usage.limit)}
+          {limitLabel ?? 'نامحدود'}
         </span>
       </div>
-      {usage.limit !== null && (
+      {!isUnlimited && (
         <div className="mt-1 h-1.5 w-full rounded-full bg-slate-100 dark:bg-slate-800">
           <div
-            className={`h-1.5 rounded-full ${percent >= 100 ? 'bg-rose-500' : 'bg-sky-500'}`}
-            style={{ width: `${percent}%` }}
+            className={`h-1.5 rounded-full ${USAGE_BAR_CLASSES[state]}`}
+            style={{ width: `${Math.min(100, Math.round((usage.used / (usage.limit || 1)) * 100))}%` }}
           />
         </div>
       )}
@@ -76,32 +72,40 @@ const LedgerRow: React.FC<{ tx: BillingCreditTransaction }> = ({ tx }) => (
     </td>
     <td className="py-2 text-slate-600 dark:text-slate-400">{SOURCE_LABELS[tx.source] || tx.source}</td>
     <td className="py-2 text-slate-500 dark:text-slate-400">{tx.feature_key ? featureLabel(tx.feature_key) : '—'}</td>
-    <td className="py-2 text-slate-400 dark:text-slate-500">{toPersianDigits(formatJalaliNumeric(tx.created_at))}</td>
+    <td className="py-2 text-slate-400 dark:text-slate-500">{relativeJalaliDayLabel(tx.created_at)}</td>
   </tr>
 );
 
 export const SubscriptionPage: React.FC = () => {
-  const [overview, setOverview] = useState<BillingOverview | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
+  const { billing: contextBilling, isLoading: contextLoading, error: contextError } = useBillingContext();
+  const [localOverview, setLocalOverview] = useState<BillingOverview | null>(null);
+  const [localLoading, setLocalLoading] = useState<boolean>(false);
+  const [localError, setLocalError] = useState<string>('');
 
   useEffect(() => {
-    let active = true;
-    const load = async () => {
-      try {
-        const data = await fetchBillingOverview();
-        if (active) setOverview(data);
-      } catch (err: any) {
-        if (active) setError(err.message || 'خطا در دریافت اطلاعات');
-      } finally {
-        if (active) setLoading(false);
-      }
-    };
-    load();
-    return () => {
-      active = false;
-    };
-  }, []);
+    // If context doesn't have data yet and isn't loading, load directly as fallback
+    if (!contextBilling && !contextLoading && !contextError) {
+      let active = true;
+      setLocalLoading(true);
+      fetchBillingOverview()
+        .then((data) => {
+          if (active) setLocalOverview(data);
+        })
+        .catch((err) => {
+          if (active) setLocalError(err.message || 'خطا در دریافت اطلاعات');
+        })
+        .finally(() => {
+          if (active) setLocalLoading(false);
+        });
+      return () => {
+        active = false;
+      };
+    }
+  }, [contextBilling, contextLoading, contextError]);
+
+  const overview = contextBilling || localOverview;
+  const loading = contextLoading || (localLoading && !overview);
+  const error = contextError || localError;
 
   if (loading) {
     return (
@@ -133,6 +137,10 @@ export const SubscriptionPage: React.FC = () => {
     pending_account_charge: 0,
   };
   const hasDebt = walletView.purchased_balance < 0;
+  const isLowCredit =
+    wallet !== null &&
+    !hasDebt &&
+    walletView.monthly_balance + walletView.purchased_balance <= LOW_CREDIT_THRESHOLD;
 
   return (
     <div className="space-y-6 p-6">
@@ -172,7 +180,7 @@ export const SubscriptionPage: React.FC = () => {
             </p>
           </div>
           <div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">سررسید بعدی</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">پایان اشتراک</p>
             <p className="text-base font-semibold text-slate-800 dark:text-slate-100">
               {plan.next_payment_due
                 ? toPersianDigits(formatJalaliNumeric(plan.next_payment_due))
@@ -193,31 +201,31 @@ export const SubscriptionPage: React.FC = () => {
         </div>
         <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
           <div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">اعتبار دوره</p>
-            <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
+            <p className="text-xs text-slate-500 dark:text-slate-400">اعتبار ماهانه</p>
+            <p className={`text-lg font-bold ${isLowCredit ? 'text-amber-600 dark:text-amber-400' : 'text-slate-800 dark:text-slate-100'}`}>
               {toGroupedPersianDigits(walletView.monthly_balance)}
             </p>
           </div>
           <div>
             <p className="text-xs text-slate-500 dark:text-slate-400">اعتبار خریداری‌شده</p>
-            <p className={`text-lg font-bold ${hasDebt ? 'text-rose-600 dark:text-rose-400' : 'text-slate-800 dark:text-slate-100'}`}>
+            <p className={`text-lg font-bold ${hasDebt ? 'text-rose-600 dark:text-rose-400' : isLowCredit ? 'text-amber-600 dark:text-amber-400' : 'text-slate-800 dark:text-slate-100'}`}>
               {toGroupedPersianDigits(walletView.purchased_balance)}
             </p>
             {hasDebt && (
               <p className="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400">
-                بدهی: {toGroupedPersianDigits(Math.abs(walletView.purchased_balance))} اعتبار — پرداخت آن ورود و ثبت داده را مسدود می‌کند
+                بدهی: {toGroupedPersianDigits(Math.abs(walletView.purchased_balance))} اعتبار — تا تسویه، ورود و ثبت داده مسدود است
               </p>
             )}
           </div>
           <div>
             <p className="text-xs text-slate-500 dark:text-slate-400">در انتظار تسویه (نشست)</p>
-            <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
+            <p className={`text-lg font-bold ${walletView.pending_session_charge !== 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-800 dark:text-slate-100'}`}>
               {toGroupedPersianDigits(walletView.pending_session_charge)}
             </p>
           </div>
           <div>
             <p className="text-xs text-slate-500 dark:text-slate-400">در انتظار تسویه (تلگرام)</p>
-            <p className="text-lg font-bold text-slate-800 dark:text-slate-100">
+            <p className={`text-lg font-bold ${walletView.pending_account_charge !== 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-800 dark:text-slate-100'}`}>
               {toGroupedPersianDigits(walletView.pending_account_charge)}
             </p>
           </div>

@@ -324,6 +324,16 @@ export interface BillingUsage {
   feature_key: string;
   used: number;
   limit: number | null;
+  remaining?: number | null;
+  payg_cost?: number | null;
+}
+
+export interface CreditAlertPrefs {
+  suppressed_sites: string[];
+}
+
+export interface CreditAlertPrefsUpdatePayload {
+  suppressed_sites: string[];
 }
 
 export interface BillingCreditTransaction {

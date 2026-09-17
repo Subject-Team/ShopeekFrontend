@@ -4,6 +4,7 @@ import { ChevronLeft } from 'lucide-react';
 import { CreditIcon } from '../icons';
 import type { BillingOverview, BillingUsage } from '../../types';
 import { USAGE_LABELS, featureLabel, planLabel } from '../../config/plansDisplay';
+import { LOW_CREDIT_THRESHOLD, usageStateOf, USAGE_BAR_CLASSES, USAGE_TEXT_CLASSES } from '../../config/credits';
 import { toGroupedPersianDigits, toPersianDigits } from '../../utils/persian';
 import { formatJalaliNumeric, getDayDifference, toIsoDate } from '../../utils/persian/date';
 
@@ -36,11 +37,9 @@ const EXEMPT_CHIP = {
 };
 
 const UsageMiniRow: React.FC<{ usage: BillingUsage }> = ({ usage }) => {
-  const percent =
-    usage.limit && usage.limit > 0
-      ? Math.min(100, Math.round((usage.used / usage.limit) * 100))
-      : 0;
-  const isNearLimit = usage.limit !== null && percent >= 90;
+  const state = usageStateOf(usage.used, usage.limit);
+  const isUnlimited = usage.limit === null;
+  const limitLabel = usage.limit === null ? null : toGroupedPersianDigits(usage.limit);
 
   return (
     <div className="space-y-1">
@@ -48,16 +47,25 @@ const UsageMiniRow: React.FC<{ usage: BillingUsage }> = ({ usage }) => {
         <span className="text-slate-500 dark:text-slate-400 font-medium">
           {USAGE_LABELS[usage.feature_key] || featureLabel(usage.feature_key)}
         </span>
-        <span className={`font-bold ${isNearLimit ? 'text-rose-600 dark:text-rose-400' : 'text-slate-700 dark:text-slate-200'}`}>
+        <span
+          className={`font-bold ${
+            isUnlimited ? 'text-slate-700 dark:text-slate-200' : USAGE_TEXT_CLASSES[state]
+          }`}
+        >
           {toGroupedPersianDigits(usage.used)}
-          {usage.limit === null ? ' — نامحدود' : ` از ${toGroupedPersianDigits(usage.limit)}`}
+          {limitLabel === null ? ' — نامحدود' : ` از ${limitLabel}`}
         </span>
       </div>
-      {usage.limit !== null && (
+      {!isUnlimited && (
         <div className="h-1 w-full rounded-full bg-slate-100 dark:bg-slate-800">
           <div
-            className={`h-1 rounded-full ${isNearLimit ? 'bg-rose-500' : 'bg-sky-500'}`}
-            style={{ width: `${percent}%` }}
+            className={`h-1 rounded-full ${USAGE_BAR_CLASSES[state]}`}
+            style={{
+              width: `${Math.min(
+                100,
+                Math.round((usage.used / (usage.limit || 1)) * 100)
+              )}%`,
+            }}
           />
         </div>
       )}
@@ -80,6 +88,10 @@ export const PlanCreditOverviewCard: React.FC<PlanCreditOverviewCardProps> = ({ 
         className: 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700',
       };
   const hasDebt = wallet !== null && wallet.purchased_balance < 0;
+  const isLowCredit =
+    wallet !== null &&
+    !hasDebt &&
+    wallet.monthly_balance + wallet.purchased_balance <= LOW_CREDIT_THRESHOLD;
 
   const todayIso = toIsoDate(new Date());
   const periodStart = plan.current_period_started_at ? plan.current_period_started_at.slice(0, 10) : null;
@@ -130,7 +142,7 @@ export const PlanCreditOverviewCard: React.FC<PlanCreditOverviewCardProps> = ({ 
               </span>
             </span>
             <span>
-              سررسید بعدی:{' '}
+              پایان اشتراک:{' '}
               <span className="font-bold text-slate-700 dark:text-slate-200">
                 {periodDue ? toPersianDigits(formatJalaliNumeric(periodDue)) : '—'}
               </span>
@@ -159,21 +171,21 @@ export const PlanCreditOverviewCard: React.FC<PlanCreditOverviewCardProps> = ({ 
       {wallet && (
         <div className="grid grid-cols-2 gap-3">
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-800">
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">اعتبار دوره</p>
-            <p className="text-base font-black text-slate-900 dark:text-white mt-0.5">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">اعتبار ماهانه</p>
+            <p className={`text-base font-black mt-0.5 ${isLowCredit ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-white'}`}>
               {toGroupedPersianDigits(wallet.monthly_balance)}
               <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500"> اعتبار</span>
             </p>
           </div>
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-800">
             <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">اعتبار خریداری‌شده</p>
-            <p className={`text-base font-black mt-0.5 ${hasDebt ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>
+            <p className={`text-base font-black mt-0.5 ${hasDebt ? 'text-rose-600 dark:text-rose-400' : isLowCredit ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-white'}`}>
               {toGroupedPersianDigits(wallet.purchased_balance)}
               <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500"> اعتبار</span>
             </p>
             {hasDebt && (
               <p className="mt-1 text-[10px] font-bold text-rose-600 dark:text-rose-400 leading-relaxed">
-                بدهی: {toGroupedPersianDigits(Math.abs(wallet.purchased_balance))} اعتبار — پرداخت آن ورود داده را مسدود می‌کند
+                بدهی: {toGroupedPersianDigits(Math.abs(wallet.purchased_balance))} اعتبار — تا تسویه، ورود و ثبت داده مسدود است
               </p>
             )}
           </div>

@@ -197,7 +197,7 @@ export const BillingForms: React.FC<BillingFormsProps> = ({ userId, plans, walle
         <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 space-y-2">
           <p className="text-xs font-extrabold text-slate-800 dark:text-slate-200">تنظیم دستی کیف پول</p>
           <div>
-            <label className={labelClass}>اعتبار دوره</label>
+            <label className={labelClass}>اعتبار ماهانه</label>
             <input
               type="number"
               min={0}

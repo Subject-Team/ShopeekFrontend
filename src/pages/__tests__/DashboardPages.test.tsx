@@ -248,7 +248,7 @@ describe('[page] Dashboard Pages', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/بدهی: ۲۰ اعتبار/)).toBeInTheDocument();
-      expect(screen.getByText(/پرداخت آن ورود داده را مسدود می‌کند/)).toBeInTheDocument();
+      expect(screen.getByText(/تا تسویه، ورود و ثبت داده مسدود است/)).toBeInTheDocument();
     });
   });
 });

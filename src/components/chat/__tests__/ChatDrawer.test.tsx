@@ -5,8 +5,9 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { ChatDrawer } from '../ChatDrawer';
 import { PageContextProvider, usePageContext } from '../../../context/PageContext';
 import { AuthProvider } from '../../../context/AuthContext';
+import { BillingContextProvider } from '../../../context/BillingContext';
 import * as api from '../../../services/api';
-import type { ChatMessage, BillingOverview, BillingWallet } from '../../../types';
+import type { ChatMessage, BillingOverview, BillingWallet, BillingUsage } from '../../../types';
 
 vi.mock('../../../services/api', () => ({
   fetchChatHistory: vi.fn(),
@@ -21,7 +22,7 @@ vi.mock('../../../services/api', () => ({
   }),
 }));
 
-const makeBilling = (wallet: BillingWallet | null): BillingOverview => ({
+const makeBilling = (wallet: BillingWallet | null, usage: BillingUsage[] = []): BillingOverview => ({
   plan: {
     key: null,
     name_fa: null,
@@ -32,7 +33,7 @@ const makeBilling = (wallet: BillingWallet | null): BillingOverview => ({
     current_period_started_at: null,
   },
   wallet,
-  usage: [],
+  usage,
   ledger: [],
   stats: { total_granted: 0, total_spent: 0, spend_by_feature: {} },
 });
@@ -59,9 +60,11 @@ const TestWrapper: React.FC = () => {
 const openChat = async () => {
   render(
     <AuthProvider>
-      <PageContextProvider>
-        <TestWrapper />
-      </PageContextProvider>
+      <BillingContextProvider>
+        <PageContextProvider>
+          <TestWrapper />
+        </PageContextProvider>
+      </BillingContextProvider>
     </AuthProvider>
   );
   fireEvent.click(screen.getByText('Open Chat'));
@@ -221,33 +224,48 @@ describe('[component] ChatDrawer Component', () => {
     expect(screen.getByText('پاسخ قبلی دستیار')).toBeInTheDocument();
   });
 
-  it('shows remaining and in-review credits when a wallet exists', async () => {
+  it('shows credit badge in header when over quota and removes pending pill', async () => {
     (api.fetchBillingOverview as any).mockResolvedValue(
-      makeBilling({
-        monthly_balance: 120,
-        purchased_balance: 30,
-        pending_session_charge: 5,
-        pending_account_charge: 2,
-      })
+      makeBilling(
+        {
+          monthly_balance: 120,
+          purchased_balance: 30,
+          pending_session_charge: 5,
+          pending_account_charge: 2,
+        },
+        [{ feature_key: 'daily_ai_run_limit', used: 10, limit: 10, remaining: 0, payg_cost: 3 }]
+      )
     );
 
     await openChat();
 
     await waitFor(() => {
-      expect(screen.getByText(/اعتبار مانده: ۱۵۰/)).toBeInTheDocument();
+      expect(screen.getByTitle('اعتبار باقی‌مانده')).toBeInTheDocument();
+      expect(screen.getByText('۱۵۰')).toBeInTheDocument();
     });
-    expect(screen.getByText(/در حال بررسی: ۷/)).toBeInTheDocument();
+    expect(screen.queryByText(/در حال بررسی/)).not.toBeInTheDocument();
   });
 
-  it('renders no quota indicator when wallet is null', async () => {
-    (api.fetchBillingOverview as any).mockResolvedValue(makeBilling(null));
+  it('renders quota indicator when under quota and hides credits badge', async () => {
+    (api.fetchBillingOverview as any).mockResolvedValue(
+      makeBilling(
+        {
+          monthly_balance: 120,
+          purchased_balance: 30,
+          pending_session_charge: 0,
+          pending_account_charge: 0,
+        },
+        [{ feature_key: 'daily_ai_run_limit', used: 2, limit: 10, remaining: 8, payg_cost: 3 }]
+      )
+    );
 
     await openChat();
 
     await waitFor(() => {
-      expect(screen.getByText(/سلام! من دستیار هوشمند شاپیک هستم/i)).toBeInTheDocument();
+      expect(screen.getByTitle('سهمیه پیام امروز')).toBeInTheDocument();
+      expect(screen.getByText('۸ از ۱۰')).toBeInTheDocument();
     });
-    expect(screen.queryByText(/اعتبار مانده/)).not.toBeInTheDocument();
+    expect(screen.queryByTitle('اعتبار باقی‌مانده')).not.toBeInTheDocument();
     expect(screen.queryByText(/در حال بررسی/)).not.toBeInTheDocument();
   });
 

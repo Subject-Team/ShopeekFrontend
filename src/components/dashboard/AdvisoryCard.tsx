@@ -3,8 +3,12 @@ import { Sparkle, RefreshCw, CheckCircle2, History, AlertTriangle } from 'lucide
 import { AIAdvisory } from '../../types';
 import { triggerManualAdvisory } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { useBillingContext } from '../../context/BillingContext';
 import { utcStringToPersianTime } from "../../utils/persian/date";
 import { AdvisoryHistoryModal } from './AdvisoryHistoryModal';
+import { CreditSpendConfirmModal } from '../credits/CreditSpendConfirmModal';
+import { QuotaOrCreditInfo } from '../credits/QuotaOrCreditInfo';
+import { PAYG_COSTS } from '../../config/credits';
 
 interface AdvisoryCardProps {
   advisory: AIAdvisory | null;
@@ -18,10 +22,24 @@ interface AdvisoryCardProps {
 export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = [], onRefresh, readOnly = false, status = 'loaded', onRetry }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false);
+  const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const { showToast } = useToast();
+  const { billing, isSiteSuppressed, suppressSite, refreshBilling } = useBillingContext();
 
-  const handleManualTrigger = async () => {
-    if (readOnly) return;
+  const wallet = billing?.wallet ?? null;
+  const remainingCredits = wallet ? wallet.purchased_balance + wallet.monthly_balance : 0;
+  const aiUsage = billing?.usage?.find(u => u.feature_key === 'daily_ai_run_limit') ?? null;
+  const paygCost = aiUsage?.payg_cost ?? PAYG_COSTS.daily_ai_run_limit ?? 3;
+  const quotaLimit = aiUsage?.limit ?? null;
+  const quotaLeft = quotaLimit === null
+    ? null
+    : aiUsage?.remaining !== undefined && aiUsage?.remaining !== null
+      ? aiUsage.remaining
+      : Math.max(0, quotaLimit - (aiUsage?.used ?? 0));
+  const overQuota = quotaLimit !== null && quotaLeft !== null && quotaLeft <= 0;
+  const blocked = overQuota && remainingCredits < paygCost;
+
+  const performTrigger = async () => {
     setLoading(true);
     try {
       const res = await triggerManualAdvisory();
@@ -35,6 +53,33 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = 
       showToast(err.message || 'سرویس مشاوره هوشمند در دسترس نیست.', 'error');
     } finally {
       setLoading(false);
+      void refreshBilling();
+    }
+  };
+
+  const handleManualTrigger = async () => {
+    if (readOnly || loading || blocked) return;
+    if (!overQuota) {
+      await performTrigger();
+      return;
+    }
+    if (isSiteSuppressed('advisory') && remainingCredits >= paygCost) {
+      await performTrigger();
+      return;
+    }
+    setShowConfirmModal(true);
+  };
+
+  const confirmTrigger = async () => {
+    setShowConfirmModal(false);
+    await performTrigger();
+  };
+
+  const handleDontShowAgain = async () => {
+    setShowConfirmModal(false);
+    await suppressSite('advisory');
+    if (remainingCredits >= paygCost) {
+      await performTrigger();
     }
   };
 
@@ -54,7 +99,9 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = 
               </h3>
             </div>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
+            <QuotaOrCreditInfo usage={aiUsage} units={1} featureKey="daily_ai_run_limit" />
+
             {/* History Popup Trigger Button */}
             <button
               type="button"
@@ -68,8 +115,8 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = 
             {/* Manual Refresh Button */}
             <button
               onClick={handleManualTrigger}
-              disabled={loading || readOnly}
-              title={readOnly ? 'در حالت فقط-خواندنی، پیشنهاد هوشمند جدید تولید نمی‌شود.' : undefined}
+              disabled={loading || readOnly || blocked}
+              title={readOnly ? 'در حالت فقط-خواندنی، پیشنهاد هوشمند جدید تولید نمی‌شود.' : blocked ? 'اعتبار کافی نیست' : undefined}
               className="flex-1 sm:flex-initial flex justify-center items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-[10px] sm:text-xs font-semibold shadow-xs transition-all disabled:opacity-60 whitespace-nowrap"
             >
               <RefreshCw className={`w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 ${loading ? 'animate-spin' : ''}`} />
@@ -137,6 +184,17 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = 
         isOpen={isHistoryModalOpen}
         onClose={() => setIsHistoryModalOpen(false)}
         history={history}
+      />
+
+      <CreditSpendConfirmModal
+        open={showConfirmModal}
+        cost={paygCost}
+        remaining={remainingCredits}
+        actionLabel="تولید پیشنهاد هوشمند"
+        quotaExhausted={overQuota}
+        onCancel={() => setShowConfirmModal(false)}
+        onConfirm={confirmTrigger}
+        onDontShowAgain={handleDontShowAgain}
       />
     </>
   );
