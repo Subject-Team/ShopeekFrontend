@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%" role="img" aria-label="محاسبه نقطه سر‌به‌سر و حداقل فروش ماهانه">
+  <rect width="800" height="450" fill="#f7faf9" />
+  <circle cx="688" cy="66" r="96" fill="#00a388" opacity="0.09" />
+  <circle cx="96" cy="386" r="72" fill="#2579ef" opacity="0.08" />
+  <g fill="#cbd5e1">
+    <circle cx="150" cy="90" r="4" />
+    <circle cx="178" cy="90" r="4" />
+    <circle cx="206" cy="90" r="4" />
+    <circle cx="150" cy="116" r="4" />
+    <circle cx="178" cy="116" r="4" />
+    <circle cx="206" cy="116" r="4" />
+  </g>
+  <path d="M268 178 l5 12 12 5 -12 5 -5 12 -5 -12 -12 -5 12 -5 Z" fill="#f59e0b" />
+  <path d="M604 124 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 Z" fill="#2579ef" />
+  <path d="M532 332 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 Z" fill="#00a388" />
+  <ellipse cx="400" cy="412" rx="270" ry="16" fill="#0f172a" opacity="0.07" />
+  <g>
+    <rect x="392" y="120" width="16" height="250" rx="8" fill="#16233a" />
+    <rect x="250" y="132" width="300" height="14" rx="7" fill="#16233a" />
+    <line x1="400" y1="146" x2="300" y2="200" stroke="#16233a" stroke-width="6" stroke-linecap="round" />
+    <line x1="400" y1="146" x2="500" y2="200" stroke="#16233a" stroke-width="6" stroke-linecap="round" />
+    <path d="M262 200 L338 200 L326 262 L274 262 Z" fill="#00a388" />
+    <path d="M262 200 L338 200 L336 214 L264 214 Z" fill="#00856f" />
+    <path d="M462 200 L538 200 L526 262 L474 262 Z" fill="#2579ef" />
+    <path d="M462 200 L538 200 L536 214 L464 214 Z" fill="#16233a" opacity="0.25" />
+    <ellipse cx="300" cy="262" rx="38" ry="10" fill="#f59e0b" />
+    <rect x="262" y="244" width="76" height="18" fill="#f59e0b" />
+    <ellipse cx="300" cy="244" rx="38" ry="10" fill="#fbbf24" />
+    <rect x="360" y="370" width="80" height="18" rx="9" fill="#16233a" />
+  </g>
+  <g>
+    <ellipse cx="610" cy="384" rx="52" ry="14" fill="#d97706" />
+    <rect x="558" y="360" width="104" height="24" fill="#f59e0b" />
+    <ellipse cx="610" cy="360" rx="52" ry="14" fill="#fbbf24" />
+    <rect x="558" y="338" width="104" height="24" fill="#f59e0b" />
+    <ellipse cx="610" cy="338" rx="52" ry="14" fill="#fbbf24" />
+  </g>
+  <g>
+    <ellipse cx="180" cy="384" rx="44" ry="12" fill="#d97706" />
+    <rect x="136" y="362" width="88" height="22" fill="#00a388" />
+    <ellipse cx="180" cy="362" rx="44" ry="12" fill="#00a388" />
+    <path d="M150 320 L210 320 L202 362 L158 362 Z" fill="#00856f" />
+  </g>
+</svg>
