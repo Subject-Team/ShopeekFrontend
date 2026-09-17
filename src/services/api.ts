@@ -22,7 +22,12 @@ export {
   fetchAdvisoryHistory,
   triggerManualAdvisory,
 } from './api/advisory';
-export { uploadSalesFile, previewSalesFile, getSampleCSV } from './api/ingestion';
+export {
+  uploadSalesFile,
+  previewSalesFile,
+  getSampleCSV,
+  type DuplicateStrategy,
+} from './api/ingestion';
 export { sendChatMessage, fetchChatHistory, clearChatHistory } from './api/chat';
 export { fetchSalesSuggestions, createInvoice } from './api/sales';
 export { fetchInvoices } from './api/invoices';

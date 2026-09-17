@@ -2,11 +2,20 @@ import { authFetch } from './client';
 
 const API_BASE = '/api/v1';
 
-export const uploadSalesFile = async (file: File, userMapping?: Record<string, string>) => {
+export type DuplicateStrategy = 'skip' | 'update' | 'duplicate';
+
+export const uploadSalesFile = async (
+  file: File,
+  userMapping?: Record<string, string>,
+  duplicateStrategy?: DuplicateStrategy
+) => {
   const formData = new FormData();
   formData.append('file', file);
   if (userMapping) {
     formData.append('user_mapping', JSON.stringify(userMapping));
+  }
+  if (duplicateStrategy) {
+    formData.append('duplicate_strategy', duplicateStrategy);
   }
 
   const res = await authFetch(`${API_BASE}/ingestion/process`, {

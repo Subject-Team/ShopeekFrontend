@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { UploadCloud, FileText, CheckCircle2, Download, Lock } from 'lucide-react';
-import { uploadSalesFile, previewSalesFile, getSampleCSV } from '../../services/api';
+import {
+  uploadSalesFile,
+  previewSalesFile,
+  getSampleCSV,
+  type DuplicateStrategy
+} from '../../services/api';
 import { useToast } from '../../context/ToastContext';
+import { ModalOverlay } from '../common/ModalOverlay';
 import { toPersianDate } from "../../utils/persian/date";
 import { toPersianDigits, toGroupedPersianDigits } from "../../utils/persian";
 
@@ -10,10 +16,18 @@ interface FileUploaderProps {
   readOnly?: boolean;
 }
 
+interface FilePreviewDuplicates {
+  in_db: string[];
+  in_db_count: number;
+  in_file: string[];
+  in_file_count: number;
+}
+
 interface FilePreview {
   detected_mapping: Record<string, string>;
   headers: string[];
   sample_rows: Record<string, unknown>[];
+  duplicates?: FilePreviewDuplicates;
 }
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
@@ -93,6 +107,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
   const [loading, setLoading] = useState<boolean>(false);
   const [processing, setProcessing] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [showDupModal, setShowDupModal] = useState<boolean>(false);
   const { showToast } = useToast();
 
   const handleFileChange = async (selectedFile: File) => {
@@ -108,7 +123,12 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
     try {
       const prevData = await previewSalesFile(selectedFile);
       setPreview(prevData);
-      showToast('ستون‌ها و سربرگ‌های فایل با موفقیت شناسایی شدند.', 'info');
+      if (prevData.duplicates && (prevData.duplicates.in_db_count > 0 || prevData.duplicates.in_file_count > 0)) {
+        showToast('شماره فاکتورهای تکراری در این فایل شناسایی شدند.', 'info');
+        setShowDupModal(true);
+      } else {
+        showToast('ستون‌ها و سربرگ‌های فایل با موفقیت شناسایی شدند.', 'info');
+      }
     } catch (err: unknown) {
       showToast(err instanceof Error ? err.message : 'خطا در پیش‌نمایش فایل', 'error');
       setFile(null);
@@ -136,20 +156,28 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
     }
   };
 
-  const handleUploadSubmit = async () => {
+  const handleUploadSubmit = async (duplicateStrategy?: DuplicateStrategy) => {
     if (readOnly || !file) return;
     setProcessing(true);
     try {
-      const res = await uploadSalesFile(file, preview?.detected_mapping);
+      const res = await uploadSalesFile(file, preview?.detected_mapping, duplicateStrategy);
       showToast(res.message, 'success');
       setFile(null);
       setPreview(null);
+      setShowDupModal(false);
       if (onSuccess) onSuccess();
     } catch (err: unknown) {
       showToast(err instanceof Error ? err.message : 'خطا در ورود داده‌ها', 'error');
     } finally {
       setProcessing(false);
     }
+  };
+
+  const handleCancelDupChoice = () => {
+    setShowDupModal(false);
+    setFile(null);
+    setPreview(null);
+    showToast('عملیات بارگذاری فایل لغو شد.', 'info');
   };
 
   const handleDownloadSample = async () => {
@@ -293,7 +321,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
           {/* Final Process Button */}
           <div className="flex justify-end gap-3 pt-4">
             <button
-              onClick={handleUploadSubmit}
+              onClick={() => handleUploadSubmit()}
               disabled={processing || readOnly}
               className="px-6 py-3 rounded-2xl bg-brand-500 hover:bg-brand-600 text-white font-extrabold text-xs shadow-lg shadow-brand-500/25 transition-all flex items-center gap-2 disabled:opacity-50"
             >
@@ -302,6 +330,59 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
             </button>
           </div>
         </div>
+      )}
+
+      {showDupModal && preview?.duplicates && (
+        <ModalOverlay onClick={handleCancelDupChoice}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+            <div
+              role="dialog"
+              aria-modal="true"
+              className="pointer-events-auto glass-card w-full max-w-md p-6 rounded-3xl shadow-2xl space-y-5"
+            >
+              <div className="space-y-1.5">
+                <h3 className="font-extrabold text-slate-900 dark:text-white text-base">
+                  تراکنش‌های تکراری شناسایی شدند
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  {toGroupedPersianDigits(preview.duplicates.in_db_count)} شماره فاکتور قبلاً در سامانه ثبت شده و{' '}
+                  {toGroupedPersianDigits(preview.duplicates.in_file_count)} شماره در همین فایل تکراری است. برای ثبت
+                  فایل، نحوه برخورد را انتخاب کنید:
+                </p>
+              </div>
+              <div className="space-y-2">
+                <button
+                  onClick={() => handleUploadSubmit('skip')}
+                  disabled={processing}
+                  className="w-full px-4 py-3 rounded-2xl bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-brand-300 hover:bg-brand-100 dark:hover:bg-brand-900 border border-brand-200 dark:border-brand-800 font-bold text-xs transition-all text-right disabled:opacity-50"
+                >
+                  ثبت موارد جدید و نادیده گرفتن تکراری‌ها
+                </button>
+                <button
+                  onClick={() => handleUploadSubmit('update')}
+                  disabled={processing}
+                  className="w-full px-4 py-3 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-900 border border-sky-200 dark:border-sky-800 font-bold text-xs transition-all text-right disabled:opacity-50"
+                >
+                  به‌روزرسانی تراکنش‌های موجود با داده‌های فایل
+                </button>
+                <button
+                  onClick={() => handleUploadSubmit('duplicate')}
+                  disabled={processing}
+                  className="w-full px-4 py-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-bold text-xs transition-all text-right disabled:opacity-50"
+                >
+                  ثبت همه به‌صورت تراکنش جداگانه (شماره جدید برای تکراری‌ها)
+                </button>
+                <button
+                  onClick={handleCancelDupChoice}
+                  disabled={processing}
+                  className="w-full px-4 py-3 rounded-2xl bg-transparent text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 font-bold text-xs transition-all text-right disabled:opacity-50"
+                >
+                  انصراف
+                </button>
+              </div>
+            </div>
+          </div>
+        </ModalOverlay>
       )}
     </div>
   );

@@ -192,7 +192,8 @@ describe('[component] FileUploader Component', () => {
     await waitFor(() => {
       expect(api.uploadSalesFile).toHaveBeenCalledWith(
         expect.any(File),
-        { col1: 'شماره فاکتور', col2: 'مبلغ' }
+        { col1: 'شماره فاکتور', col2: 'مبلغ' },
+        undefined
       );
       expect(onSuccess).toHaveBeenCalledTimes(1);
     });
@@ -274,6 +275,52 @@ describe('[component] FileUploader Component', () => {
     fireEvent.click(screen.getByText(/بارگیری داده‌های نمونه فروش/i));
 
     expect(await screen.findByText(/خطا در دریافت داده نمونه/i)).toBeInTheDocument();
+  });
+
+  const DUPLICATE_PREVIEW = {
+    headers: ['col1', 'col2'],
+    detected_mapping: { col1: 'شماره فاکتور', col2: 'مبلغ' },
+    sample_rows: [{ col1: 'val1', col2: 'val2' }],
+    source_type: 'CSV',
+    duplicates: { in_db: ['INV-001'], in_db_count: 1, in_file: ['INV-900'], in_file_count: 1 },
+  };
+
+  it('shows the duplicate-choice modal when preview reports duplicates', async () => {
+    (api.previewSalesFile as any).mockResolvedValue(DUPLICATE_PREVIEW);
+    const { container } = renderComponent();
+
+    await pickFile(container, VALID_CSV);
+
+    expect(await screen.findByText(/تراکنش‌های تکراری شناسایی شدند/i)).toBeInTheDocument();
+    expect(api.uploadSalesFile).not.toHaveBeenCalled();
+  });
+
+  it('uploads with the chosen duplicate strategy and closes the modal', async () => {
+    (api.previewSalesFile as any).mockResolvedValue(DUPLICATE_PREVIEW);
+    const { container } = renderComponent();
+
+    await pickFile(container, VALID_CSV);
+    fireEvent.click(await screen.findByText(/نادیده گرفتن تکراری‌ها/i));
+
+    await waitFor(() => {
+      expect(api.uploadSalesFile).toHaveBeenCalledWith(
+        expect.any(File),
+        { col1: 'شماره فاکتور', col2: 'مبلغ' },
+        'skip'
+      );
+    });
+    expect(screen.queryByText(/تراکنش‌های تکراری شناسایی شدند/i)).not.toBeInTheDocument();
+  });
+
+  it('cancel on the duplicate modal resets the uploader without uploading', async () => {
+    (api.previewSalesFile as any).mockResolvedValue(DUPLICATE_PREVIEW);
+    const { container } = renderComponent();
+
+    await pickFile(container, VALID_CSV);
+    fireEvent.click(await screen.findByText('انصراف'));
+
+    expect(api.uploadSalesFile).not.toHaveBeenCalled();
+    expect(getDropZone(container)).toBeInTheDocument();
   });
 });
 
