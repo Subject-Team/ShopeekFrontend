@@ -132,12 +132,12 @@ describe('[page] PlansPage', () => {
     await waitFor(() => {
       expect(screen.getByText('لایت')).toBeInTheDocument();
     });
-    const ctas = screen.getAllByRole('link', { name: 'مشاوره و ثبت‌نام' });
+    const ctas = screen.getAllByRole('link', { name: 'تماس برای خرید و تمدید' });
     expect(ctas.length).toBe(2);
     ctas.forEach(link => expect(link).toHaveAttribute('href', '/contact'));
   });
 
-  it('renders a /dashboard/subscription CTA per plan for logged-in users', async () => {
+  it('renders a /contact CTA per plan for logged-in users (no loop back to /dashboard/subscription)', async () => {
     vi.mocked(api.fetchPublicPlans).mockResolvedValue(mockPlans as any);
     vi.mocked(useAuth).mockReturnValue({ isAuthenticated: true } as any);
 
@@ -146,8 +146,8 @@ describe('[page] PlansPage', () => {
     await waitFor(() => {
       expect(screen.getByText('لایت')).toBeInTheDocument();
     });
-    const ctas = screen.getAllByRole('link', { name: 'تمدید یا ارتقای اشتراک' });
+    const ctas = screen.getAllByRole('link', { name: 'تماس برای خرید و تمدید' });
     expect(ctas.length).toBe(2);
-    ctas.forEach(link => expect(link).toHaveAttribute('href', '/dashboard/subscription'));
+    ctas.forEach(link => expect(link).toHaveAttribute('href', '/contact'));
   });
 });
