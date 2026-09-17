@@ -152,8 +152,11 @@ export const ChatDrawer: React.FC = () => {
   }, [isChatOpen, refreshBilling]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, loading]);
+    const raf = requestAnimationFrame(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [messages, loading, historyLoading]);
 
   const sendMessage = async (rawText: string) => {
     const userText = rawText.trim();
