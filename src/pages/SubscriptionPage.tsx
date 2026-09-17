@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CreditCard } from 'lucide-react';
 import { CreditIcon } from '../components/icons';
+import { SEO } from '../components/common/SEO';
 
 import { fetchBillingOverview } from '../services/api';
 import type {
@@ -144,6 +145,12 @@ export const SubscriptionPage: React.FC = () => {
 
   return (
     <div className="space-y-6 p-6">
+      <SEO
+        title="اشتراک و پرداخت | شاپیک"
+        description="مدیریت طرح اشتراک، کیف پول اعتبار، سهمیه مصرف و تاریخچه تراکنش‌های حساب شاپیک شما."
+        canonicalPath="/dashboard/subscription"
+      />
+
       {/* Plan status */}
       <section
         data-guide="subscription-plan-card"
