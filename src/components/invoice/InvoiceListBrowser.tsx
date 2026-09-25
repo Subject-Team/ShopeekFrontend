@@ -19,7 +19,6 @@ import {
 } from '../../utils/persian';
 import {
   formatJalaliNumeric,
-  jalaliToGregorian,
   PERSIAN_MONTH_NAMES,
   toIsoDate,
   toJalali,
@@ -148,9 +147,7 @@ export const InvoiceListBrowser: React.FC<InvoiceListBrowserProps> = ({
     setRangeOpen(false);
   };
 
-  const handleRangeDayClick = (day: number) => {
-    const { gy, gm, gd } = jalaliToGregorian(viewYear, viewMonth, day);
-    const clickedIso = toIsoDate(new Date(gy, gm - 1, gd));
+  const handleRangeDayClick = (clickedIso: string) => {
     if (clickedIso > todayIso) return;
 
     if (!tempStart || (tempStart && tempEnd)) {
@@ -170,7 +167,7 @@ export const InvoiceListBrowser: React.FC<InvoiceListBrowserProps> = ({
     setRangeOpen(false);
   };
 
-  const renderDay = (day: number, dayIso: string) => {
+  const renderDay = (day: number, dayIso: string, isCurrentMonth: boolean) => {
     const isFuture = dayIso > todayIso;
     const isStart = tempStart === dayIso;
     const isEnd = tempEnd === dayIso;
@@ -178,10 +175,10 @@ export const InvoiceListBrowser: React.FC<InvoiceListBrowserProps> = ({
       tempStart && tempEnd && dayIso > tempStart && dayIso < tempEnd;
     return (
       <button
-        key={day}
+        key={dayIso}
         type="button"
         disabled={isFuture}
-        onClick={() => handleRangeDayClick(day)}
+        onClick={() => handleRangeDayClick(dayIso)}
         className={`h-8 w-8 mx-auto rounded-lg text-xs font-semibold flex items-center justify-center transition-all ${
           isFuture
             ? 'text-slate-300 dark:text-slate-600 cursor-not-allowed opacity-40'
@@ -189,7 +186,9 @@ export const InvoiceListBrowser: React.FC<InvoiceListBrowserProps> = ({
             ? 'bg-brand-600 text-white shadow-md shadow-brand-500/30 scale-105 z-10'
             : isInRange
             ? 'bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-brand-300 rounded-none'
-            : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'
+            : isCurrentMonth
+            ? 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'
+            : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400/60 dark:text-slate-500/60'
         }`}
       >
         {toPersianDigits(day)}

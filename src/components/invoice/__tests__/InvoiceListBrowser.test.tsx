@@ -139,8 +139,8 @@ describe('[component] InvoiceListBrowser', () => {
 
     // Open range picker, pick start then end day (past days of current month)
     fireEvent.click(screen.getByRole('button', { name: /همه تاریخ‌ها/ }));
-    fireEvent.click(screen.getByText('۱'));
-    fireEvent.click(screen.getByText('۲'));
+    fireEvent.click(screen.getAllByText('۱')[0]);
+    fireEvent.click(screen.getAllByText('۲')[0]);
 
     await waitFor(() => {
       expect(api.fetchInvoices).toHaveBeenLastCalledWith(

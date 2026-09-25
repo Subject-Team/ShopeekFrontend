@@ -217,13 +217,13 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose, onC
     );
   };
 
-  const renderDay = (day: number, dIso: string) => {
+  const renderDay = (day: number, dIso: string, isCurrentMonth: boolean) => {
     const isDisabled = dIso > todayIso;
     const active = selectedIso === dIso;
     const isToday = dIso === todayIso;
     return (
       <button
-        key={day}
+        key={dIso}
         type="button"
         onClick={() => setSelectedIso(dIso)}
         disabled={isDisabled || readOnly}
@@ -234,7 +234,9 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, onClose, onC
               ? 'bg-brand-600 text-white shadow-md shadow-brand-500/30 scale-105 z-10'
               : isToday
                 ? 'border border-brand-500/50 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
-                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
+                : isCurrentMonth
+                  ? 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
+                  : 'text-slate-400/60 dark:text-slate-500/60 hover:bg-slate-100 dark:hover:bg-slate-700'
         }`}
       >
         {toPersianDigits(day)}

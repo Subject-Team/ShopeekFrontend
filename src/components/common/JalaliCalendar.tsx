@@ -10,7 +10,7 @@ interface JalaliCalendarProps {
   viewMonth: number;
   weekdayClassName?: string;
   gridClassName?: string;
-  renderDay: (day: number, iso: string) => React.ReactNode;
+  renderDay: (day: number, iso: string, isCurrentMonth: boolean) => React.ReactNode;
 }
 
 /**
@@ -29,6 +29,15 @@ export const JalaliCalendar: React.FC<JalaliCalendarProps> = ({
   const { gy, gm, gd } = jalaliToGregorian(viewYear, viewMonth, 1);
   const startDow = getPersianDayOfWeek(new Date(gy, gm - 1, gd));
 
+  // Previous month padding
+  const prevYear = viewMonth === 1 ? viewYear - 1 : viewYear;
+  const prevMonth = viewMonth === 1 ? 12 : viewMonth - 1;
+  const prevMonthDays = getJalaliMonthDays(prevYear, prevMonth);
+
+  // Next month padding (fixed 6 rows = 42 cells total)
+  const totalCells = 42;
+  const nextMonthCellsCount = totalCells - (startDow + daysInMonth);
+
   return (
     <>
       <div className="grid grid-cols-7 gap-1 text-center mb-1">
@@ -39,15 +48,26 @@ export const JalaliCalendar: React.FC<JalaliCalendarProps> = ({
         ))}
       </div>
       <div className={gridClassName}>
-        {Array.from({ length: startDow }).map((_, i) => (
-          <div key={`pad-${i}`} className="h-8 w-8" />
-        ))}
+        {/* Leading days from previous month */}
+        {Array.from({ length: startDow }).map((_, i) => {
+          const day = prevMonthDays - startDow + 1 + i;
+          const iso = toIsoDate(new Date(gy, gm - 1, gd - (startDow - i)));
+          return renderDay(day, iso, false);
+        })}
+        {/* Current month days */}
         {Array.from({ length: daysInMonth }).map((_, i) => {
           const day = i + 1;
           const iso = toIsoDate(new Date(gy, gm - 1, gd + day - 1));
-          return renderDay(day, iso);
+          return renderDay(day, iso, true);
+        })}
+        {/* Trailing days from next month */}
+        {Array.from({ length: nextMonthCellsCount }).map((_, i) => {
+          const day = i + 1;
+          const iso = toIsoDate(new Date(gy, gm - 1, gd + daysInMonth + i));
+          return renderDay(day, iso, false);
         })}
       </div>
     </>
   );
 };
+

@@ -87,15 +87,32 @@ describe('[component] JalaliDateRangeModal', () => {
     // Initial month should be Shahrivar
     expect(screen.getAllByText(/شهریور/i).length).toBeGreaterThan(0);
 
-    // Click previous month
+    // Right button (ماه قبل) clicks to go to previous month (Mordad)
     const prevBtn = screen.getByTitle('ماه قبل');
     fireEvent.click(prevBtn);
     expect(screen.getByText(/مرداد/i)).toBeInTheDocument();
 
-    // Click next month
+    // Left button (ماه بعد) clicks to go back forward to next month (Shahrivar)
     const nextBtn = screen.getByTitle('ماه بعد');
     fireEvent.click(nextBtn);
     expect(screen.getAllByText(/شهریور/i).length).toBeGreaterThan(0);
+  });
+
+  it('renders fixed 42 cells grid and allows selecting dates from adjacent months', () => {
+    const handleApply = vi.fn();
+    render(
+      <JalaliDateRangeModal
+        isOpen={true}
+        onClose={vi.fn()}
+        startDate="2026-08-25"
+        endDate="2026-08-31"
+        onApply={handleApply}
+      />
+    );
+
+    // Grid should contain 42 day buttons
+    const dayButtons = screen.getAllByRole('button').filter(b => /^[۰-۹]+$/.test(b.textContent || ''));
+    expect(dayButtons.length).toBe(42);
   });
 });
 

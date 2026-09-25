@@ -13,7 +13,6 @@ import { isQuickPresetRange } from "../../utils/persian/date";
 import { getDayDifference } from "../../utils/persian/date";
 import { toIsoDate } from "../../utils/persian/date";
 import { toJalali } from "../../utils/persian/date";
-import { jalaliToGregorian } from "../../utils/persian/date";
 import { PERSIAN_MONTH_NAMES } from "../../utils/persian/date";
 import { toPersianDigits } from "../../utils/persian";
 import { JalaliCalendar } from './JalaliCalendar';
@@ -85,11 +84,7 @@ export const JalaliDateRangeModal: React.FC<JalaliDateRangeModalProps> = ({
   };
 
   // Handle day click
-  const handleDayClick = (dayNumber: number) => {
-    const { gy, gm, gd } = jalaliToGregorian(viewYear, viewMonth, dayNumber);
-    const clickedDate = new Date(gy, gm - 1, gd);
-    const clickedIso = toIsoDate(clickedDate);
-
+  const handleDayClick = (clickedIso: string) => {
     // Check future condition
     if (clickedIso > todayIso) {
       setErrorMessage('امکان انتخاب تاریخ‌های آینده وجود ندارد.');
@@ -133,7 +128,7 @@ export const JalaliDateRangeModal: React.FC<JalaliDateRangeModalProps> = ({
     }
   };
 
-  const renderDay = (day: number, currentIso: string) => {
+  const renderDay = (day: number, currentIso: string, isCurrentMonth: boolean) => {
     const isFuture = currentIso > todayIso;
     const isOlderThanLimit = currentIso < minDateIso;
     const isDisabled = isFuture || isOlderThanLimit;
@@ -146,10 +141,10 @@ export const JalaliDateRangeModal: React.FC<JalaliDateRangeModalProps> = ({
 
     return (
       <button
-        key={day}
+        key={currentIso}
         type="button"
         disabled={isDisabled}
-        onClick={() => handleDayClick(day)}
+        onClick={() => handleDayClick(currentIso)}
         className={`h-8 w-8 sm:h-9 sm:w-9 mx-auto rounded-lg text-xs font-semibold flex items-center justify-center transition-all relative ${
           isDisabled
             ? 'text-slate-300 dark:text-slate-600 cursor-not-allowed opacity-40'
@@ -157,7 +152,9 @@ export const JalaliDateRangeModal: React.FC<JalaliDateRangeModalProps> = ({
             ? 'bg-brand-600 text-white shadow-md shadow-brand-500/30 scale-105 z-10'
             : isInRange
             ? 'bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-brand-300 rounded-none'
-            : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'
+            : isCurrentMonth
+            ? 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'
+            : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400/60 dark:text-slate-500/60'
         } ${isToday && !isStart && !isEnd ? 'border border-brand-500/50' : ''}`}
       >
         {toPersianDigits(day)}
@@ -282,9 +279,9 @@ export const JalaliDateRangeModal: React.FC<JalaliDateRangeModalProps> = ({
         <div className="px-5 pt-3 pb-2 flex items-center justify-between">
           <button
             type="button"
-            onClick={handleNextMonth}
+            onClick={handlePrevMonth}
             className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
-            title="ماه بعد"
+            title="ماه قبل"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -293,9 +290,9 @@ export const JalaliDateRangeModal: React.FC<JalaliDateRangeModalProps> = ({
           </span>
           <button
             type="button"
-            onClick={handlePrevMonth}
+            onClick={handleNextMonth}
             className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
-            title="ماه قبل"
+            title="ماه بعد"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
