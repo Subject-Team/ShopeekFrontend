@@ -51,7 +51,8 @@ export const refreshAccessToken = async (): Promise<RefreshOutcome> => {
           ...(getWebSessionId() ? { session_id: getWebSessionId() } : {}),
         }),
       });
-      if (!res.ok) return 'invalid';
+      if (res.status === 401) return 'invalid';
+      if (!res.ok) return 'unavailable';
       const data = (await res.json()) as AuthTokenResponse;
       localStorage.setItem('shopeek_token', data.access_token);
       if (data.refresh_token) {

@@ -233,4 +233,23 @@ describe('[service] API Services', () => {
     expect(localStorage.getItem('shopeek_refresh_token')).toBe('refresh-token-1');
     window.removeEventListener('shopeek_unauthorized', unauthorizedListener);
   });
+
+  it('authFetch keeps the stored session when refresh returns a transient server error', async () => {
+    localStorage.setItem('shopeek_token', 'expired-token');
+    localStorage.setItem('shopeek_refresh_token', 'refresh-token-1');
+    const unauthorizedListener = vi.fn();
+    window.addEventListener('shopeek_unauthorized', unauthorizedListener);
+
+    // Original request 401s, then /auth/refresh returns 503 (transient).
+    window.fetch = vi.fn()
+      .mockResolvedValueOnce({ status: 401, ok: false })
+      .mockResolvedValueOnce({ status: 503, ok: false });
+
+    await expect(fetchKPISummary(30)).rejects.toThrow();
+
+    expect(unauthorizedListener).not.toHaveBeenCalled();
+    expect(localStorage.getItem('shopeek_token')).toBe('expired-token');
+    expect(localStorage.getItem('shopeek_refresh_token')).toBe('refresh-token-1');
+    window.removeEventListener('shopeek_unauthorized', unauthorizedListener);
+  });
 });
