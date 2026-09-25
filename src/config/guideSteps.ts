@@ -57,11 +57,14 @@ export const GUIDE_CONFIGS: Record<string, PageGuideConfig> = {
         placement: 'top',
       },
       {
-        id: 'dashboard-ingestion-cta',
-        targetSelector: '[data-guide="dashboard-ingestion-cta"]',
-        title: 'ورود سریع فاکتورها',
-        description: 'ثبت مستقیم و آنی فاکتور فروش یا انتقال به صفحه بارگذاری فایل‌های اکسل و CSV.',
-        tips: ['امکان ثبت سریع فاکتور با دکمه «ثبت فاکتور مستقیم» همیشه در دسترس شماست.'],
+        id: 'dashboard-last-invoices',
+        targetSelector: '[data-guide="dashboard-last-invoices"]',
+        title: 'آخرین فاکتورها و ثبت سریع',
+        description: 'مشاهده آخرین فاکتورهای ثبت‌شده در بازه زمانی، ثبت مستقیم فاکتور جدید بدون نیاز به فایل و دسترسی به بخش ورود داده‌ها.',
+        tips: [
+          'با دکمه «ثبت فاکتور مستقیم» یک فروش جدید را در لحظه ثبت کنید.',
+          'با کلیک روی «مشاهده همه» به آرشیو کامل فاکتورها منتقل می‌شوید.',
+        ],
         placement: 'top',
       },
       {

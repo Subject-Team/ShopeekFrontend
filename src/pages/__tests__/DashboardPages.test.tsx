@@ -31,6 +31,7 @@ vi.mock('../../services/api', () => ({
   createInvoice: vi.fn(),
   fetchBusinessProfile: vi.fn(),
   fetchBillingOverview: vi.fn(),
+  fetchInvoices: vi.fn(),
 }));
 
 const activeBillingOverview = {
@@ -115,6 +116,22 @@ describe('[page] Dashboard Pages', () => {
     (api.createInvoice as any).mockResolvedValue({ transaction_reference: 'INV-10001' });
     (api.fetchBusinessProfile as any).mockResolvedValue(null);
     (api.fetchBillingOverview as any).mockResolvedValue(activeBillingOverview);
+    (api.fetchInvoices as any).mockResolvedValue({
+      items: [
+        {
+          id: 'inv-1',
+          transaction_reference: 'INV-10001',
+          product_name: 'قهوه اسپرسو',
+          customer_name: 'علی محمدی',
+          total_amount: 120000,
+          currency: 'IRR',
+          transaction_date: '2026-03-21T10:00:00Z',
+        },
+      ],
+      total: 1,
+      limit: 5,
+      offset: 0,
+    });
   });
 
   const renderPage = (ui: React.ReactElement, initialPath = '/dashboard') => {
@@ -166,13 +183,15 @@ describe('[page] Dashboard Pages', () => {
     });
   });
 
-  it('renders the "ورود فاکتورهای جدید" card on dashboard', async () => {
+  it('renders the "آخرین فاکتورها" card on dashboard with action buttons', async () => {
     renderPage(<DashboardPage />, '/dashboard');
 
     await waitFor(() => {
-      expect(screen.getByText(/ورود فاکتورهای جدید/i)).toBeInTheDocument();
+      expect(screen.getByText(/آخرین فاکتورها/i)).toBeInTheDocument();
       expect(screen.getByText(/ثبت فاکتور مستقیم/i)).toBeInTheDocument();
       expect(screen.getAllByText(/ورود داده‌ها/i).length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText(/مشاهده همه/i).length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByText('قهوه اسپرسو')).toBeInTheDocument();
     });
   });
 
@@ -180,7 +199,7 @@ describe('[page] Dashboard Pages', () => {
     renderPage(<DashboardPage />, '/dashboard');
 
     await waitFor(() => {
-      expect(screen.getByText(/ورود فاکتورهای جدید/i)).toBeInTheDocument();
+      expect(screen.getByText(/آخرین فاکتورها/i)).toBeInTheDocument();
     });
 
     const openButton = screen.getByText('ثبت فاکتور مستقیم');

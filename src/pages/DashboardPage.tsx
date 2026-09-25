@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DollarSign, ShoppingBag, Users, UploadCloud, ReceiptText, AlertTriangle, RefreshCw, Medal } from 'lucide-react';
+import { DollarSign, ShoppingBag, Users, ReceiptText, AlertTriangle, RefreshCw, Medal } from 'lucide-react';
 import { CreditIcon } from '../components/icons';
 import { KpiCard } from '../components/dashboard/KpiCard';
 import { RevenueChart } from '../components/dashboard/RevenueChart';
@@ -9,6 +9,7 @@ import { SubscriptionWarningBanner } from '../components/dashboard/SubscriptionW
 import { PlanCreditOverviewCard } from '../components/dashboard/PlanCreditOverviewCard';
 import { LatestArticleCard } from '../components/dashboard/LatestArticleCard';
 import { BusinessProfileBanner } from '../components/dashboard/BusinessProfileBanner';
+import { LastInvoicesCard } from '../components/dashboard/LastInvoicesCard';
 import { usePageContext } from '../context/PageContext';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -88,6 +89,7 @@ export const DashboardPage: React.FC = () => {
   const [businessProfile, setBusinessProfile] = useState<BusinessProfile | null>(null);
   const [billing, setBilling] = useState<BillingOverview | null>(null);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState<boolean>(false);
+  const [invoicesRefreshKey, setInvoicesRefreshKey] = useState<number>(0);
   const [statuses, setStatuses] = useState<WidgetStatuses>(INITIAL_STATUSES);
   const isMountedRef = useRef(true);
 
@@ -239,51 +241,31 @@ export const DashboardPage: React.FC = () => {
         )}
       </div>
 
-      {/* Revenue Trend & Forecast Chart */}
+      {/* Revenue Trend & Forecast Chart + Last Invoices */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div data-guide="dashboard-chart" className="lg:col-span-2" aria-busy={trend.length === 0 && statuses.trend === 'loading'}>
-          {trend.length === 0 && statuses.trend === 'loading' ? (
-            <ChartCardSkeleton />
-          ) : trend.length === 0 && statuses.trend === 'failed' ? (
-            <WidgetErrorCard onRetry={loadTrend} label="بارگذاری نمودار فروش با خطا مواجه شد." />
-          ) : (
-            <RevenueChart data={trend} hideForecast={isHistorical} />
-          )}
-        </div>
-
-        {/* Side Widget: Top Customers Summary, Data Import CTA, & Subscription Card */}
-
-        <div className="space-y-6">
-          {/* Quick Import & Invoice CTA */}
-          <div
-            data-guide="dashboard-ingestion-cta"
-            className="glass-card p-5 rounded-2xl bg-gradient-to-br from-brand-50 to-indigo-50/40 dark:from-brand-950/40 dark:to-slate-900 border border-brand-200 dark:border-brand-900/50 space-y-3"
-          >
-            <div className="flex items-center gap-3 text-brand-700 dark:text-brand-300">
-              <ReceiptText className="w-6 h-6" />
-              <h4 className="font-extrabold text-sm">ورود فاکتورهای جدید</h4>
-            </div>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              ثبت سریع فاکتور فروش به صورت مستقیم یا ورود داده‌ها از طریق فایل اکسل و CSV.
-            </p>
-            <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2">
-              <button
-                onClick={() => setInvoiceModalOpen(true)}
-                className="flex-1 py-2.5 px-4 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition-all flex items-center justify-center gap-2"
-              >
-                <ReceiptText className="w-4 h-4" />
-                ثبت فاکتور مستقیم
-              </button>
-              <button
-                onClick={() => navigate('/dashboard/ingestion')}
-                className="flex-1 py-2.5 px-4 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs shadow-sm border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-center gap-2"
-              >
-                <UploadCloud className="w-4 h-4" />
-                ورود داده‌ها
-              </button>
-            </div>
+        <div className="lg:col-span-2 space-y-6">
+          <div data-guide="dashboard-chart" aria-busy={trend.length === 0 && statuses.trend === 'loading'}>
+            {trend.length === 0 && statuses.trend === 'loading' ? (
+              <ChartCardSkeleton />
+            ) : trend.length === 0 && statuses.trend === 'failed' ? (
+              <WidgetErrorCard onRetry={loadTrend} label="بارگذاری نمودار فروش با خطا مواجه شد." />
+            ) : (
+              <RevenueChart data={trend} hideForecast={isHistorical} />
+            )}
           </div>
 
+          <LastInvoicesCard
+            startDate={startDate}
+            endDate={endDate}
+            isHistorical={isHistorical}
+            readOnly={Boolean(user?.is_read_only)}
+            onOpenInvoiceModal={() => setInvoiceModalOpen(true)}
+            refreshKey={invoicesRefreshKey}
+          />
+        </div>
+
+        {/* Side Widget: Top Customers Summary, Subscription Card, & Latest Article */}
+        <div className="space-y-6">
           <div className="glass-card p-5 rounded-2xl shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">مشتریان برتر (LTV)</h4>
@@ -335,7 +317,7 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Plan & Credit Overview Card (Under Data Entry Section) */}
+          {/* Plan & Credit Overview Card */}
           <PlanCreditOverviewCard overview={billing} />
 
           {/* Latest Blog Article Card */}
@@ -345,7 +327,14 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      <InvoiceModal isOpen={invoiceModalOpen} onClose={() => setInvoiceModalOpen(false)} />
+      <InvoiceModal
+        isOpen={invoiceModalOpen}
+        onClose={() => setInvoiceModalOpen(false)}
+        onCreated={() => {
+          setInvoicesRefreshKey((k) => k + 1);
+          void loadDashboardData();
+        }}
+      />
     </div>
   );
 };
