@@ -45,6 +45,13 @@ export interface BlogPost {
   /** Pins the post to the blog hero slot; see `getFeaturedPost`. */
   featured?: boolean;
   featuredImage: string;
+  /**
+   * Raster (PNG) twin of `featuredImage`, used for `og:image` / `twitter:image`.
+   * Must not be an SVG: Open Graph crawlers only render JPEG/PNG/GIF/WEBP, so an
+   * SVG card is silently dropped and the shared link shows no preview image.
+   * Regenerate the assets with `node scripts/generate-blog-og-images.mjs`.
+   */
+  ogImage: string;
   imageAlt: string;
   keywords: string[];
   sections: BlogSection[];

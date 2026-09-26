@@ -54,7 +54,7 @@ export const BlogPostPage: React.FC = () => {
         description={post.metaDescription}
         canonicalPath={`/blog/${post.slug}`}
         type="article"
-        image={post.featuredImage}
+        image={post.ogImage}
         post={post}
       />
 

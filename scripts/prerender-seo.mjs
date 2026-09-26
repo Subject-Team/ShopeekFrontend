@@ -21,7 +21,7 @@
  *  - Blog JSON-LD schemas (Blog / BreadcrumbList / BlogPosting):
  *    src/components/common/BlogSEO.tsx.
  *  - Blog post data (slug/title/metaTitle/metaDescription/isoPublishedAt/
- *    author.name/keywords/featuredImage): src/data/blog/posts.ts — parsed
+ *    author.name/keywords/ogImage): src/data/blog/posts.ts — parsed
  *    with the same regex approach as scripts/generate-sitemap.mjs.
  *  - Public route list: src/App.tsx. Redirect-only routes (/privacy-policy,
  *    /privacy -> /legal) are skipped; /dashboard/* and /admin are
@@ -122,7 +122,7 @@ function parseBlogPosts() {
       metaTitle: field(block, 'metaTitle'),
       metaDescription: field(block, 'metaDescription'),
       isoPublishedAt: field(block, 'isoPublishedAt'),
-      featuredImage: field(block, 'featuredImage'),
+      ogImage: field(block, 'ogImage'),
       authorName: authorMatch ? authorMatch[1] : '',
       keywords: keywordsMatch ? [...keywordsMatch[1].matchAll(/'([^']*)'/g)].map((m) => m[1]) : [],
     });
@@ -207,7 +207,9 @@ function buildPostJsonLd(route) {
 // ── Per-route render ──────────────────────────────────────────────────────
 // Only head SEO elements are swapped; every asset/script/link/body tag stays
 // byte-identical. Blog posts additionally get og:type=article and the post's
-// featured image for og:image/twitter:image (as BlogSEO.tsx does).
+// raster OG card for og:image/twitter:image (as BlogSEO.tsx does). The `/blog`
+// index needs no og:image swap — it keeps index.html's site-wide PNG, which is
+// what BlogSEO's default resolves to.
 function renderRoute(template, route) {
   let html = template;
   const title = formatTitle(route.title);
@@ -301,13 +303,24 @@ const routes = STATIC_ROUTES.map((route) => {
   };
 });
 
-// Each blog post becomes /blog/<slug> with article JSON-LD + featured image.
+// Each blog post becomes /blog/<slug> with article JSON-LD + raster OG card.
 const postRoutes = parseBlogPosts().map((post) => {
   const path = `/blog/${post.slug}`;
   const canonicalUrl = `${BASE_URL}${path}`;
-  const fullImageUrl = post.featuredImage.startsWith('http')
-    ? post.featuredImage
-    : `${BASE_URL}${post.featuredImage.startsWith('/') ? post.featuredImage : `/${post.featuredImage}`}`;
+  // og:image / twitter:image / BlogPosting.image must be raster (see
+  // BlogSEO.tsx): crawlers silently drop an SVG, so a link would render with
+  // no preview image. Fail the build rather than ship that.
+  if (!post.ogImage) {
+    throw new Error(`prerender-seo: ${path} has no ogImage in src/data/blog/posts.ts`);
+  }
+  if (post.ogImage.toLowerCase().endsWith('.svg')) {
+    throw new Error(
+      `prerender-seo: ${path} ogImage must not be an SVG (crawlers render raster only): ${post.ogImage}`,
+    );
+  }
+  const fullImageUrl = post.ogImage.startsWith('http')
+    ? post.ogImage
+    : `${BASE_URL}${post.ogImage.startsWith('/') ? post.ogImage : `/${post.ogImage}`}`;
   return {
     path,
     title: post.metaTitle,

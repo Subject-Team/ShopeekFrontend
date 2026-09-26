@@ -18,6 +18,7 @@ export const BLOG_POSTS: BlogPost[] = [
     readingTimeMinutes: 6,
     featured: true,
     featuredImage: '/images/blog/sales-analytics-guide.svg',
+    ogImage: '/images/blog/sales-analytics-guide.og.png',
     imageAlt: 'نمودار تحلیل فروش و ارزیابی درآمد فروشگاه آنلاین',
     keywords: [
       'تحلیل فروش فروشگاه اینستاگرامی',
@@ -108,6 +109,7 @@ export const BLOG_POSTS: BlogPost[] = [
     isoPublishedAt: '2026-08-15T09:30:00+03:30',
     readingTimeMinutes: 5,
     featuredImage: '/images/blog/profit-loss-mistakes.svg',
+    ogImage: '/images/blog/profit-loss-mistakes.og.png',
     imageAlt: 'محاسبه سود و زیان و بررسی خطاهای مالی فروشگاه',
     keywords: [
       'محاسبه سود و زیان کسب و کار خرد',
@@ -205,6 +207,7 @@ export const BLOG_POSTS: BlogPost[] = [
     isoPublishedAt: '2026-08-24T11:00:00+03:30',
     readingTimeMinutes: 6,
     featuredImage: '/images/blog/rfm-analysis-guide.svg',
+    ogImage: '/images/blog/rfm-analysis-guide.og.png',
     imageAlt: 'دسته‌بندی مشتریان بر پایه مدل RFM و تحلیل رفتار خرید',
     keywords: [
       'تحلیل RFM و وفادارسازی مشتریان',
@@ -296,6 +299,7 @@ export const BLOG_POSTS: BlogPost[] = [
     isoPublishedAt: '2026-08-31T14:20:00+03:30',
     readingTimeMinutes: 5,
     featuredImage: '/images/blog/quick-sales-recording.svg',
+    ogImage: '/images/blog/quick-sales-recording.og.png',
     imageAlt: 'ثبت سریع فروش و فاکتور با ربات تلگرام و ابزارهای دیجیتال',
     keywords: [
       'ثبت سریع فروش و فاکتور',
@@ -381,6 +385,7 @@ export const BLOG_POSTS: BlogPost[] = [
     isoPublishedAt: '2026-09-07T09:00:00+03:30',
     readingTimeMinutes: 6,
     featuredImage: '/images/blog/breakeven-point-monthly-sales-smbs.svg',
+    ogImage: '/images/blog/breakeven-point-monthly-sales-smbs.og.png',
     imageAlt: 'محاسبه نقطه سر‌به‌سر و تعیین حداقل فروش ماهانه فروشگاه',
     keywords: [
       'محاسبه نقطه سر به سر',
@@ -477,6 +482,7 @@ export const BLOG_POSTS: BlogPost[] = [
     isoPublishedAt: '2026-09-14T10:00:00+03:30',
     readingTimeMinutes: 6,
     featuredImage: '/images/blog/inflation-proof-pricing-formula-iran.svg',
+    ogImage: '/images/blog/inflation-proof-pricing-formula-iran.og.png',
     imageAlt: 'فرمول قیمت‌گذاری کالا در تورم شامل بهای خرید، هزینه‌های پنهان و حاشیه امن',
     keywords: [
       'قیمت‌گذاری کالا در تورم',
@@ -573,6 +579,7 @@ export const BLOG_POSTS: BlogPost[] = [
     isoPublishedAt: '2026-09-15T09:30:00+03:30',
     readingTimeMinutes: 6,
     featuredImage: '/images/blog/seasonal-sales-calendar-iranian-shops.svg',
+    ogImage: '/images/blog/seasonal-sales-calendar-iranian-shops.og.png',
     imageAlt: 'تقویم فروش فصلی ایران با نشان‌دادن ماه‌های پیک فروش مانند عید و یلدا',
     keywords: [
       'تقویم فروش فصلی',
@@ -669,6 +676,7 @@ export const BLOG_POSTS: BlogPost[] = [
     isoPublishedAt: '2026-09-16T11:00:00+03:30',
     readingTimeMinutes: 6,
     featuredImage: '/images/blog/winback-inactive-customers-sms-direct.svg',
+    ogImage: '/images/blog/winback-inactive-customers-sms-direct.og.png',
     imageAlt: 'ارسال پیامک و دایرکت برای بازگرداندن مشتری خاموش فروشگاه',
     keywords: [
       'بازگرداندن مشتری قدیمی',
@@ -759,6 +767,7 @@ export const BLOG_POSTS: BlogPost[] = [
     isoPublishedAt: '2026-09-17T10:00:00+03:30',
     readingTimeMinutes: 7,
     featuredImage: '/images/blog/excel-sales-file-cleanup-before-analysis.svg',
+    ogImage: '/images/blog/excel-sales-file-cleanup-before-analysis.og.png',
     imageAlt: 'تمیز کردن فایل اکسل فروش پیش از تحلیل و رسم نمودار',
     keywords: [
       'تمیز کردن فایل اکسل فروش',
@@ -868,6 +877,7 @@ export const BLOG_POSTS: BlogPost[] = [
     isoPublishedAt: '2026-09-17T16:00:00+03:30',
     readingTimeMinutes: 6,
     featuredImage: '/images/blog/simple-sales-forecast-moving-average.svg',
+    ogImage: '/images/blog/simple-sales-forecast-moving-average.og.png',
     imageAlt: 'نمودار میانگین متحرک فروش و برنامه‌ریزی سفارش انبار',
     keywords: [
       'پیش‌بینی فروش فروشگاه',

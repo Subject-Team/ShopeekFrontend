@@ -16,6 +16,7 @@ const makePost = (
   publishedAt: '۱ مهر ۱۴۰۵',
   readingTimeMinutes: 5,
   featuredImage: '/images/blog/sample.svg',
+  ogImage: '/images/blog/sample.og.png',
   imageAlt: 'تصویر',
   keywords: [],
   sections: [],

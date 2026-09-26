@@ -6,22 +6,39 @@ interface BlogSEOProps {
   description: string;
   canonicalPath: string;
   type?: 'website' | 'article';
+  /**
+   * Absolute URL or site-relative path of the social card. Must be a raster
+   * image — see `resolveOgImage` for why SVG is rejected.
+   */
   image?: string;
   post?: BlogPost;
 }
+
+// Site-wide raster card, used as the default and as the SVG fallback.
+const OG_FALLBACK_IMAGE = '/images/opengraph-image.png';
+
+// Open Graph / Twitter crawlers only render raster images (JPEG, PNG, GIF,
+// WEBP); an SVG card is silently dropped and the shared link shows no preview.
+// Never emit an SVG here — fall back to the site card instead.
+const resolveOgImage = (image: string, baseUrl: string): string => {
+  if (image.toLowerCase().endsWith('.svg')) {
+    return `${baseUrl}${OG_FALLBACK_IMAGE}`;
+  }
+  return image.startsWith('http') ? image : `${baseUrl}${image.startsWith('/') ? image : `/${image}`}`;
+};
 
 export const BlogSEO: React.FC<BlogSEOProps> = ({
   title,
   description,
   canonicalPath,
   type = 'website',
-  image = '/images/logo.svg',
+  image = OG_FALLBACK_IMAGE,
   post,
 }) => {
   useEffect(() => {
     const baseUrl = 'https://shopeekapp.ir';
     const fullCanonicalUrl = `${baseUrl}${canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`}`;
-    const fullImageUrl = image.startsWith('http') ? image : `${baseUrl}${image.startsWith('/') ? image : `/${image}`}`;
+    const fullImageUrl = resolveOgImage(image, baseUrl);
 
     // 1. Document Title
     const formattedTitle = title.includes('شاپیک') ? title : `${title} | شاپیک`;
