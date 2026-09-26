@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Calendar, Clock } from 'lucide-react';
 import { BLOG_POSTS } from '../../data/blog/posts';
+import { getCategoryName } from '../../data/blog/categories';
 import { toPersianDigits } from '../../utils/persian';
 
 /**
@@ -43,7 +44,7 @@ export const LatestArticleCard: React.FC = () => {
           loading="lazy"
         />
         <span className="absolute top-2.5 start-2.5 px-2.5 py-1 rounded-lg bg-slate-900/80 backdrop-blur-xs text-white text-[11px] font-bold">
-          {latestPost.category}
+          {getCategoryName(latestPost.categorySlug)}
         </span>
       </Link>
 

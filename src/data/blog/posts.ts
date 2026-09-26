@@ -1,31 +1,4 @@
-import { BlogPost, BlogCategory } from './types';
-
-export const BLOG_CATEGORIES: BlogCategory[] = [
-  {
-    id: 'sales-analytics',
-    name: 'تحلیل فروش',
-    slug: 'sales-analytics',
-    description: 'راهکارها و شاخص‌های کلیدی برای بررسی عملکرد فروشگاه و رشد درآمد',
-  },
-  {
-    id: 'financial-management',
-    name: 'مدیریت مالی',
-    slug: 'financial-management',
-    description: 'اصول محاسبه سود واقعی، حاشیه سود، نقطه سر‌به‌سر و بهینه‌سازی دخل و خرج',
-  },
-  {
-    id: 'customer-retention',
-    name: 'مدیریت مشتریان',
-    slug: 'customer-retention',
-    description: 'تکنیک‌های وفادارسازی خریداران، مدل RFM و افزایش نرخ بازگشت مشتری',
-  },
-  {
-    id: 'smart-tools',
-    name: 'ابزارهای هوشمند',
-    slug: 'smart-tools',
-    description: 'اتوماسیون ثبت سفارش‌ها، ربات‌های تلگرام و کاربرد هوش مصنوعی در کسب‌وکار',
-  },
-];
+import { BlogPost } from './types';
 
 export const BLOG_POSTS: BlogPost[] = [
   {
@@ -34,7 +7,6 @@ export const BLOG_POSTS: BlogPost[] = [
     metaTitle: 'راهنمای تحلیل فروش فروشگاه اینستاگرامی و آنلاین | شاپیک',
     metaDescription: 'راهنمای جامع تحلیل فروش فروشگاه اینستاگرامی و آنلاین: محاسبه سود واقعی، پایش سه شاخص کلیدی روزانه و پیش‌بینی تقاضا با ابزارهای هوشمند.',
     excerpt: 'رشد واریزی‌های روزانه همیشه به معنای رشد سود خالص نیست. در این راهنما می‌آموزید چگونه داده‌های فروش را تحلیل کنید و تصمیم‌های سودآورتری بگیرید.',
-    category: 'تحلیل فروش',
     categorySlug: 'sales-analytics',
     author: {
       name: 'تیم تحلیل داده شاپیک',
@@ -44,6 +16,7 @@ export const BLOG_POSTS: BlogPost[] = [
     publishedAt: '۱۸ مرداد ۱۴۰۵',
     isoPublishedAt: '2026-08-09T08:00:00+03:30',
     readingTimeMinutes: 6,
+    featured: true,
     featuredImage: '/images/blog/sales-analytics-guide.svg',
     imageAlt: 'نمودار تحلیل فروش و ارزیابی درآمد فروشگاه آنلاین',
     keywords: [
@@ -125,7 +98,6 @@ export const BLOG_POSTS: BlogPost[] = [
     metaTitle: '۵ اشتباه رایج در محاسبه سود و زیان کسب‌وکارهای خرد | شاپیک',
     metaDescription: 'پنج خطای رایج در محاسبه سود و زیان کسب‌وکارهای خرد: مرجوعی، برداشت شخصی، حقوق مالک، کارمزد درگاه و تخفیف‌های بی‌حساب؛ به‌همراه راهکار ثبت هفتگی.',
     excerpt: 'با وجود فروش مستمر، پایان سال با حساب خالی مواجه می‌شوید؟ پنج خطای محاسباتی رایج را بشناسید و از زیان‌های پنهان انبار و ارسال جلوگیری کنید.',
-    category: 'مدیریت مالی',
     categorySlug: 'financial-management',
     author: {
       name: 'تیم تحلیل داده شاپیک',
@@ -223,7 +195,6 @@ export const BLOG_POSTS: BlogPost[] = [
     metaTitle: 'تحلیل RFM و وفادارسازی مشتریان در فروشگاه‌های خرد | شاپیک',
     metaDescription: 'آموزش گام به گام دسته‌بندی مشتریان با مدل RFM برای افزایش نرخ خرید مجدد، پیشگیری از ریزش خریداران و بهینه‌سازی بودجه بازاریابی؛ همراه با نحوه استفاده از فهرست مشتریان شاپیک برای این محاسبه.',
     excerpt: 'با تفکیک مشتریان وفادار از خریداران در معرض ریزش و ارسال پیام هدفمند، فروش تکراری را بدون افزایش بودجه تبلیغات ارتقا دهید.',
-    category: 'مدیریت مشتریان',
     categorySlug: 'customer-retention',
     author: {
       name: 'تیم تحلیل داده شاپیک',
@@ -315,7 +286,6 @@ export const BLOG_POSTS: BlogPost[] = [
     metaTitle: 'ثبت سریع فروش و فاکتور: مقایسه اکسل، دفتر و ربات تلگرام | شاپیک',
     metaDescription: 'مقایسه روش‌های سنتی و مدرن ثبت فاکتور روزانه؛ بررسی راهکار ثبت آنی سفارش‌ها از طریق ربات تلگرام شاپیک بدون اتلاف وقت و تکرارپذیری کار دستی.',
     excerpt: 'ثبت دیرهنگام فاکتور، ریشه بی‌نظمی انبار و حسابداری است. با ابزار مناسب، فاکتور دقیقاً در لحظه پرداخت ثبت می‌شود.',
-    category: 'ابزارهای هوشمند',
     categorySlug: 'smart-tools',
     author: {
       name: 'تیم تحلیل داده شاپیک',
@@ -401,7 +371,6 @@ export const BLOG_POSTS: BlogPost[] = [
     metaTitle: 'نقطه سر‌به‌سر: هر ماه چقدر بفروشید تا ضرر نکنید؟ | شاپیک',
     metaDescription: 'با فرمول نقطه سر‌به‌سر مشخص کنید هر ماه حداقل چقدر بفروشید تا ضرر نکنید؛ محاسبه گام‌به‌گام هزینه ثابت و حاشیه سود با مثال تومانی و تصمیم‌های فروش.',
     excerpt: 'فروش خوب دارید اما پایان ماه چیزی باقی نمی‌ماند؟ نقطه سر‌به‌سر می‌گوید با هزینه‌های فعلی، حداقل فروش ماهانه چقدر باید باشد تا ضرر نکنید.',
-    category: 'مدیریت مالی',
     categorySlug: 'financial-management',
     author: {
       name: 'تیم تحلیل داده شاپیک',
@@ -498,7 +467,6 @@ export const BLOG_POSTS: BlogPost[] = [
     metaTitle: 'فرمول قیمت‌گذاری در تورم: سود ماه بعد را امروز حساب کنید | شاپیک',
     metaDescription: 'با فرمول چهاربخشی قیمت‌گذاری، بهای تمام‌شده، هزینه‌های پنهان و حاشیه امن تورمی ۱۵ تا ۲۵ درصد را در قیمت نهایی بگنجانید و از فروش زیر قیمت جایگزینی جلوگیری کنید.',
     excerpt: 'خرید امروز، فروش فردا با قیمت دیروز یعنی ذوب شدن سرمایه در انبار. با فرمول چهاربخشی، قیمتی بگذارید که تورم ماه بعد را هم پوشش دهد.',
-    category: 'مدیریت مالی',
     categorySlug: 'financial-management',
     author: {
       name: 'تیم تحلیل داده شاپیک',
@@ -595,7 +563,6 @@ export const BLOG_POSTS: BlogPost[] = [
     metaTitle: 'تقویم فروش فصلی: در هر ماه ایران چه چیزی می‌فروشد؟ | شاپیک',
     metaDescription: 'با تقویم فروش فصلی ایران بدانید در هر ماه چه چیزی می‌فروشد؛ انبار را برای شب عید و یلدا آماده کنید و در رکود محرم و صفر، هزینه تبلیغات را هوشمندانه مدیریت کنید.',
     excerpt: 'انبار پر از جنس اشتباه در ماه اشتباه، نتیجه برنامه‌ریزی بدون تقویم فروش است. در این مقاله می‌آموزید هر فصل ایران چه می‌فروشد و چطور برای آن آماده شوید.',
-    category: 'تحلیل فروش',
     categorySlug: 'sales-analytics',
     author: {
       name: 'تیم تحلیل داده شاپیک',
@@ -692,7 +659,6 @@ export const BLOG_POSTS: BlogPost[] = [
     metaTitle: 'مشتری خاموش را برگردانید: کمپین ۳ مرحله‌ای پیامکی و دایرکت | شاپیک',
     metaDescription: 'مشتری خاموش را با کمپین ۳ مرحله‌ای پیامکی و دایرکت برگردانید: از فهرست مشتریان شاپیک تا متن آماده پیام احوال‌پرسی، پیشنهاد برگشت محدود و یادآوری نهایی.',
     excerpt: 'جذب مشتری جدید تا پنج برابر بازگرداندن مشتری قدیمی هزینه دارد؛ اما فهرست خریداران خاموش شما در گوشی خاک می‌خورد. با کمپین ۳ مرحله‌ای پیامکی و دایرکت، آن را زنده کنید.',
-    category: 'مدیریت مشتریان',
     categorySlug: 'customer-retention',
     author: {
       name: 'تیم تحلیل داده شاپیک',
@@ -783,8 +749,7 @@ export const BLOG_POSTS: BlogPost[] = [
     metaTitle: 'اکسل فروش را تمیز کنید: ۷ خطایی که نمودارها را خراب می‌کند | شاپیک',
     metaDescription: 'پیش‌نیاز تحلیل فروش، فایل اکسل تمیز است؛ با شناسایی فاکتور تکراری، یکدست‌کردن تاریخ شمسی و اصلاح مبلغ متنی، داده‌ها را برای نمودار و پیش‌بینی آماده کنید.',
     excerpt: 'فایل فروش را آپلود می‌کنید اما اعداد نمی‌خوانند؛ چون تاریخ‌ها قاطی‌اند، کد فاکتورها تکراری‌اند و مبلغ‌ها به‌صورت متن ذخیره شده‌اند. این هفت خطا را پیش از تحلیل برطرف کنید.',
-    category: 'ابزارهای هوشمند',
-    categorySlug: 'smart-tools',
+    categorySlug: 'sales-analytics',
     author: {
       name: 'تیم تحلیل داده شاپیک',
       role: 'متخصصان آمار و فروش کسب‌وکارهای خرد',
@@ -893,7 +858,6 @@ export const BLOG_POSTS: BlogPost[] = [
     metaTitle: 'پیش‌بینی فروش بدون فرمول پیچیده: میانگین متحرک ۷ و ۳۰ روزه | شاپیک',
     metaDescription: 'با میانگین متحرک ۷ و ۳۰ روزه فروش را بدون فرمول پیچیده پیش‌بینی کنید؛ سفارش انبار را بر اساس تقاضای واقعی تنظیم کنید و خطای کم‌خرید و زیادخرید را کاهش دهید.',
     excerpt: 'کم سفارش می‌دهید و کالا تمام می‌شود؛ زیاد سفارش می‌دهید و پولتان در انبار خواب می‌ماند. با میانگین متحرک ۷ و ۳۰ روزه، سفارش را بر اساس فروش واقعی تنظیم کنید.',
-    category: 'تحلیل فروش',
     categorySlug: 'sales-analytics',
     author: {
       name: 'تیم تحلیل داده شاپیک',
@@ -988,13 +952,28 @@ export const getPostBySlug = (slug: string): BlogPost | undefined => {
   return BLOG_POSTS.find((post) => post.slug === slug);
 };
 
-export const getFeaturedPost = (): BlogPost => {
-  return BLOG_POSTS[0];
+/** Sorts a copy, so the caller's array keeps its original order. */
+export const getPostsByDateDesc = (posts: BlogPost[] = BLOG_POSTS): BlogPost[] => {
+  return [...posts].sort(
+    (a, b) => Date.parse(b.isoPublishedAt) - Date.parse(a.isoPublishedAt)
+  );
+};
+
+/**
+ * Picks the blog hero.
+ *
+ * Flagged posts win, newest first, so the choice stays editorial rather than
+ * depending on array position. With no flag the newest post is used, which
+ * means the hero can never go stale or point at the oldest article.
+ */
+export const getFeaturedPost = (posts: BlogPost[] = BLOG_POSTS): BlogPost | undefined => {
+  const postsByDate = getPostsByDateDesc(posts);
+  return postsByDate.find((post) => post.featured) ?? postsByDate[0];
 };
 
 export const getRelatedPosts = (currentSlug: string, limit = 2): BlogPost[] => {
   const currentPost = getPostBySlug(currentSlug);
-  if (!currentPost) return BLOG_POSTS.slice(0, limit);
+  if (!currentPost) return getPostsByDateDesc().slice(0, limit);
 
   const sameCategory = BLOG_POSTS.filter(
     (post) => post.slug !== currentSlug && post.categorySlug === currentPost.categorySlug
@@ -1009,8 +988,4 @@ export const getRelatedPosts = (currentSlug: string, limit = 2): BlogPost[] => {
   );
 
   return [...sameCategory, ...others].slice(0, limit);
-};
-
-export const getCategories = (): BlogCategory[] => {
-  return BLOG_CATEGORIES;
 };

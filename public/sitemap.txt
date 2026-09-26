@@ -5,13 +5,13 @@ https://shopeekapp.ir/privacy-policy
 https://shopeekapp.ir/plans
 https://shopeekapp.ir/legal
 https://shopeekapp.ir/blog
-https://shopeekapp.ir/blog/sales-analytics-guide-for-iranian-online-shops
-https://shopeekapp.ir/blog/5-common-profit-loss-mistakes-in-smbs
-https://shopeekapp.ir/blog/rfm-analysis-and-customer-retention-for-smbs
-https://shopeekapp.ir/blog/quick-sales-recording-telegram-bot-guide
-https://shopeekapp.ir/blog/breakeven-point-monthly-sales-smbs
-https://shopeekapp.ir/blog/inflation-proof-pricing-formula-iran
-https://shopeekapp.ir/blog/seasonal-sales-calendar-iranian-shops
-https://shopeekapp.ir/blog/winback-inactive-customers-sms-direct
-https://shopeekapp.ir/blog/excel-sales-file-cleanup-before-analysis
-https://shopeekapp.ir/blog/simple-sales-forecast-moving-average
+https://shopeekapp.ir/blog/sales-analytics-guide-for-iranian-online-shops 2026-08-09T08:00:00+03:30
+https://shopeekapp.ir/blog/5-common-profit-loss-mistakes-in-smbs 2026-08-15T09:30:00+03:30
+https://shopeekapp.ir/blog/rfm-analysis-and-customer-retention-for-smbs 2026-08-24T11:00:00+03:30
+https://shopeekapp.ir/blog/quick-sales-recording-telegram-bot-guide 2026-08-31T14:20:00+03:30
+https://shopeekapp.ir/blog/breakeven-point-monthly-sales-smbs 2026-09-07T09:00:00+03:30
+https://shopeekapp.ir/blog/inflation-proof-pricing-formula-iran 2026-09-14T10:00:00+03:30
+https://shopeekapp.ir/blog/seasonal-sales-calendar-iranian-shops 2026-09-15T09:30:00+03:30
+https://shopeekapp.ir/blog/winback-inactive-customers-sms-direct 2026-09-16T11:00:00+03:30
+https://shopeekapp.ir/blog/excel-sales-file-cleanup-before-analysis 2026-09-17T10:00:00+03:30
+https://shopeekapp.ir/blog/simple-sales-forecast-moving-average 2026-09-17T16:00:00+03:30

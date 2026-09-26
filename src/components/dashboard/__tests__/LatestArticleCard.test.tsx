@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { LatestArticleCard } from '../LatestArticleCard';
 import type { BlogPost } from '../../../data/blog/types';
+import { getCategoryName } from '../../../data/blog/categories';
 import { toPersianDigits } from '../../../utils/persian';
 
 const mockState = vi.hoisted(() => ({ posts: [] as BlogPost[] }));
@@ -39,7 +40,7 @@ describe('[component] LatestArticleCard', () => {
     expect(screen.getByRole('heading', { name: 'آخرین مقاله وبلاگ' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: newest.title })).toBeInTheDocument();
     expect(screen.getByText(newest.excerpt)).toBeInTheDocument();
-    expect(screen.getByText(newest.category)).toBeInTheDocument();
+    expect(screen.getByText(getCategoryName(newest.categorySlug))).toBeInTheDocument();
     expect(screen.getByText(newest.author.name)).toBeInTheDocument();
     expect(screen.getByText(`${toPersianDigits(newest.readingTimeMinutes)} دقیقه مطالعه`)).toBeInTheDocument();
 

@@ -19,6 +19,7 @@ import { PublicHeader } from '../components/layout/PublicHeader';
 import { MainFooter } from '../components/layout/MainFooter';
 import { BlogSEO } from '../components/common/BlogSEO';
 import { getPostBySlug, getRelatedPosts } from '../data/blog/posts';
+import { getCategoryName } from '../data/blog/categories';
 import { toPersianDigits } from '../utils/persian';
 
 export const BlogPostPage: React.FC = () => {
@@ -79,7 +80,7 @@ export const BlogPostPage: React.FC = () => {
         <header className="space-y-4 border-b border-slate-200 pb-6 sm:pb-8">
           <div className="flex flex-wrap items-center gap-2.5">
             <span className="px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-xs font-bold">
-              {post.category}
+              {getCategoryName(post.categorySlug)}
             </span>
           </div>
 
@@ -337,7 +338,7 @@ export const BlogPostPage: React.FC = () => {
                 >
                   <div className="space-y-2">
                     <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 text-slate-600 text-[11px] font-bold">
-                      {rPost.category}
+                      {getCategoryName(rPost.categorySlug)}
                     </span>
                     <Link to={`/blog/${rPost.slug}`} className="block">
                       <h3 className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-brand-600 transition-colors line-clamp-2 leading-snug">

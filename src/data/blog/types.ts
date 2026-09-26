@@ -37,12 +37,13 @@ export interface BlogPost {
   metaTitle: string;
   metaDescription: string;
   excerpt: string;
-  category: string;
   categorySlug: string;
   author: BlogAuthor;
   publishedAt: string;
   isoPublishedAt: string;
   readingTimeMinutes: number;
+  /** Pins the post to the blog hero slot; see `getFeaturedPost`. */
+  featured?: boolean;
   featuredImage: string;
   imageAlt: string;
   keywords: string[];

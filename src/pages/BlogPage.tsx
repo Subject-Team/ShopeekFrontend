@@ -4,15 +4,24 @@ import { Search, Clock, Calendar, ArrowLeft, BookOpen, Star, Filter, X } from 'l
 import { PublicHeader } from '../components/layout/PublicHeader';
 import { MainFooter } from '../components/layout/MainFooter';
 import { BlogSEO } from '../components/common/BlogSEO';
-import { BLOG_POSTS, BLOG_CATEGORIES } from '../data/blog/posts';
+import { getFeaturedPost, getPostsByDateDesc } from '../data/blog/posts';
+import { BLOG_CATEGORIES, getCategoryName } from '../data/blog/categories';
 import { toPersianDigits } from '../utils/persian';
 
 export const BlogPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
+  const postsByDate = useMemo(() => getPostsByDateDesc(), []);
+  const featuredPost = useMemo(() => getFeaturedPost(), []);
+  const isHeroVisible = !searchQuery && selectedCategory === 'all';
+
   const filteredPosts = useMemo(() => {
-    return BLOG_POSTS.filter((post) => {
+    const candidates = isHeroVisible
+      ? postsByDate.filter((post) => post.slug !== featuredPost?.slug)
+      : postsByDate;
+
+    return candidates.filter((post) => {
       const matchesCategory =
         selectedCategory === 'all' || post.categorySlug === selectedCategory;
 
@@ -24,9 +33,7 @@ export const BlogPage: React.FC = () => {
 
       return matchesCategory && matchesSearch;
     });
-  }, [selectedCategory, searchQuery]);
-
-  const featuredPost = BLOG_POSTS[0];
+  }, [postsByDate, featuredPost, isHeroVisible, selectedCategory, searchQuery]);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-vazir dir-rtl selection:bg-brand-500 selection:text-white">
@@ -112,7 +119,7 @@ export const BlogPage: React.FC = () => {
         </section>
 
         {/* Featured Post Banner (Visible when no specific search is active) */}
-        {!searchQuery && selectedCategory === 'all' && featuredPost && (
+        {isHeroVisible && featuredPost && (
           <section className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden border border-slate-800">
             <div className="absolute -top-24 -start-24 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -122,7 +129,7 @@ export const BlogPage: React.FC = () => {
                     <Star className="w-3.5 h-3.5 text-brand-400" />
                     <span>مقاله ویژه و منتخب</span>
                   </span>
-                  <span className="text-slate-400">{featuredPost.category}</span>
+                  <span className="text-slate-400">{getCategoryName(featuredPost.categorySlug)}</span>
                 </div>
 
                 <Link
@@ -184,7 +191,7 @@ export const BlogPage: React.FC = () => {
               {searchQuery ? `نتایج جستجو (${toPersianDigits(filteredPosts.length)} مقاله)` : 'آخرین مقالات و یادداشت‌ها'}
             </h2>
             <span className="text-xs text-slate-500">
-              نمایش {toPersianDigits(filteredPosts.length)} از {toPersianDigits(BLOG_POSTS.length)} مطلب
+              نمایش {toPersianDigits(filteredPosts.length)} از {toPersianDigits(postsByDate.length)} مطلب
             </span>
           </div>
 
@@ -222,7 +229,7 @@ export const BlogPage: React.FC = () => {
                       loading="lazy"
                     />
                     <span className="absolute top-3 start-3 px-2.5 py-1 rounded-lg bg-slate-900/80 backdrop-blur-xs text-white text-[11px] font-bold">
-                      {post.category}
+                      {getCategoryName(post.categorySlug)}
                     </span>
                   </Link>
 
