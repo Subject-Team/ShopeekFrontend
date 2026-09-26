@@ -26,12 +26,13 @@
  *
  * WHY A KNOWN-VIEWBOX TABLE
  * `ARTWORK_VIEWBOX` maps a source `viewBox` to the sub-rectangle of it holding
- * real artwork. The house card is authored on 800x450. One card
- * (sales-analytics-guide.svg) is an Illustrator export authored on a square
- * 595.3 canvas with ~108 units of dead space above and below the design, so
- * its artwork band is listed explicitly. Any source viewBox missing from the
- * table throws, so a re-authored card fails loudly here instead of quietly
- * producing a letterboxed or half-empty OG image.
+ * real artwork. The house card is authored on 800x450 with a `0 0` origin. One
+ * card (sales-analytics-guide.svg) is an Illustrator export that keeps its
+ * original 595.3-unit coordinate space rather than being rescaled to 800x450,
+ * so its viewBox origin sits at y=130.2 and the mapping is the identity. Any
+ * source viewBox missing from the table throws, so a re-authored card fails
+ * loudly here instead of quietly producing a letterboxed or half-empty OG
+ * image.
  *
  * ── SYNC POINTS (update BOTH sides when editing) ──────────────────────────
  *  - Output path: the `ogImage` value of each post in
@@ -65,7 +66,7 @@ const CARD_BG = '#f7faf9';
 // source viewBox -> artwork sub-rectangle ("minX minY width height").
 const ARTWORK_VIEWBOX = new Map([
   ['0 0 800 450', '0 0 800 450'],
-  ['0 0 595.3 595.3', '0 107.6 595.3 363.6'],
+  ['0 130.2 595.3 334.8', '0 130.2 595.3 334.8'],
 ]);
 
 // ── Helpers ───────────────────────────────────────────────────────────────
