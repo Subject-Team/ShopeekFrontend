@@ -198,7 +198,7 @@ export const LandingPage: React.FC = () => {
             </div>
             <h3 className="text-lg font-bold text-slate-900">مدیریت ارتباط با مشتریان (CRM)</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              دسته‌بندی مشتریان، مشاهده تاریخچه خرید، ثبت یادداشت‌های تعاملی و سنجش وفاداری خریداران.
+              مشاهده تاریخچه خرید، ارزش طول عمر (LTV) و تعداد تراکنش هر مشتری، به‌همراه ثبت یادداشت و گزارش تماس.
             </p>
           </div>
 

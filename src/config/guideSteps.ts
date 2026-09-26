@@ -178,7 +178,7 @@ export const GUIDE_CONFIGS: Record<string, PageGuideConfig> = {
         id: 'customers-row-action',
         targetSelector: '[data-guide="customers-row-action"], [data-guide="customers-list"]',
         title: 'پرونده مشتری و ثبت تعاملات',
-        description: 'با کلیک روی هر مشتری، پنجره پرونده کامل شامل تاریخچه خرید، ثبت یادداشت، تماس و ارسال ایمیل باز می‌شود.',
+        description: 'با کلیک روی هر مشتری، پنجره پرونده کامل شامل تاریخچه خرید، ثبت یادداشت و گزارش تماس یا ایمیل باز می‌شود.',
         tips: ['ثبت پیگیری‌های تلفنی و یادداشت‌ها به افزایش نرخ بازگشت خریداران کمک می‌کند.'],
         placement: 'top',
       },
