@@ -10,7 +10,7 @@
  * Converts every ASCII (Latin) digit in a string or number to Persian digits (۰-۹),
  * leaving all other characters untouched.
  *
- * - Returns `''` for `null`/`undefined` and for empty input.
+ * - Returns `''` for `null`/`undefined`/`NaN` and for empty input.
  * - Safe for embedded digits: slash-separated Jalali dates (`1405/06/09` →
  *   `۱۴۰۵/۰۶/۰۹`), prose (`دوره 30 روزه` → `دوره ۳۰ روزه`), and plain numbers.
  * - Preserves leading zeros (e.g. phone numbers like `۰۹۱۲...`).
@@ -19,6 +19,7 @@
  */
 export const toPersianDigits = (input: string | number | null | undefined): string => {
   if (input === null || input === undefined) return '';
+  if (typeof input === 'number' && isNaN(input)) return '';
 
   const str = String(input);
   if (str.length === 0) return str;
@@ -95,11 +96,12 @@ export const formatTomaan = (realValue: number): string => {
  * thousand-grouped string of Persian digits via `Intl.NumberFormat('fa-IR')`.
  *
  * Examples: `1234567` → `۱٬۲۳۴٬۵۶۷`, `'1,234,567'` → `۱٬۲۳۴٬۵۶۷`.
- * Non-numeric input is returned unchanged; `null`/`undefined` return `''`.
+ * Non-numeric input is returned unchanged; `null`/`undefined`/`NaN` return `''`.
  * Use this for monetary and other large numeric values that need grouping.
  */
 export const toGroupedPersianDigits = (input: number | string): string => {
   if (input === null || input === undefined) return '';
+  if (typeof input === 'number' && isNaN(input)) return '';
 
   const str = String(input);
 

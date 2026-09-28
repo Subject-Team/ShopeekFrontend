@@ -71,6 +71,22 @@ describe('[component] CRM Components', () => {
     expect(onAdd).not.toHaveBeenCalled();
   });
 
+  it('CustomerList falls back to 0 invoices when transactions_count is missing', () => {
+    const onSelect = vi.fn();
+    const onAdd = vi.fn();
+    const [withoutCount] = mockCustomers as any[];
+
+    render(
+      <CustomerList
+        customers={[{ ...withoutCount, transactions_count: undefined }] as any}
+        onSelectCustomer={onSelect}
+        onAddCustomerClick={onAdd}
+      />
+    );
+
+    expect(screen.getAllByText('۰ فاکتور').length).toBeGreaterThan(0);
+  });
+
   it('renders CreateCustomerModal and handles submission', async () => {
     (api.createCustomer as any).mockResolvedValue({ id: 'c-2', name: 'رضا' });
     const onClose = vi.fn();

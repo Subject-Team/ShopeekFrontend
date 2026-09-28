@@ -32,6 +32,33 @@ describe('[component] Dashboard Components', () => {
     expect(screen.getByText('۱۲,۰۰۰,۰۰۰ تومان')).toBeInTheDocument();
   });
 
+  it('renders a signed 0% for a null change percentage instead of a bare %', () => {
+    render(
+      <KpiCard
+        title="درآمد کل"
+        value="۰ تومان"
+        changePercentage={null}
+        icon={DollarSign}
+      />
+    );
+
+    expect(screen.getByText('۰%')).toBeInTheDocument();
+    expect(screen.queryByText('%')).not.toBeInTheDocument();
+  });
+
+  it('keeps the explicit plus sign for a real zero change', () => {
+    render(
+      <KpiCard
+        title="درآمد کل"
+        value="۱۰ تومان"
+        changePercentage={0}
+        icon={DollarSign}
+      />
+    );
+
+    expect(screen.getByText('۰%+')).toBeInTheDocument();
+  });
+
   it('renders AdvisoryCard with recommendation, handles refresh and opens history modal', async () => {
     (api.triggerManualAdvisory as any).mockResolvedValue({
       advisory: { success: true, message: 'توصیه جدید تولید شد' },

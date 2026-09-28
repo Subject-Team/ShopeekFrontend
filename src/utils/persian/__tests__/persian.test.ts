@@ -16,6 +16,10 @@ describe('[unit] utils/persian formatting functions', () => {
       expect(toPersianDigits(undefined)).toBe('');
     });
 
+    it('returns empty string for NaN instead of leaking "NaN"', () => {
+      expect(toPersianDigits(NaN)).toBe('');
+    });
+
     it('converts numbers to Persian digits without separators', () => {
       expect(toPersianDigits(123456)).toBe('۱۲۳۴۵۶');
     });
@@ -45,6 +49,10 @@ describe('[unit] utils/persian formatting functions', () => {
     it('returns empty string for null or undefined', () => {
       expect(toGroupedPersianDigits(null as any)).toBe('');
       expect(toGroupedPersianDigits(undefined as any)).toBe('');
+    });
+
+    it('returns empty string for NaN instead of leaking "NaN"', () => {
+      expect(toGroupedPersianDigits(NaN)).toBe('');
     });
 
     it('groups thousands with Persian digits', () => {

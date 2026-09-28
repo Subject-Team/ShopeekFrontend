@@ -51,6 +51,24 @@ describe('[component] RevenueChart Component', () => {
     unmount2();
   });
 
+  it('renders a friendly empty state instead of a bare axis for an empty data array', () => {
+    const { container } = render(<RevenueChart data={[]} />);
+
+    expect(screen.getByText('فروشی برای این بازه ثبت نشده است')).toBeInTheDocument();
+    expect(
+      screen.getByText(/اولین فاکتور خود را ثبت کنید تا نمودار فروش روزانه به صورت خودکار ساخته شود/)
+    ).toBeInTheDocument();
+    expect(container.querySelector('.recharts-surface')).toBeNull();
+    expect(screen.queryByText('واقعی')).not.toBeInTheDocument();
+  });
+
+  it('renders the chart surface when data is present', () => {
+    const { container } = render(<RevenueChart data={DATA} />);
+
+    expect(container.querySelector('.recharts-surface')).not.toBeNull();
+    expect(screen.queryByText('فروشی برای این بازه ثبت نشده است')).not.toBeInTheDocument();
+  });
+
   it('renders the chart surface with axes and areas when the container has size', () => {
     const { container, unmount } = render(<RevenueChart data={DATA} />);
     expect(container.querySelector('.recharts-surface')).not.toBeNull();

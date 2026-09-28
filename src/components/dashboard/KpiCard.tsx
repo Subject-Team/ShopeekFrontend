@@ -5,7 +5,7 @@ import { toPersianDigits, toGroupedPersianDigits } from "../../utils/persian";
 interface KpiCardProps {
   title: string;
   value: string | number;
-  changePercentage?: number;
+  changePercentage?: number | null;
   subtitle?: string;
   icon: LucideIcon;
   color?: 'emerald' | 'indigo' | 'amber' | 'cyan';
@@ -24,6 +24,9 @@ export const KpiCard: React.FC<KpiCardProps> = ({
   forecastLabel
 }) => {
   const isPositive = (changePercentage ?? 0) >= 0;
+  const hasChange = changePercentage !== undefined;
+  const sign = changePercentage == null ? '' : isPositive ? '+' : '';
+  const changeLabel = `${toPersianDigits(changePercentage ?? 0)}%${sign}`;
 
   const colorStyles = {
     emerald: 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/50',
@@ -61,11 +64,11 @@ export const KpiCard: React.FC<KpiCardProps> = ({
         </div>
       )}
 
-      {changePercentage !== undefined && (
+      {hasChange && (
         <div className="flex items-center justify-between text-xs pt-3 border-t border-slate-100 dark:border-slate-800/80">
           <div className={`flex items-center gap-1 font-bold ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
             {isPositive ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
-            <span>{toPersianDigits(changePercentage)}%{isPositive ? '+' : ''}</span>
+            <span>{changeLabel}</span>
           </div>
           <span className="text-slate-400 dark:text-slate-500">{subtitle || 'نسبت به دوره قبل'}</span>
         </div>

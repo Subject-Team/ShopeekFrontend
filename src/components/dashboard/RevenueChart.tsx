@@ -9,6 +9,7 @@ import {
   CartesianGrid
 } from 'recharts';
 import { RevenuePoint } from '../../types';
+import { LineChart } from 'lucide-react';
 import { shortTomaanWithUnit } from "../../utils/persian";
 import { toPersianDate } from "../../utils/persian/date";
 import { toGroupedPersianDigits } from "../../utils/persian";
@@ -28,6 +29,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
 
   const [formattedData, setFormattedData] = useState<RevenuePoint[]>([]);
   const isMobile = useIsMobile(640);
+  const hasData = data.length > 0;
 
   useEffect(() => {
     const translated = data.map(item => ({
@@ -90,94 +92,110 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
               : 'داده‌های واقعی به همراه خط‌چین پیش‌بینی هوشمند برای روز آینده'}
           </p>
         </div>
-        <div className="flex items-center gap-3 text-[10px] sm:text-xs font-semibold">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-brand-500" />
-            <span className="text-slate-600 dark:text-slate-400">واقعی</span>
-          </div>
-          {!hideForecast && (
+        {hasData && (
+          <div className="flex items-center gap-3 text-[10px] sm:text-xs font-semibold">
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-accent-500" />
-              <span className="text-slate-600 dark:text-slate-400">پیش‌بینی</span>
+              <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-brand-500" />
+              <span className="text-slate-600 dark:text-slate-400">واقعی</span>
             </div>
-          )}
-        </div>
+            {!hideForecast && (
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-accent-500" />
+                <span className="text-slate-600 dark:text-slate-400">پیش‌بینی</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
 
-      <div className="h-64 sm:h-72 w-full pt-1">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={formattedData} margin={{ top: 5, right: isMobile ? 0 : 10, left: isMobile ? -15 : -20, bottom: 0 }}>
-            <defs>
-              <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#00a388" stopOpacity={0.4}/>
-                <stop offset="95%" stopColor="#00a388" stopOpacity={0.0}/>
-              </linearGradient>
-              <linearGradient id="colorForecast" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#2579ef" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#2579ef" stopOpacity={0.0}/>
-              </linearGradient>
-            </defs>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="#e2e8f0"
-              opacity={0.5}
-              vertical={false}
-              horizontal={true}
-            />
-            <XAxis
-              dataKey="date"
-              tick={{
-                fontSize: isMobile ? 9 : 11,
-                fill: '#94a3b8'
-              }}
-              tickLine={false}
-              axisLine={{ stroke: '#cbd5e1' }}
-              tickFormatter={xAxisTickFormatter}
-              interval={isMobile ? 2 : 0}
-              minTickGap={isMobile ? 15 : 5}
-            />
-            <YAxis
-              tick={{
-                fontSize: isMobile ? 9 : 11,
-                fill: '#94a3b8',
-                textAnchor: 'start',
-                direction: 'rtl'
-              }}
-              tickFormatter={shortTomaanWithUnit}
-              tickLine={false}
-              axisLine={{ stroke: '#cbd5e1' }}
-              tickMargin={3}
-              tickCount={isMobile ? 4 : 6}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            {!hideForecast && (
+      {hasData ? (
+        <div className="h-64 sm:h-72 w-full pt-1">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={formattedData} margin={{ top: 5, right: isMobile ? 0 : 10, left: isMobile ? -15 : -20, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#00a388" stopOpacity={0.4}/>
+                  <stop offset="95%" stopColor="#00a388" stopOpacity={0.0}/>
+                </linearGradient>
+                <linearGradient id="colorForecast" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#2579ef" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#2579ef" stopOpacity={0.0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="#e2e8f0"
+                opacity={0.5}
+                vertical={false}
+                horizontal={true}
+              />
+              <XAxis
+                dataKey="date"
+                tick={{
+                  fontSize: isMobile ? 9 : 11,
+                  fill: '#94a3b8'
+                }}
+                tickLine={false}
+                axisLine={{ stroke: '#cbd5e1' }}
+                tickFormatter={xAxisTickFormatter}
+                interval={isMobile ? 2 : 0}
+                minTickGap={isMobile ? 15 : 5}
+              />
+              <YAxis
+                tick={{
+                  fontSize: isMobile ? 9 : 11,
+                  fill: '#94a3b8',
+                  textAnchor: 'start',
+                  direction: 'rtl'
+                }}
+                tickFormatter={shortTomaanWithUnit}
+                tickLine={false}
+                axisLine={{ stroke: '#cbd5e1' }}
+                tickMargin={3}
+                tickCount={isMobile ? 4 : 6}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              {!hideForecast && (
+                <Area
+                  type="monotone"
+                  dataKey="forecast_revenue"
+                  name="پیش‌بینی AI"
+                  stroke="#2579ef"
+                  strokeWidth={3}
+                  strokeDasharray="5 5"
+                  fillOpacity={1}
+                  fill="url(#colorForecast)"
+                  connectNulls={false}
+                />
+              )}
               <Area
+  
                 type="monotone"
-                dataKey="forecast_revenue"
-                name="پیش‌بینی AI"
-                stroke="#2579ef"
+                dataKey="revenue"
+                name="فروش واقعی"
+                stroke="#00a388"
                 strokeWidth={3}
-                strokeDasharray="5 5"
                 fillOpacity={1}
-                fill="url(#colorForecast)"
+                fill="url(#colorRevenue)"
                 connectNulls={false}
               />
-            )}
-            <Area
-
-              type="monotone"
-              dataKey="revenue"
-              name="فروش واقعی"
-              stroke="#00a388"
-              strokeWidth={3}
-              fillOpacity={1}
-              fill="url(#colorRevenue)"
-              connectNulls={false}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="h-64 sm:h-72 w-full flex flex-col items-center justify-center gap-2 text-center">
+          <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+            <LineChart className="w-6 h-6 text-slate-400" />
+          </div>
+          <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
+            فروشی برای این بازه ثبت نشده است
+          </p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-xs leading-relaxed">
+            اولین فاکتور خود را ثبت کنید تا نمودار فروش روزانه به صورت خودکار ساخته شود.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

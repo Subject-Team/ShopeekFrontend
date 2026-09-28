@@ -220,7 +220,7 @@ export const DashboardPage: React.FC = () => {
         />
         <KpiCard
           title="میانگین ارزش فاکتور (AOV)"
-          value={kpi ? toGroupedPersianDigits(kpi.average_order_value.toFixed(0)) : '۰'}
+          value={kpi ? toGroupedPersianDigits((kpi.average_order_value ?? 0).toFixed(0)) : '۰'}
           changePercentage={kpi?.aov_change_percentage}
           subtitle="تومان"
           icon={ReceiptText}
