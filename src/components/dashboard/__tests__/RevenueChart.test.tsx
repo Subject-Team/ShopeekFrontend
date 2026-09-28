@@ -85,4 +85,42 @@ describe('[component] RevenueChart Component', () => {
     expect(container.querySelectorAll('.recharts-area').length).toBe(1);
     unmount();
   });
+
+  it('keeps the real line painted above the forecast line across default/archive/default switches', () => {
+    // Default range (contains today): history carries forecast values equal
+    // to revenue plus one future forecast-only point.
+    const DEFAULT_DATA: RevenuePoint[] = [
+      { date: '2026-08-01', revenue: 1500000, forecast_revenue: 1500000 },
+      { date: '2026-08-02', revenue: 2300000, forecast_revenue: 2300000 },
+      { date: '2026-08-03', revenue: null, forecast_revenue: 2600000 },
+    ] as unknown as RevenuePoint[];
+    // Archive range (all in the past): no forecast fields at all.
+    const ARCHIVE_DATA: RevenuePoint[] = [
+      { date: '2026-07-01', revenue: 900000 },
+      { date: '2026-07-02', revenue: 1100000 },
+    ] as unknown as RevenuePoint[];
+
+    // SVG paints in document order, so the forecast area must come first
+    // for the real line to stay on top of it.
+    const areaStrokes = (container: HTMLElement) =>
+      Array.from(container.querySelectorAll('.recharts-area')).map(
+        (g) => g.querySelector('path.recharts-area-curve')?.getAttribute('stroke')
+      );
+
+    // 1. Default range: both areas, forecast underneath the real line.
+    const { container, rerender } = render(<RevenueChart data={DEFAULT_DATA} />);
+    expect(areaStrokes(container)).toEqual(['#2579ef', '#00a388']);
+    expect(screen.getByText('پیش‌بینی')).toBeInTheDocument();
+
+    // 2. Archive range: forecast area and legend entry disappear entirely.
+    rerender(<RevenueChart data={ARCHIVE_DATA} hideForecast />);
+    expect(container.querySelectorAll('.recharts-area').length).toBe(1);
+    expect(areaStrokes(container)).toEqual(['#00a388']);
+    expect(screen.queryByText('پیش‌بینی')).not.toBeInTheDocument();
+
+    // 3. Back to default: forecast returns, still underneath the real line.
+    rerender(<RevenueChart data={DEFAULT_DATA} />);
+    expect(areaStrokes(container)).toEqual(['#2579ef', '#00a388']);
+    expect(screen.getByText('پیش‌بینی')).toBeInTheDocument();
+  });
 });

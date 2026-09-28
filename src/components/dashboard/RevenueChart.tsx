@@ -112,7 +112,12 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
       {hasData ? (
         <div className="h-64 sm:h-72 w-full pt-1">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={formattedData} margin={{ top: 5, right: isMobile ? 0 : 10, left: isMobile ? -15 : -20, bottom: 0 }}>
+            {/* Keyed by range kind: toggling the forecast Area unmounts it,
+                and a remounted Area paints on top of the real line. A fresh
+                chart mount restores the declared forecast-under-revenue order. */}
+            <AreaChart
+              key={hideForecast ? 'archive' : 'live'}
+              data={formattedData} margin={{ top: 5, right: isMobile ? 0 : 10, left: isMobile ? -15 : -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#00a388" stopOpacity={0.4}/>
@@ -156,6 +161,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
                 tickCount={isMobile ? 4 : 6}
               />
               <Tooltip content={<CustomTooltip />} />
+              {/* The forecast Area must paint underneath the real line. */}
               {!hideForecast && (
                 <Area
                   type="monotone"
