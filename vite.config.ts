@@ -15,89 +15,74 @@ export default defineConfig({
     }
   },
   build: {
-    rollupOptions: {
+    // Vite 8 bundles with Rolldown, so the bundler options are `rolldownOptions`
+    // (`rollupOptions` is a deprecated alias) and chunking is expressed through
+    // `output.codeSplitting`. Both older spellings are ignored when it is set:
+    //   - `output.manualChunks`  — deprecated (object form not even supported)
+    //   - `output.advancedChunks` — deprecated alias kept for compatibility
+    // Reference: https://rolldown.rs/reference/OutputOptions.codeSplitting
+    rolldownOptions: {
       output: {
-        // Group third-party code by change-frequency + shared ownership so a
-        // dependency bump invalidates only its own chunk (better HTTP caching).
-        // Function form is used (not the object form) because deps must not be
-        // hand-enumerated: transitive deps (d3-*, victory-vendor, micromark,
-        // react-router v7 runtime, ...) are captured by path and the config
-        // self-heals when packages are added/removed.
-        manualChunks(id) {
-          if (!id.includes('node_modules')) return undefined
-
-          // React core (react + react-dom + scheduler) MUST stay in one chunk:
-          // they version in lockstep. Splitting them (e.g. react in vendor,
-          // react-dom folded elsewhere) invalidates two files on every React bump.
-          if (
-            id.includes('node_modules/react/') ||
-            id.includes('node_modules/react-dom/') ||
-            id.includes('node_modules/scheduler/')
-          ) {
-            return 'react'
-          }
-
-          // recharts + its entire dependency family (victory-vendor, d3-*,
-          // decimal.js-light, eventemitter3, internmap). Everything here is
-          // recharts-only, so a recharts upgrade stays isolated from all other
-          // chunks — and this family can move to a lazy-loaded route later.
-          if (
-            id.includes('node_modules/recharts/') ||
-            id.includes('node_modules/victory-vendor/') ||
-            id.includes('node_modules/d3-') ||
-            id.includes('node_modules/decimal.js-light/') ||
-            id.includes('node_modules/eventemitter3/') ||
-            id.includes('node_modules/internmap/')
-          ) {
-            return 'charts'
-          }
-
-          // react-router-dom v7 + its runtime deps, shared by every page.
-          if (
-            id.includes('node_modules/react-router') ||
-            id.includes('node_modules/cookie') ||
-            id.includes('node_modules/set-cookie-parser') ||
-            id.includes('node_modules/tiny-invariant') ||
-            id.includes('node_modules/minimatch')
-          ) {
-            return 'router'
-          }
-
-          // react-markdown + the unified/remark/micromark stack, used only by
-          // the chat drawer. Own chunk keeps it out of the entry and gives it
-          // isolated cache invalidation.
-          if (
-            id.includes('node_modules/react-markdown/') ||
-            id.includes('node_modules/remark-') ||
-            id.includes('node_modules/micromark') ||
-            id.includes('node_modules/mdast-') ||
-            id.includes('node_modules/hast-') ||
-            id.includes('node_modules/unified/') ||
-            id.includes('node_modules/unist-') ||
-            id.includes('node_modules/vfile') ||
-            id.includes('node_modules/zwitch/') ||
-            id.includes('node_modules/trough/') ||
-            id.includes('node_modules/bail/') ||
-            id.includes('node_modules/ccount/') ||
-            id.includes('node_modules/devlop/') ||
-            id.includes('node_modules/extend/') ||
-            id.includes('node_modules/character-') ||
-            id.includes('node_modules/stringify-entities/') ||
-            id.includes('node_modules/parse-entities/') ||
-            id.includes('node_modules/property-information/') ||
-            id.includes('node_modules/space-separated-tokens/') ||
-            id.includes('node_modules/comma-separated-tokens/') ||
-            id.includes('node_modules/decode-named-character-reference/') ||
-            id.includes('node_modules/trim-lines/')
-          ) {
-            return 'markdown'
-          }
-
-          // Catch-all for the remaining third-party code (lucide-react,
-          // @marsidev/react-turnstile, clsx, tailwind-merge, ...).
-          return 'vendor'
-        }
-      }
-    }
-  }
+        // Groups are matched in declaration order unless `priority` says
+        // otherwise, and a module claimed by a higher-priority group is removed
+        // from every lower-priority one. That is why the specific families below
+        // outrank the `vendor` catch-all rather than relying on ordering alone.
+        //
+        // Each group name becomes the chunk filename prefix, so a dependency bump
+        // invalidates only its own chunk and the rest stay in the browser cache.
+        //
+        // Separator discipline in the `test` patterns below: patterns ending in
+        // `[\\/]` list EXACT package names, and the separator is mandatory so
+        // `react` cannot swallow `react-router`. Patterns for family prefixes
+        // (`d3-`, `mdast-`, `remark-`) use `[\\/]?` instead — a mandatory
+        // separator can never match `mdast-util-gfm-table`, which silently drops
+        // those packages into `vendor` and drags them onto the critical path.
+        codeSplitting: {
+          groups: [
+            // React core (react + react-dom + scheduler) versions in lockstep;
+            // splitting them would invalidate two files on every React bump.
+            // Trailing `[\\/]` pins the package boundary — without it `/react/`
+            // style prefixes also swallow `react-dom` and `react-router`.
+            {
+              name: 'react',
+              test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+              priority: 40,
+            },
+            // recharts and its whole dependency family (victory-vendor, d3-*,
+            // decimal.js-light, eventemitter3, internmap). Only DashboardPage
+            // and AnalyticsPage pull this in, so it stays out of the landing
+            // page's module graph.
+            {
+              name: 'charts',
+              test: /node_modules[\\/](recharts|victory-vendor|d3-|decimal\.js-light|eventemitter3|internmap)[\\/]?/,
+              priority: 30,
+            },
+            // react-router v7 plus its runtime deps, needed by every route.
+            {
+              name: 'router',
+              test: /node_modules[\\/](react-router|cookie|set-cookie-parser|tiny-invariant|minimatch)[\\/]/,
+              priority: 30,
+            },
+            // react-markdown + the unified/remark/micromark stack. Only the chat
+            // drawer needs it, and the drawer is mounted on demand, so this
+            // chunk is never part of any initial page load.
+            {
+              name: 'markdown',
+              test: /node_modules[\\/](react-markdown|remark-|micromark|mdast-|hast-|unist-|character-|vfile|unified|zwitch|trough|bail|ccount|devlop|extend|trim-lines|stringify-entities|parse-entities|property-information|space-separated-tokens|comma-separated-tokens|decode-named-character-reference)[\\/]?/,
+              priority: 30,
+            },
+            // Everything else third-party (lucide-react, clsx, tailwind-merge,
+            // @marsidev/react-turnstile, ...). Deliberately last and lowest
+            // priority: it is the fallback bucket, so it must not shadow a
+            // family above.
+            {
+              name: 'vendor',
+              test: /node_modules[\\/]/,
+              priority: 10,
+            },
+          ],
+        },
+      },
+    },
+  },
 })

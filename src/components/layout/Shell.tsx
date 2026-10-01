@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { MinimalFooter } from './MinimalFooter';
-import { ChatDrawer } from '../chat/ChatDrawer';
 import { GuideSpotlight } from '../guide/GuideSpotlight';
 import { RestrictionBanner } from '../dashboard/RestrictionBanner';
 import { useAuth } from '../../context/AuthContext';
+import { usePageContext } from '../../context/PageContext';
 import { fetchBillingOverview } from '../../services/api';
 import type { BillingOverview } from '../../types';
+
+// Mounted only while the drawer is open so the react-markdown/unified stack
+// stays out of the dashboard's initial load.
+const ChatDrawer = lazy(() => import('../chat/ChatDrawer').then((m) => ({ default: m.ChatDrawer })));
 
 interface ShellProps {
   children: React.ReactNode;
@@ -17,6 +21,7 @@ export const Shell: React.FC<ShellProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [billing, setBilling] = useState<BillingOverview | null>(null);
   const { user } = useAuth();
+  const { isChatOpen } = usePageContext();
 
   useEffect(() => {
     let active = true;
@@ -52,7 +57,11 @@ export const Shell: React.FC<ShellProps> = ({ children }) => {
       </div>
 
       {/* Context-Aware AI Chat Assistant Drawer */}
-      <ChatDrawer />
+      {isChatOpen && (
+        <Suspense fallback={null}>
+          <ChatDrawer />
+        </Suspense>
+      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider, useToast } from './context/ToastContext';
@@ -8,23 +8,27 @@ import { BillingContextProvider } from './context/BillingContext';
 import { GuideProvider } from './context/GuideContext';
 import { ScrollToTop } from './components/common/ScrollToTop';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { ContentLoader, FullPageLoader, RouteLoader } from './components/common/AppLoader';
 import { Shell } from './components/layout/Shell';
 import { LandingPage } from './pages/LandingPage';
-import { LegalPage } from './pages/LegalPage';
-import { ContactPage } from './pages/ContactPage';
-import { BlogPage } from './pages/BlogPage';
-import { PlansPage } from './pages/PlansPage';
-import { BlogPostPage } from './pages/BlogPostPage';
-import { LoginPage } from './pages/LoginPage';
-import { DashboardPage } from './pages/DashboardPage';
-import { AnalyticsPage } from './pages/AnalyticsPage';
-import { CustomersPage } from './pages/CustomersPage';
-import { IngestionPage } from './pages/IngestionPage';
-import { InvoicesPage } from './pages/InvoicesPage';
-import { SettingsPage } from './pages/SettingsPage';
-import { SubscriptionPage } from './pages/SubscriptionPage';
 import { NotFoundPage } from './pages/NotFoundPage';
-import { AdminGuard } from './pages/admin/AdminGuard';
+
+// Not lazy on purpose: the landing page is the default entry for new visitors,
+// and the 404 is reused by AdminGuard for non-admin roles.
+const LoginPage = lazy(() => import('./pages/LoginPage').then((m) => ({ default: m.LoginPage })));
+const ContactPage = lazy(() => import('./pages/ContactPage').then((m) => ({ default: m.ContactPage })));
+const PlansPage = lazy(() => import('./pages/PlansPage').then((m) => ({ default: m.PlansPage })));
+const BlogPage = lazy(() => import('./pages/BlogPage').then((m) => ({ default: m.BlogPage })));
+const BlogPostPage = lazy(() => import('./pages/BlogPostPage').then((m) => ({ default: m.BlogPostPage })));
+const LegalPage = lazy(() => import('./pages/LegalPage').then((m) => ({ default: m.LegalPage })));
+const AdminGuard = lazy(() => import('./pages/admin/AdminGuard').then((m) => ({ default: m.AdminGuard })));
+const DashboardPage = lazy(() => import('./pages/DashboardPage').then((m) => ({ default: m.DashboardPage })));
+const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage').then((m) => ({ default: m.AnalyticsPage })));
+const CustomersPage = lazy(() => import('./pages/CustomersPage').then((m) => ({ default: m.CustomersPage })));
+const InvoicesPage = lazy(() => import('./pages/InvoicesPage').then((m) => ({ default: m.InvoicesPage })));
+const IngestionPage = lazy(() => import('./pages/IngestionPage').then((m) => ({ default: m.IngestionPage })));
+const SettingsPage = lazy(() => import('./pages/SettingsPage').then((m) => ({ default: m.SettingsPage })));
+const SubscriptionPage = lazy(() => import('./pages/SubscriptionPage').then((m) => ({ default: m.SubscriptionPage })));
 
 const ProtectedDashboardLayout: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -37,14 +41,7 @@ const ProtectedDashboardLayout: React.FC = () => {
   }, [isLoading, isAuthenticated, showToast]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen w-full bg-slate-900 flex items-center justify-center text-slate-100 font-vazir dir-rtl">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-brand-500/30 border-t-brand-500 rounded-full animate-spin" />
-          <p className="text-sm font-semibold text-slate-300">در حال بارگذاری سامانه شاپیک...</p>
-        </div>
-      </div>
-    );
+    return <FullPageLoader />;
   }
 
   if (!isAuthenticated) {
@@ -53,16 +50,18 @@ const ProtectedDashboardLayout: React.FC = () => {
 
   return (
     <Shell>
-      <Routes>
-        <Route index element={<DashboardPage />} />
-        <Route path="analytics" element={<AnalyticsPage />} />
-        <Route path="customers" element={<CustomersPage />} />
-        <Route path="invoices" element={<InvoicesPage />} />
-        <Route path="ingestion" element={<IngestionPage />} />
-        <Route path="settings" element={<SettingsPage />} />
-        <Route path="subscription" element={<SubscriptionPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+      <Suspense fallback={<ContentLoader />}>
+        <Routes>
+          <Route index element={<DashboardPage />} />
+          <Route path="analytics" element={<AnalyticsPage />} />
+          <Route path="customers" element={<CustomersPage />} />
+          <Route path="invoices" element={<InvoicesPage />} />
+          <Route path="ingestion" element={<IngestionPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="subscription" element={<SubscriptionPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
     </Shell>
   );
 };
@@ -114,7 +113,9 @@ export function App() {
                 <BrowserRouter>
                   <GuideProvider>
                     <ScrollToTop />
-                    <AppRoutes />
+                    <Suspense fallback={<RouteLoader />}>
+                      <AppRoutes />
+                    </Suspense>
                   </GuideProvider>
                 </BrowserRouter>
               </PageContextProvider>
