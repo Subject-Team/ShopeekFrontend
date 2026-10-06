@@ -72,8 +72,16 @@ export interface LoginPageForm {
 }
 
 export const useLoginPage = (): LoginPageForm => {
-  const { sendOtp, verifyOtp, loginWithPhone, registerWithPhone, isLoading, isAuthenticated } =
-    useAuth();
+  const {
+    sendOtp,
+    verifyOtp,
+    loginWithPhone,
+    registerWithPhone,
+    isLoading,
+    isAuthenticated,
+    accounts,
+    switchAccount,
+  } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -169,6 +177,15 @@ export const useLoginPage = (): LoginPageForm => {
       showToast('لطفاً یک شماره موبایل معتبر وارد کنید.', 'warning');
       return;
     }
+    const existingAccount = accounts.find(
+      a => a.user.phone && normalizePhoneNumber(a.user.phone) === cleanPhone
+    );
+    if (existingAccount) {
+      switchAccount(existingAccount.user.id);
+      showToast(`وارد حساب ${existingAccount.user.full_name} شدید.`, 'success');
+      navigate('/dashboard');
+      return;
+    }
     if (!password) {
       showToast('لطفاً کلمه عبور را وارد نمایید.', 'warning');
       return;
@@ -202,6 +219,15 @@ export const useLoginPage = (): LoginPageForm => {
     const cleanPhone = normalizePhoneNumber(phone);
     if (!PHONE_REGEX.test(cleanPhone)) {
       showToast('لطفاً یک شماره موبایل معتبر وارد کنید.', 'warning');
+      return;
+    }
+    const existingAccount = accounts.find(
+      a => a.user.phone && normalizePhoneNumber(a.user.phone) === cleanPhone
+    );
+    if (existingAccount) {
+      switchAccount(existingAccount.user.id);
+      showToast(`وارد حساب ${existingAccount.user.full_name} شدید.`, 'success');
+      navigate('/dashboard');
       return;
     }
     if (!turnstileToken) {
@@ -289,6 +315,15 @@ export const useLoginPage = (): LoginPageForm => {
     const cleanPhone = normalizePhoneNumber(phone);
     if (!PHONE_REGEX.test(cleanPhone)) {
       showToast('لطفاً یک شماره موبایل معتبر وارد کنید.', 'warning');
+      return;
+    }
+    const existingAccount = accounts.find(
+      a => a.user.phone && normalizePhoneNumber(a.user.phone) === cleanPhone
+    );
+    if (existingAccount) {
+      switchAccount(existingAccount.user.id);
+      showToast(`این شماره در دستگاه فعال است. وارد حساب ${existingAccount.user.full_name} شدید.`, 'success');
+      navigate('/dashboard');
       return;
     }
     if (!turnstileToken) {

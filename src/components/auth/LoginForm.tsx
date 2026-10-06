@@ -116,6 +116,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ form }) => {
             submitting={submitting}
             className="mt-2"
             withArrow
+            dataTestId="login-submit-btn"
           >
             <span>ورود به داشبورد</span>
           </SubmitButton>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -15,11 +15,16 @@ import {
   Sun,
   Moon,
   LogOut,
-  User as UserIcon,
+  ArrowLeftRight,
+  UserPlus,
+  Check,
+  X,
+  Trash2,
 } from 'lucide-react';
 import { useGuide } from '../../context/GuideContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
+import { toPersianDigits } from '../../utils/persian';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -29,8 +34,25 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const { startGuide, isGuideOpen } = useGuide();
   const { theme, toggleTheme } = useTheme();
-  const { user, logout } = useAuth();
+  const { user, accounts, switchAccount, removeAccount, logout, logoutAll } = useAuth();
   const location = useLocation();
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState<boolean>(false);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close accounts popover on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (accountMenuRef.current && !accountMenuRef.current.contains(event.target as Node)) {
+        setIsAccountMenuOpen(false);
+      }
+    };
+    if (isAccountMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isAccountMenuOpen]);
 
   const navItems = [
     { path: '/dashboard', label: 'داشبورد اصلی', icon: LayoutDashboard },
@@ -152,14 +174,146 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           </nav>
         </div>
 
-        {/* User Profile, Theme Toggle & Logout Controls */}
-        <div className="p-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+        {/* User Profile, Multi-Account Switcher, Theme Toggle & Logout Controls */}
+        <div className="relative p-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50" ref={accountMenuRef}>
+          {/* Floating Multi-Account Popover Menu */}
+          {isAccountMenuOpen && (
+            <div className="absolute bottom-full mb-2 right-2 left-2 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl p-3 z-50 space-y-3 font-vazir dir-rtl animate-in fade-in zoom-in-95 duration-150">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700/80">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-100">حساب‌های متصل</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-brand-50 dark:bg-brand-950/80 text-brand-600 dark:text-brand-400 font-bold">
+                    {toPersianDigits(accounts.length || (user ? 1 : 0))}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsAccountMenuOpen(false)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition-colors"
+                  aria-label="بستن منو"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {/* Accounts List */}
+              <div className="max-h-52 overflow-y-auto space-y-1.5 pr-0.5">
+                {accounts.map(acc => {
+                  const isActive = acc.user.id === user?.id;
+                  return (
+                    <div
+                      key={acc.user.id}
+                      className={`group flex items-center justify-between gap-2 p-2 rounded-xl transition-all border ${
+                        isActive
+                          ? 'bg-brand-50/70 dark:bg-brand-950/40 border-brand-200/80 dark:border-brand-800/60'
+                          : 'bg-slate-50/80 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-700/50 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!isActive) {
+                            switchAccount(acc.user.id);
+                          }
+                          setIsAccountMenuOpen(false);
+                        }}
+                        className="flex items-center gap-2 min-w-0 flex-1 text-right cursor-pointer"
+                        title={isActive ? 'حساب فعال فعلی' : `تغییر به حساب ${acc.user.full_name}`}
+                      >
+                        <div
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
+                            isActive
+                              ? 'bg-brand-500 text-white'
+                              : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200'
+                          }`}
+                        >
+                          {isActive ? (
+                            <Check className="w-4 h-4" />
+                          ) : (
+                            acc.user.full_name.charAt(0) || 'ک'
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+                              {acc.user.full_name}
+                            </span>
+                            {isActive && (
+                              <span className="text-[9px] px-1 py-0.2 rounded bg-brand-100 dark:bg-brand-900/60 text-brand-700 dark:text-brand-300 font-bold shrink-0">
+                                فعال
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 block truncate">
+                            {acc.user.phone || acc.user.email || ''}
+                          </span>
+                        </div>
+                      </button>
+
+                      {/* Remove Account action */}
+                      <button
+                        type="button"
+                        onClick={e => {
+                          e.stopPropagation();
+                          removeAccount(acc.user.id);
+                          if (acc.user.id === user?.id && accounts.length <= 1) {
+                            setIsAccountMenuOpen(false);
+                          }
+                        }}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 opacity-70 group-hover:opacity-100 transition-all shrink-0"
+                        title="حذف نشست این حساب از دستگاه"
+                        aria-label={`حذف حساب ${acc.user.full_name}`}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-700/80 space-y-1.5">
+                <Link
+                  to="/login"
+                  onClick={() => {
+                    setIsAccountMenuOpen(false);
+                    setIsOpen(false);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all"
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  <span>افزودن حساب کاربری جدید</span>
+                </Link>
+
+                {accounts.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAccountMenuOpen(false);
+                      logoutAll();
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-1.5 px-3 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 text-[11px] font-semibold transition-colors"
+                  >
+                    <LogOut className="w-3 h-3" />
+                    <span>خروج از تمام حساب‌ها</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
           {user ? (
             <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/60 shadow-xs">
               <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <div className="w-8 h-8 rounded-lg bg-brand-500/15 text-brand-600 dark:text-brand-400 flex items-center justify-center font-bold text-xs shrink-0">
-                  <UserIcon className="w-4 h-4" />
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}
+                  className="w-8 h-8 rounded-lg bg-brand-500/15 text-brand-600 dark:text-brand-400 hover:bg-brand-500/25 flex items-center justify-center font-bold text-xs shrink-0 cursor-pointer transition-colors"
+                  title="تغییر یا مدیریت حساب‌های متصل"
+                  aria-label="تغییر یا مدیریت حساب‌ها"
+                >
+                  <ArrowLeftRight className="w-4 h-4" />
+                </button>
                 <div className="min-w-0 flex-1">
                   <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block truncate" title={user.full_name}>
                     {user.full_name}
@@ -213,3 +367,4 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     </>
   );
 };
+

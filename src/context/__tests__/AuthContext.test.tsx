@@ -141,4 +141,66 @@ describe('[component] AuthContext', () => {
     expect(result.current.user).toBeNull();
     errorSpy.mockRestore();
   });
+
+  it('supports multiple logged-in accounts and switching between them', async () => {
+    const userA = { id: 'u-A', email: 'a@shopeek.ir', full_name: 'کاربر الف', role: 'User', is_subscription_active: true };
+    const userB = { id: 'u-B', email: 'b@shopeek.ir', full_name: 'کاربر ب', role: 'User', is_subscription_active: true };
+
+    (api.loginApi as any)
+      .mockResolvedValueOnce({
+        access_token: 'token-A',
+        refresh_token: 'refresh-A',
+        token_type: 'bearer',
+        user: userA,
+      })
+      .mockResolvedValueOnce({
+        access_token: 'token-B',
+        refresh_token: 'refresh-B',
+        token_type: 'bearer',
+        user: userB,
+      });
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+    await act(async () => {});
+
+    // Login user A
+    await act(async () => {
+      await result.current.login('09111111111', 'Password123!');
+    });
+    expect(result.current.user?.id).toBe('u-A');
+    expect(result.current.accounts.length).toBe(1);
+
+    // Login user B
+    await act(async () => {
+      await result.current.login('09222222222', 'Password123!');
+    });
+    expect(result.current.user?.id).toBe('u-B');
+    expect(result.current.accounts.length).toBe(2);
+
+    // Switch back to user A
+    act(() => {
+      result.current.switchAccount('u-A');
+    });
+    expect(result.current.user?.id).toBe('u-A');
+    expect(result.current.token).toBe('token-A');
+    expect(localStorage.getItem('shopeek_token')).toBe('token-A');
+
+    // Remove user A -> should auto-switch to remaining user B
+    act(() => {
+      result.current.removeAccount('u-A');
+    });
+    expect(result.current.user?.id).toBe('u-B');
+    expect(result.current.token).toBe('token-B');
+    expect(result.current.accounts.length).toBe(1);
+
+    // Logout all
+    act(() => {
+      result.current.logoutAll();
+    });
+    expect(result.current.user).toBeNull();
+    expect(result.current.token).toBeNull();
+    expect(result.current.accounts.length).toBe(0);
+    expect(localStorage.getItem('shopeek_accounts')).toBeNull();
+  });
 });
+

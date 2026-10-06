@@ -17,6 +17,14 @@ export interface User {
   restriction_reasons?: string[];
 }
 
+export interface StoredAccount {
+  user: User;
+  token: string;
+  refreshToken?: string | null;
+  webSessionId?: string | null;
+  lastActiveAt: number;
+}
+
 export interface DataImportResult {
   message: string;
   imported_transactions: number;

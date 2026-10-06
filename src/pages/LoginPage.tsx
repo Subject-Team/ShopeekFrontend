@@ -1,23 +1,18 @@
 import React from 'react';
-import { Link, Navigate } from 'react-router-dom';
-import { Sparkle, LogIn, UserPlus, AlertCircle, Home, MessageSquare } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Sparkle, LogIn, UserPlus, AlertCircle, Home, MessageSquare, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { SEO } from '../components/common/SEO';
 import { MinimalFooter } from '../components/layout/MinimalFooter';
+import { useAuth } from '../context/AuthContext';
 import { useLoginPage } from '../hooks/useLoginPage';
 import { LoginForm } from '../components/auth/LoginForm';
 import { RegisterForm } from '../components/auth/RegisterForm';
 
 export const LoginPage: React.FC = () => {
+  const { user } = useAuth();
   const form = useLoginPage();
-  const { mode, setMode, setRegisterStep, setLoginOtpStep, resetLoginFields, errorMessage, isAuthenticated, isLoading } =
+  const { mode, setMode, setRegisterStep, setLoginOtpStep, resetLoginFields, errorMessage } =
     form;
-
-  /* ────────────────────────────────────────────────
-     AUTH GUARD
-  ──────────────────────────────────────────────── */
-  if (isAuthenticated && !isLoading) {
-    return <Navigate to="/dashboard" replace />;
-  }
 
   /* ────────────────────────────────────────────────
      RENDER
@@ -49,7 +44,36 @@ export const LoginPage: React.FC = () => {
       <div className="absolute bottom-10 -left-40 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Main Card Container */}
-      <main className="flex-1 flex items-center justify-center p-4 my-8 z-10">
+      <main className="flex-1 flex flex-col items-center justify-center p-4 my-8 z-10">
+        {/* Active Session Banner */}
+        {user && (
+          <div className="w-full max-w-md bg-gradient-to-r from-brand-50 to-indigo-50/70 border border-brand-200/80 rounded-3xl p-4 shadow-sm space-y-2.5 mb-4 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                <div className="w-9 h-9 rounded-2xl bg-brand-500/15 text-brand-600 flex items-center justify-center font-bold text-xs shrink-0">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11px] text-slate-500 font-medium">نشست فعال در این دستگاه</p>
+                  <span className="text-xs font-bold text-slate-900 block truncate" title={user.full_name}>
+                    {user.full_name}
+                  </span>
+                </div>
+              </div>
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-xs shadow-brand-600/20 transition-all shrink-0"
+              >
+                <span>ورود به داشبورد</span>
+                <ArrowLeft className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+            <p className="text-[11px] text-slate-600 leading-relaxed border-t border-brand-200/60 pt-2">
+              می‌توانید هم‌زمان حساب‌های دیگری نیز به این دستگاه اضافه کنید و بدون نیاز به ورود و خروج مکرر، میان آن‌ها جابجا شوید.
+            </p>
+          </div>
+        )}
+
         <div className="w-full max-w-md bg-white/90 backdrop-blur-xl border border-slate-200/80 rounded-3xl p-6 md:p-8 shadow-xl space-y-6">
           {/* Brand Header */}
           <div className="text-center space-y-2">

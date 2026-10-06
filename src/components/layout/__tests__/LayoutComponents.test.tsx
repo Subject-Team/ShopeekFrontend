@@ -90,6 +90,56 @@ describe('[component] Layout Components', () => {
     expect(screen.getByTitle(/تغییر به حالت/i)).toBeInTheDocument();
   });
 
+  it('opens account switcher popover in Sidebar and lists accounts', async () => {
+    localStorage.setItem('shopeek_token', 'test-token');
+    localStorage.setItem(
+      'shopeek_user',
+      JSON.stringify({ id: 'u-1', email: 'user1@shopeek.ir', full_name: 'کاربر اول', role: 'User' })
+    );
+    const accounts = [
+      {
+        user: { id: 'u-1', email: 'user1@shopeek.ir', full_name: 'کاربر اول', role: 'User' },
+        token: 'test-token',
+        lastActiveAt: Date.now(),
+      },
+      {
+        user: { id: 'u-2', phone: '09120000000', full_name: 'کاربر دوم', role: 'User' },
+        token: 'token-2',
+        lastActiveAt: Date.now() - 5000,
+      },
+    ];
+    localStorage.setItem('shopeek_accounts', JSON.stringify(accounts));
+
+    render(
+      <MemoryRouter initialEntries={['/dashboard']}>
+        <ThemeProvider>
+          <AuthProvider>
+            <GuideProvider>
+              <PageContextProvider>
+                <Sidebar isOpen={true} setIsOpen={vi.fn()} />
+              </PageContextProvider>
+            </GuideProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </MemoryRouter>
+    );
+
+    // Find and click the switch icon button
+    const switchBtn = screen.getByTitle('تغییر یا مدیریت حساب‌های متصل');
+    expect(switchBtn).toBeInTheDocument();
+    fireEvent.click(switchBtn);
+
+    // Popover opens
+    expect(screen.getByText('حساب‌های متصل')).toBeInTheDocument();
+    expect(screen.getAllByText('کاربر اول').length).toBeGreaterThan(0);
+    expect(screen.getByRole('link', { name: /افزودن حساب کاربری جدید/ })).toHaveAttribute('href', '/login');
+    expect(screen.getByText('خروج از تمام حساب‌ها')).toBeInTheDocument();
+
+    // Switch account to second user
+    fireEvent.click(screen.getByTitle('تغییر به حساب کاربر دوم'));
+    expect(localStorage.getItem('shopeek_token')).toBe('token-2');
+  });
+
   it('renders Topbar with subscription plan, remaining credits, date filter, and chat launcher', () => {
     const onMenu = vi.fn();
     render(

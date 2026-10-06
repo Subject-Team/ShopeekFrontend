@@ -100,7 +100,7 @@ describe('[page] LoginPage Comprehensive Tests', () => {
     expect(screen.getByText('تطابق تکرار رمز')).toBeInTheDocument();
   });
 
-  it('redirects an already-authenticated user to the dashboard', async () => {
+  it('displays active session banner without auto-redirecting an already-authenticated user', async () => {
     localStorage.setItem('shopeek_token', 'test-access-token');
     localStorage.setItem(
       'shopeek_user',
@@ -126,10 +126,59 @@ describe('[page] LoginPage Comprehensive Tests', () => {
       </MemoryRouter>
     );
 
+    // Should stay on /login and display the active session banner
+    await waitFor(() => {
+      expect(screen.getByText('نشست فعال در این دستگاه')).toBeInTheDocument();
+      expect(screen.getByText('کاربر فعال')).toBeInTheDocument();
+      expect(screen.getByText(/می‌توانید هم‌زمان حساب‌های دیگری نیز به این دستگاه اضافه کنید/)).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /ورود به داشبورد/ })).toBeInTheDocument();
+    });
+
+    // Clicking the dashboard button navigates to /dashboard
+    fireEvent.click(screen.getByRole('link', { name: /ورود به داشبورد/ }));
     await waitFor(() => {
       expect(screen.getByText('داشبورد کاربر')).toBeInTheDocument();
     });
-    expect(api.fetchMeApi).toHaveBeenCalled();
+  });
+
+  it('fast-switches to existing local session upon phone submit without sending API/SMS requests', async () => {
+    const savedAccount = {
+      user: { id: 'u-saved', phone: '09123456789', email: 'saved@shopeek.ir', full_name: 'کاربر ذخیره شده', role: 'User' },
+      token: 'saved-token',
+      refreshToken: 'saved-refresh',
+      webSessionId: null,
+      lastActiveAt: Date.now() - 1000,
+    };
+    localStorage.setItem('shopeek_accounts', JSON.stringify([savedAccount]));
+
+    render(
+      <MemoryRouter initialEntries={['/login']}>
+        <AuthProvider>
+          <ToastProvider>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/dashboard" element={<div>داشبورد کاربر</div>} />
+            </Routes>
+          </ToastProvider>
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    // Enter matching phone number
+    const phoneInput = screen.getByTestId('otp-phone');
+    fireEvent.change(phoneInput, { target: { value: '09123456789' } });
+
+    // Submit phone-password form
+    const submitBtn = screen.getByTestId('login-submit-btn');
+    fireEvent.click(submitBtn);
+
+    // Should fast-switch to dashboard immediately without calling loginApi or sendOtpApi
+    await waitFor(() => {
+      expect(screen.getByText('داشبورد کاربر')).toBeInTheDocument();
+    });
+    expect(api.loginApi).not.toHaveBeenCalled();
+    expect(api.sendOtpApi).not.toHaveBeenCalled();
+    expect(localStorage.getItem('shopeek_token')).toBe('saved-token');
   });
 
   it('renders the login form for a stale token that gets conclusively rejected', async () => {
