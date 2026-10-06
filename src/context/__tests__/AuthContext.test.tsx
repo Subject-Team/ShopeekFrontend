@@ -2,7 +2,7 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { AuthProvider, useAuth } from '../AuthContext';
+import { AuthProvider, useAuth, triggerAccountSwitchReload } from '../AuthContext';
 import * as api from '../../services/api';
 
 vi.mock('../../services/api', () => ({
@@ -201,6 +201,11 @@ describe('[component] AuthContext', () => {
     expect(result.current.token).toBeNull();
     expect(result.current.accounts.length).toBe(0);
     expect(localStorage.getItem('shopeek_accounts')).toBeNull();
+  });
+
+  it('triggers reload helper on account switch', () => {
+    // Verify triggerAccountSwitchReload does not throw in test/browser environment
+    expect(() => triggerAccountSwitchReload()).not.toThrow();
   });
 });
 

@@ -78,6 +78,19 @@ const readStoredAccounts = (): StoredAccount[] => {
   return [];
 };
 
+export const triggerAccountSwitchReload = () => {
+  if (typeof window === 'undefined') return;
+  try {
+    if (window.location.pathname.startsWith('/login')) {
+      window.location.href = '/dashboard';
+    } else if (typeof window.location.reload === 'function') {
+      window.location.reload();
+    }
+  } catch {
+    // Gracefully ignore unsupported navigation in test environments
+  }
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [accounts, setAccounts] = useState<StoredAccount[]>(() => readStoredAccounts());
   const [user, setUser] = useState<User | null>(() => readStoredUser());
@@ -158,6 +171,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Switch to the most recently active remaining account
           const nextActive = [...remaining].sort((a, b) => b.lastActiveAt - a.lastActiveAt)[0];
           saveAccountsAndActive(remaining, nextActive);
+          triggerAccountSwitchReload();
         } else {
           saveAccountsAndActive([], null);
         }
@@ -193,6 +207,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         a.user.id === userId ? updatedAccount : a
       );
       saveAccountsAndActive(updatedList, updatedAccount);
+      triggerAccountSwitchReload();
     },
     [saveAccountsAndActive]
   );
