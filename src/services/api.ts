@@ -28,7 +28,7 @@ export {
   getSampleCSV,
   type DuplicateStrategy,
 } from './api/ingestion';
-export { sendChatMessage, fetchChatHistory, clearChatHistory } from './api/chat';
+export { sendChatMessage, sendChatMessageStream, fetchChatHistory, clearChatHistory } from './api/chat';
 export { fetchSalesSuggestions, createInvoice } from './api/sales';
 export { fetchInvoices } from './api/invoices';
 export {

@@ -1,6 +1,7 @@
 // @test-type service
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { sendChatMessage, fetchChatHistory, clearChatHistory } from '../api';
+import { ReadableStream as WebReadableStream } from 'node:stream/web';
+import { sendChatMessage, sendChatMessageStream, fetchChatHistory, clearChatHistory } from '../api';
 
 describe('[service] chat API', () => {
   const originalFetch = window.fetch;
@@ -47,5 +48,52 @@ describe('[service] chat API', () => {
   it('clearChatHistory throws on failure', async () => {
     window.fetch = vi.fn().mockResolvedValue(errJson(500, {}));
     await expect(clearChatHistory('sess-1')).rejects.toThrow('خطا در پاک کردن تاریخچه گفتگو');
+  });
+
+  const sseBody = (events: string[]) => {
+    const enc = new TextEncoder();
+    const stream = new WebReadableStream({
+      start(controller) {
+        for (const e of events) controller.enqueue(enc.encode(e));
+        controller.close();
+      }
+    });
+    return stream as unknown as ReadableStream<Uint8Array>;
+  };
+
+  it('sendChatMessageStream emits deltas and resolves the final message', async () => {
+    const finalMsg = {
+      id: 'm9',
+      session_id: 'sess-1',
+      sender: 'ASSISTANT',
+      message_content: 'سلام دنیا',
+      created_at: new Date().toISOString()
+    };
+    window.fetch = vi.fn().mockResolvedValue(new Response(
+      sseBody([
+        `data: ${JSON.stringify({ delta: 'سلام ' })}\n\n`,
+        `data: ${JSON.stringify({ delta: 'دنیا' })}\n\n`,
+        `data: ${JSON.stringify({ done: true, message: finalMsg })}\n\n`
+      ]),
+      { status: 200, headers: { 'Content-Type': 'text/event-stream' } }
+    ));
+    const seen: string[] = [];
+    const result = await sendChatMessageStream('sess-1', 'سلام', d => { seen.push(d); });
+    expect(seen).toEqual(['سلام ', 'دنیا']);
+    expect(result).toEqual(finalMsg);
+    expect(window.fetch).toHaveBeenCalledWith(
+      '/api/v1/chat/message/stream',
+      expect.objectContaining({ method: 'POST' })
+    );
+  });
+
+  it('sendChatMessageStream throws when the stream never completes', async () => {
+    window.fetch = vi.fn().mockResolvedValue(new Response(
+      sseBody([`data: ${JSON.stringify({ delta: 'نصف' })}\n\n`]),
+      { status: 200 }
+    ));
+    await expect(sendChatMessageStream('sess-1', 'سلام', () => {})).rejects.toThrow(
+      'دستیار هوشمند شاپیک در حال حاضر در دسترس نیست.'
+    );
   });
 });

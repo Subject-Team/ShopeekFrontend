@@ -6,7 +6,7 @@ import { CreditIcon } from '../icons';
 import { usePageContext } from '../../context/PageContext';
 import { useAuth } from '../../context/AuthContext';
 import { useBillingContext } from '../../context/BillingContext';
-import { sendChatMessage, fetchChatHistory, clearChatHistory } from '../../services/api';
+import { sendChatMessage, sendChatMessageStream, fetchChatHistory, clearChatHistory } from '../../services/api';
 import type { ChatMessage } from '../../types';
 import { toGroupedPersianDigits, toPersianDigits } from "../../utils/persian";
 import { formatJalaliRangeLabel } from "../../utils/persian/date";
@@ -95,6 +95,7 @@ export const ChatDrawer: React.FC = () => {
   const [historyLoading, setHistoryLoading] = useState<boolean>(false);
   const [showClearConfirm, setShowClearConfirm] = useState<boolean>(false);
   const [pendingSend, setPendingSend] = useState<string | null>(null);
+  const [streamingId, setStreamingId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const sessionId = 'session_default_user';
   // History rows are isolated per account server-side (user_id + session_id),
@@ -171,28 +172,60 @@ export const ChatDrawer: React.FC = () => {
       message_content: userText,
       created_at: new Date().toISOString()
     };
-    setMessages(prev => [...prev, tempUserMsg]);
+    const assistantId = crypto.randomUUID();
+    const placeholder: ChatMessage = {
+      id: assistantId,
+      session_id: sessionId,
+      sender: 'ASSISTANT',
+      message_content: '',
+      created_at: new Date().toISOString()
+    };
+    setMessages(prev => [...prev, tempUserMsg, placeholder]);
     setLoading(true);
+    setStreamingId(assistantId);
 
     const contextHints = {
       active_page: activePage,
       date_range_days: dateRangeDays
     };
 
+    // Batched UI flush: tokens accumulate here, painted ~11x/sec.
+    let accumulated = '';
+    const flushTimer = window.setInterval(() => {
+      if (!accumulated) return;
+      const snapshot = accumulated;
+      setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, message_content: snapshot } : m));
+    }, 90);
+
+    const stopFlush = () => window.clearInterval(flushTimer);
+
     try {
-      const response = await sendChatMessage(sessionId, userText, contextHints);
-      setMessages(prev => [...prev, response]);
-    } catch (err: unknown) {
-      console.error('Failed to send chat message', err instanceof Error ? err.message : err);
-      const errorMsg: ChatMessage = {
-        id: crypto.randomUUID(),
-        session_id: sessionId,
-        sender: 'ASSISTANT',
-        message_content: 'دستیار هوشمند شاپیک در حال حاضر در دسترس نیست. لطفاً چند دقیقه دیگر دوباره تلاش کنید.',
-        created_at: new Date().toISOString()
-      };
-      setMessages(prev => [...prev, errorMsg]);
+      const finalMsg = await sendChatMessageStream(
+        sessionId,
+        userText,
+        delta => { accumulated += delta; },
+        contextHints
+      );
+      stopFlush();
+      setMessages(prev => prev.map(m => m.id === assistantId ? finalMsg : m));
+    } catch (streamErr: unknown) {
+      // Streaming failed (proxy stripped SSE, network hiccup): fall back to blocking call.
+      console.warn('Chat stream failed, falling back to blocking message', streamErr instanceof Error ? streamErr.message : streamErr);
+      try {
+        const response = await sendChatMessage(sessionId, userText, contextHints);
+        stopFlush();
+        setMessages(prev => prev.map(m => m.id === assistantId ? response : m));
+      } catch (err: unknown) {
+        stopFlush();
+        console.error('Failed to send chat message', err instanceof Error ? err.message : err);
+        setMessages(prev => prev.map(m => m.id === assistantId ? {
+          ...m,
+          message_content: 'دستیار هوشمند شاپیک در حال حاضر در دسترس نیست. لطفاً چند دقیقه دیگر دوباره تلاش کنید.'
+        } : m));
+      }
     } finally {
+      stopFlush();
+      setStreamingId(null);
       setLoading(false);
       void refreshBilling();
     }
@@ -377,9 +410,18 @@ export const ChatDrawer: React.FC = () => {
                   }`}
                 >
                   {msg.sender === 'ASSISTANT' ? (
-                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={assistantMarkdownComponents}>
-                      {msg.message_content}
-                    </ReactMarkdown>
+                    msg.id === streamingId ? (
+                      <div key={Math.floor(msg.message_content.length / 48)} className="chat-stream-batch">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={assistantMarkdownComponents}>
+                          {msg.message_content}
+                        </ReactMarkdown>
+                        <span className="chat-caret" aria-hidden="true" />
+                      </div>
+                    ) : (
+                      <ReactMarkdown remarkPlugins={[remarkGfm]} components={assistantMarkdownComponents}>
+                        {msg.message_content}
+                      </ReactMarkdown>
+                    )
                   ) : (
                     msg.message_content
                   )}
@@ -426,7 +468,7 @@ export const ChatDrawer: React.FC = () => {
               </div>
             )}
 
-            {loading && (
+            {loading && streamingId === null && (
               <div className="flex gap-3">
                 <div className="w-7 h-7 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-xs shrink-0">
                   <Bot className="w-4 h-4" />

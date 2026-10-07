@@ -46,6 +46,43 @@
   border: 1px solid rgba(51, 65, 85, 0.6);
 }
 
+/* Streaming chat reply: soft fade per text batch + blinking caret */
+@keyframes chat-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chat-stream-batch {
+  animation: chat-fade-in 0.3s ease-out;
+}
+
+.chat-caret {
+  display: inline-block;
+  width: 6px;
+  height: 14px;
+  margin-inline-start: 2px;
+  vertical-align: -2px;
+  border-radius: 2px;
+  background: var(--color-indigo-500, #6366f1);
+  animation: chat-blink 1s ease-in-out infinite;
+}
+
+@keyframes chat-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
 /* Utility to hide scrollbars while preserving scrolling */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
