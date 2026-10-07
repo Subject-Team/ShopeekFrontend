@@ -39,10 +39,10 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = 
   const overQuota = quotaLimit !== null && quotaLeft !== null && quotaLeft <= 0;
   const blocked = overQuota && remainingCredits < paygCost;
 
-  const performTrigger = async () => {
+  const performTrigger = async (paygConfirmed = false) => {
     setLoading(true);
     try {
-      const res = await triggerManualAdvisory();
+      const res = await triggerManualAdvisory(paygConfirmed);
       if (res.advisory.success) {
         showToast(res.advisory.message, 'success');
         if (onRefresh) onRefresh();
@@ -64,7 +64,7 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = 
       return;
     }
     if (isSiteSuppressed('advisory') && remainingCredits >= paygCost) {
-      await performTrigger();
+      await performTrigger(true);
       return;
     }
     setShowConfirmModal(true);
@@ -72,14 +72,14 @@ export const AdvisoryCard: React.FC<AdvisoryCardProps> = ({ advisory, history = 
 
   const confirmTrigger = async () => {
     setShowConfirmModal(false);
-    await performTrigger();
+    await performTrigger(true);
   };
 
   const handleDontShowAgain = async () => {
     setShowConfirmModal(false);
     await suppressSite('advisory');
     if (remainingCredits >= paygCost) {
-      await performTrigger();
+      await performTrigger(true);
     }
   };
 

@@ -159,7 +159,7 @@ export const ChatDrawer: React.FC = () => {
     return () => cancelAnimationFrame(raf);
   }, [messages, loading, historyLoading]);
 
-  const sendMessage = async (rawText: string) => {
+  const sendMessage = async (rawText: string, paygConfirmed = false) => {
     const userText = rawText.trim();
     if (readOnly || !userText || loading) return;
 
@@ -204,7 +204,8 @@ export const ChatDrawer: React.FC = () => {
         sessionId,
         userText,
         delta => { accumulated += delta; },
-        contextHints
+        contextHints,
+        { paygConfirmed }
       );
       stopFlush();
       setMessages(prev => prev.map(m => m.id === assistantId ? finalMsg : m));
@@ -212,7 +213,7 @@ export const ChatDrawer: React.FC = () => {
       // Streaming failed (proxy stripped SSE, network hiccup): fall back to blocking call.
       console.warn('Chat stream failed, falling back to blocking message', streamErr instanceof Error ? streamErr.message : streamErr);
       try {
-        const response = await sendChatMessage(sessionId, userText, contextHints);
+        const response = await sendChatMessage(sessionId, userText, contextHints, paygConfirmed);
         stopFlush();
         setMessages(prev => prev.map(m => m.id === assistantId ? response : m));
       } catch (err: unknown) {
@@ -242,7 +243,7 @@ export const ChatDrawer: React.FC = () => {
     }
     if (isSiteSuppressed('chat') && remainingCredits >= paygCost) {
       setInput('');
-      void sendMessage(text);
+      void sendMessage(text, true);
       return;
     }
     setPendingSend(text);
@@ -255,7 +256,7 @@ export const ChatDrawer: React.FC = () => {
       return;
     }
     if (isSiteSuppressed('chat') && remainingCredits >= paygCost) {
-      void sendMessage(suggested);
+      void sendMessage(suggested, true);
       return;
     }
     setPendingSend(suggested);
@@ -266,7 +267,7 @@ export const ChatDrawer: React.FC = () => {
     const text = pendingSend;
     setPendingSend(null);
     setInput('');
-    void sendMessage(text);
+    void sendMessage(text, true);
   };
 
   const handleDontShowAgain = async () => {
@@ -276,7 +277,7 @@ export const ChatDrawer: React.FC = () => {
     await suppressSite('chat');
     if (remainingCredits >= paygCost) {
       setInput('');
-      void sendMessage(text);
+      void sendMessage(text, true);
     }
   };
 

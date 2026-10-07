@@ -3,14 +3,15 @@ import { authFetch } from './client';
 
 const API_BASE = '/api/v1';
 
-export const sendChatMessage = async (sessionId: string, message: string, contextHints?: { active_page?: string; date_range_days?: number }): Promise<ChatMessage> => {
+export const sendChatMessage = async (sessionId: string, message: string, contextHints?: { active_page?: string; date_range_days?: number }, paygConfirmed?: boolean): Promise<ChatMessage> => {
   const res = await authFetch(`${API_BASE}/chat/message`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       session_id: sessionId,
       message,
-      context_hints: contextHints
+      context_hints: contextHints,
+      payg_confirmed: paygConfirmed ?? false
     })
   });
   if (!res.ok) throw new Error('دستیار هوشمند شاپیک در حال حاضر در دسترس نیست.');
@@ -22,7 +23,7 @@ export const sendChatMessageStream = async (
   message: string,
   onToken: (delta: string) => void,
   contextHints?: { active_page?: string; date_range_days?: number },
-  signal?: AbortSignal
+  options?: { signal?: AbortSignal; paygConfirmed?: boolean }
 ): Promise<ChatMessage> => {
   const res = await authFetch(`${API_BASE}/chat/message/stream`, {
     method: 'POST',
@@ -30,9 +31,10 @@ export const sendChatMessageStream = async (
     body: JSON.stringify({
       session_id: sessionId,
       message,
-      context_hints: contextHints
+      context_hints: contextHints,
+      payg_confirmed: options?.paygConfirmed ?? false
     }),
-    signal
+    signal: options?.signal
   });
   if (!res.ok || !res.body) throw new Error('دستیار هوشمند شاپیک در حال حاضر در دسترس نیست.');
   const reader = res.body.getReader();

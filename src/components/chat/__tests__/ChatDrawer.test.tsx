@@ -118,7 +118,8 @@ describe('[component] ChatDrawer Component', () => {
       expect(api.sendChatMessage).toHaveBeenCalledWith(
         'session_default_user',
         'پرفروش‌ترین روزهای دوره کدام بودند؟',
-        expect.objectContaining({ active_page: expect.any(String) })
+        expect.objectContaining({ active_page: expect.any(String) }),
+        false
       );
       expect(screen.getByText('پرفروش‌ترین روزهای دوره کدام بودند؟')).toBeInTheDocument();
       expect(screen.getByText('پاسخ هوش مصنوعی به سوال شما')).toBeInTheDocument();

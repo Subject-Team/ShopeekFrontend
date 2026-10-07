@@ -17,8 +17,12 @@ export const fetchAdvisoryHistory = async (): Promise<AIAdvisory[]> => {
   return res.json();
 };
 
-export const triggerManualAdvisory = async (): Promise<AdvisoryTriggerResult> => {
-  const res = await authFetch(`${API_BASE}/advisory/generate`, { method: 'POST' });
+export const triggerManualAdvisory = async (paygConfirmed?: boolean): Promise<AdvisoryTriggerResult> => {
+  const res = await authFetch(`${API_BASE}/advisory/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ payg_confirmed: paygConfirmed ?? false })
+  });
   if (!res.ok) throw new Error('سرویس مشاوره هوشمند در دسترس نیست.');
   return res.json();
 };
