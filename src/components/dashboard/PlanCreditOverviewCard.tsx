@@ -127,10 +127,24 @@ export const PlanCreditOverviewCard: React.FC<PlanCreditOverviewCardProps> = ({ 
       </div>
 
       {/* Period progress (or unlimited access for exempt plans) */}
-      {isExempt || !periodPercent ? (
+      {isExempt ? (
         <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/50">
           <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">دسترسی نامحدود</span>
           <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">بدون محدودیت زمانی</span>
+        </div>
+      ) : periodPercent === null ? (
+        <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-800">
+          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+            پایان اشتراک:{' '}
+            <span className="font-bold text-slate-700 dark:text-slate-200">
+              {periodDue ? toPersianDigits(formatJalaliNumeric(periodDue)) : '—'}
+            </span>
+          </span>
+          <span className="text-[11px] font-bold text-sky-600 dark:text-sky-400">
+            {plan.remaining_days === null
+              ? 'نامحدود'
+              : `${toGroupedPersianDigits(plan.remaining_days)} روز باقی‌مانده`}
+          </span>
         </div>
       ) : (
         <div className="space-y-1.5">

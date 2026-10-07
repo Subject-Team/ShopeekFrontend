@@ -270,4 +270,20 @@ describe('[page] Dashboard Pages', () => {
       expect(screen.getByText(/تا تسویه، ورود و ثبت داده مسدود است/)).toBeInTheDocument();
     });
   });
+
+  it('keeps the plan card slot visible with a retry when billing fails to load', async () => {
+    (api.fetchBillingOverview as any).mockRejectedValueOnce(new Error('billing down'));
+
+    renderPage(<DashboardPage />, '/dashboard');
+
+    await waitFor(() => {
+      expect(screen.getByText(/بارگذاری اطلاعات طرح و اعتبار با خطا مواجه شد/)).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('تلاش دوباره'));
+
+    await waitFor(() => {
+      expect(screen.getByText('طرح و اعتبار')).toBeInTheDocument();
+    });
+  });
 });

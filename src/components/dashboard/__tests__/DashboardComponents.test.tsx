@@ -6,15 +6,54 @@ import { DollarSign } from 'lucide-react';
 import { AdvisoryCard } from '../AdvisoryCard';
 import { AdvisoryHistoryModal } from '../AdvisoryHistoryModal';
 import { KpiCard } from '../KpiCard';
+import { PlanCreditOverviewCard } from '../PlanCreditOverviewCard';
 import { RevenueChart } from '../RevenueChart';
 import { SubscriptionStatusCard } from '../SubscriptionStatusCard';
 import { SubscriptionWarningBanner } from '../SubscriptionWarningBanner';
 import { ToastProvider } from '../../../context/ToastContext';
+import type { BillingOverview } from '../../../types';
+import { toIsoDate } from '../../../utils/persian/date';
 import * as api from '../../../services/api';
 
 vi.mock('../../../services/api', () => ({
   triggerManualAdvisory: vi.fn(),
 }));
+
+const shiftIso = (days: number): string => {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return toIsoDate(d);
+};
+
+const makePlanOverview = (plan: Partial<BillingOverview['plan']>): BillingOverview => ({
+  plan: {
+    key: 'pro',
+    name_fa: null,
+    status: 'active',
+    is_exempt: false,
+    remaining_days: 18,
+    next_payment_due: `${shiftIso(18)}T00:00:00`,
+    current_period_started_at: `${shiftIso(-12)}T00:00:00`,
+    ...plan,
+  },
+  wallet: {
+    monthly_balance: 230,
+    purchased_balance: 40,
+    pending_session_charge: 0,
+    pending_account_charge: 0,
+  },
+  usage: [],
+  ledger: [],
+  stats: { total_granted: 250, total_spent: 20, spend_by_feature: {} },
+});
+
+const renderCard = (overview: BillingOverview): void => {
+  render(
+    <MemoryRouter>
+      <PlanCreditOverviewCard overview={overview} />
+    </MemoryRouter>
+  );
+};
 
 describe('[component] Dashboard Components', () => {
   it('renders KpiCard with title, value, and change percentage', () => {
@@ -180,5 +219,41 @@ describe('[component] Dashboard Components', () => {
 
     expect(screen.getByText(/وضعیت اشتراک حساب/i)).toBeInTheDocument();
     expect(screen.getByText(/هشدار تمدید اشتراک/i)).toBeInTheDocument();
+  });
+
+  it('shows a period percent that agrees with the remaining days', () => {
+    renderCard(makePlanOverview({
+      current_period_started_at: `${shiftIso(-12)}T00:00:00`,
+      next_payment_due: `${shiftIso(18)}T00:00:00`,
+      remaining_days: 18,
+    }));
+
+    const progress = screen.getByText(/دوره سپری شده/);
+    expect(progress.textContent).toContain('۴۰');
+    expect(screen.getByText(/۱۸ روز باقی‌مانده/)).toBeInTheDocument();
+  });
+
+  it('renders a 0% progress bar on the first period day instead of the unlimited box', () => {
+    renderCard(makePlanOverview({
+      current_period_started_at: `${shiftIso(0)}T00:00:00`,
+      next_payment_due: `${shiftIso(30)}T00:00:00`,
+      remaining_days: 30,
+    }));
+
+    const progress = screen.getByText(/دوره سپری شده/);
+    expect(progress.textContent).toContain('۰');
+    expect(screen.queryByText('دسترسی نامحدود')).not.toBeInTheDocument();
+  });
+
+  it('falls back to due date and remaining days when the period start is missing', () => {
+    renderCard(makePlanOverview({
+      current_period_started_at: null,
+      next_payment_due: `${shiftIso(14)}T00:00:00`,
+      remaining_days: 14,
+    }));
+
+    expect(screen.getByText(/پایان اشتراک/)).toBeInTheDocument();
+    expect(screen.getByText(/۱۴ روز باقی‌مانده/)).toBeInTheDocument();
+    expect(screen.queryByText('دسترسی نامحدود')).not.toBeInTheDocument();
   });
 });

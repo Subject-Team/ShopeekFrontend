@@ -28,7 +28,7 @@ import { formatJalaliRangeLabel } from "../utils/persian/date";
 import { SEO } from '../components/common/SEO';
 import { InvoiceModal } from '../components/invoice/InvoiceModal';
 
-type WidgetKey = 'kpi' | 'trend' | 'advisory' | 'customers';
+type WidgetKey = 'kpi' | 'trend' | 'advisory' | 'customers' | 'billing';
 type WidgetStatus = 'loading' | 'loaded' | 'failed';
 type WidgetStatuses = Record<WidgetKey, WidgetStatus>;
 
@@ -37,6 +37,7 @@ const INITIAL_STATUSES: WidgetStatuses = {
   trend: 'loading',
   advisory: 'loading',
   customers: 'loading',
+  billing: 'loading',
 };
 
 const ShimmerBox: React.FC<{ className?: string }> = ({ className = '' }) => (
@@ -60,6 +61,26 @@ const ChartCardSkeleton: React.FC = () => (
   <div className="glass-card p-4 sm:p-6 rounded-2xl shadow-xs space-y-4" aria-hidden="true">
     <ShimmerBox className="h-5 w-52" />
     <ShimmerBox className="h-64 sm:h-72 w-full" />
+  </div>
+);
+
+const PlanCreditSkeleton: React.FC = () => (
+  <div className="glass-card p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4 shadow-xs" aria-hidden="true">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2.5">
+        <ShimmerBox className="w-8 h-8 rounded-xl" />
+        <div className="space-y-1.5">
+          <ShimmerBox className="h-3 w-24" />
+          <ShimmerBox className="h-2.5 w-16" />
+        </div>
+      </div>
+      <ShimmerBox className="h-6 w-16 rounded-full" />
+    </div>
+    <ShimmerBox className="h-12 w-full rounded-xl" />
+    <div className="grid grid-cols-2 gap-3">
+      <ShimmerBox className="h-16 w-full rounded-xl" />
+      <ShimmerBox className="h-16 w-full rounded-xl" />
+    </div>
   </div>
 );
 
@@ -123,12 +144,12 @@ export const DashboardPage: React.FC = () => {
   const loadTrend = () => loadWidget('trend', () => fetchRevenueTrend(dateRangeDays, startDate, endDate), setTrend);
   const loadAdvisoryWidget = () => loadWidget('advisory', fetchLatestAdvisory, setAdvisory);
   const loadCustomersWidget = () => loadWidget('customers', fetchCustomers, (v) => setTopCustomers(v.slice(0, 3)));
+  const loadBilling = () => loadWidget('billing', fetchBillingOverview, setBilling);
 
   const loadDashboardData = async () => {
-    await Promise.all([loadKpi(), loadTrend(), loadAdvisoryWidget(), loadCustomersWidget()]);
+    await Promise.all([loadKpi(), loadTrend(), loadAdvisoryWidget(), loadCustomersWidget(), loadBilling()]);
     void loadOptional(fetchAdvisoryHistory, setAdvisoryHistory);
     void loadOptional(fetchBusinessProfile, setBusinessProfile);
-    void loadOptional(fetchBillingOverview, setBilling);
   };
 
   useEffect(() => {
@@ -318,7 +339,13 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           {/* Plan & Credit Overview Card */}
-          <PlanCreditOverviewCard overview={billing} />
+          {billing === null && statuses.billing === 'loading' ? (
+            <PlanCreditSkeleton />
+          ) : billing === null && statuses.billing === 'failed' ? (
+            <WidgetErrorCard onRetry={loadBilling} label="بارگذاری اطلاعات طرح و اعتبار با خطا مواجه شد." />
+          ) : (
+            <PlanCreditOverviewCard overview={billing} />
+          )}
 
           {/* Latest Blog Article Card */}
           <div data-guide="dashboard-latest-article">
