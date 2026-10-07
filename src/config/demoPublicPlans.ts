@@ -21,7 +21,6 @@ export const DEMO_PUBLIC_PLANS: PublicPlan[] = [
       { feature_key: 'advisory_scheduling', enabled: false, limit_value: null, payg_cost: null },
       { feature_key: 'custom_scheduling', enabled: false, limit_value: null, payg_cost: null },
       { feature_key: 'import_export', enabled: true, limit_value: null, payg_cost: null },
-      { feature_key: 'forecast_lookback_days', enabled: true, limit_value: 30, payg_cost: null },
     ],
   },
   {
@@ -43,7 +42,6 @@ export const DEMO_PUBLIC_PLANS: PublicPlan[] = [
       { feature_key: 'advisory_scheduling', enabled: true, limit_value: null, payg_cost: null },
       { feature_key: 'custom_scheduling', enabled: true, limit_value: null, payg_cost: null },
       { feature_key: 'import_export', enabled: true, limit_value: null, payg_cost: null },
-      { feature_key: 'forecast_lookback_days', enabled: true, limit_value: 90, payg_cost: null },
     ],
   },
 ];

@@ -117,15 +117,6 @@ function formatSectionValue(section: PlanSection, plan: PublicPlan): SectionValu
       if (custom?.enabled) parts.push('زمان‌بندی سفارشی');
       return { main: parts.join(' + ') || 'ندارد' };
     }
-    case 'lookback': {
-      const f = features[0];
-      return {
-        main:
-          f.limit_value === null
-            ? 'تمام داده‌های گذشته'
-            : `${toGroupedPersianDigits(f.limit_value)} روز از داده‌های گذشته`,
-      };
-    }
     case 'transfer': {
       const f = features[0];
       return { main: f.limit_value === null ? 'نامحدود' : `${toGroupedPersianDigits(f.limit_value)} بار در ماه` };

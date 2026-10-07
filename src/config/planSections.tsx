@@ -7,7 +7,6 @@ import {
   Monitor,
   Send,
   Sparkles,
-  TrendingUp,
   UploadCloud,
   Wallet,
   Zap,
@@ -46,15 +45,6 @@ export const PLAN_SECTIONS: PlanSection[] = [
       'هوش مصنوعی شاپیک روند فروش شما را پیش‌بینی می‌کند، به شما توصیه‌های عملی برای افزایش درآمدتان می‌دهد؛ همچنین یک چت‌بات مشاور درون‌برنامه در دسترس است که از مدل‌های قدرتمند جهانی استفاده می‌کند.',
     featureKeys: ['daily_ai_run_limit'],
     infoBox: 'تولید توصیه‌های زمان‌بندی‌شده در این قابلیت نامحدود است.',
-  },
-  {
-    key: 'lookback',
-    icon: TrendingUp,
-    tileClasses: 'bg-fuchsia-50 border-fuchsia-200 text-fuchsia-600',
-    title: 'بازه داده پیش‌بینی',
-    description:
-      'پیش‌بینی‌های شاپیک بر اساس داده‌های فروش گذشته شما ساخته می‌شوند؛ هرچه بازه داده بیشتری در اختیار موتور پیش‌بینی باشد، نتایج دقیق‌تری دریافت می‌کنید.',
-    featureKeys: ['forecast_lookback_days'],
   },
   {
     key: 'devices',
