@@ -411,18 +411,14 @@ export const ChatDrawer: React.FC = () => {
                   }`}
                 >
                   {msg.sender === 'ASSISTANT' ? (
-                    msg.id === streamingId ? (
-                      <div key={Math.floor(msg.message_content.length / 48)} className="chat-stream-batch">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={assistantMarkdownComponents}>
-                          {msg.message_content}
-                        </ReactMarkdown>
-                        <span className="chat-caret" aria-hidden="true" />
-                      </div>
-                    ) : (
+                    <>
                       <ReactMarkdown remarkPlugins={[remarkGfm]} components={assistantMarkdownComponents}>
                         {msg.message_content}
                       </ReactMarkdown>
-                    )
+                      {msg.id === streamingId && (
+                        <span className="chat-caret" aria-hidden="true" />
+                      )}
+                    </>
                   ) : (
                     msg.message_content
                   )}
