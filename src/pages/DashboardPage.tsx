@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DollarSign, ShoppingBag, Users, ReceiptText, AlertTriangle, RefreshCw, Medal } from 'lucide-react';
-import { CreditIcon } from '../components/icons';
 import { KpiCard } from '../components/dashboard/KpiCard';
 import { RevenueChart } from '../components/dashboard/RevenueChart';
 import { AdvisoryCard } from '../components/dashboard/AdvisoryCard';
@@ -22,7 +21,6 @@ import {
   fetchBillingOverview,
 } from '../services/api';
 import { KPISummary, RevenuePoint, AIAdvisory, Customer, BusinessProfile, BillingOverview } from '../types';
-import { USAGE_LABELS } from '../config/plansDisplay';
 import { toGroupedPersianDigits } from "../utils/persian";
 import { formatJalaliRangeLabel } from "../utils/persian/date";
 import { SEO } from '../components/common/SEO';
@@ -114,8 +112,6 @@ export const DashboardPage: React.FC = () => {
   const [statuses, setStatuses] = useState<WidgetStatuses>(INITIAL_STATUSES);
   const isMountedRef = useRef(true);
 
-  const aiUsage = billing?.usage.find((u) => u.feature_key === 'daily_ai_run_limit');
-
   const loadWidget = async <T,>(key: WidgetKey, fetcher: () => Promise<T>, apply: (value: T) => void): Promise<void> => {
     setStatuses((prev) => ({ ...prev, [key]: 'loading' }));
     try {
@@ -193,15 +189,6 @@ export const DashboardPage: React.FC = () => {
       {/* 3-Hour AI Advisory Widget */}
       <div data-guide="dashboard-advisory">
         <AdvisoryCard advisory={advisory} history={advisoryHistory} onRefresh={loadDashboardData} readOnly={Boolean(user?.is_read_only)} status={statuses.advisory} onRetry={loadAdvisoryWidget} />
-        {aiUsage && (
-          <p className="mt-2 px-1 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
-            <CreditIcon className="w-3.5 h-3.5 text-sky-500" />
-            <span>
-              {USAGE_LABELS['daily_ai_run_limit']}: {toGroupedPersianDigits(aiUsage.used)}
-              {aiUsage.limit === null ? ' — نامحدود' : ` از ${toGroupedPersianDigits(aiUsage.limit)}`}
-            </span>
-          </p>
-        )}
       </div>
 
       {/* KPI Cards Grid */}
