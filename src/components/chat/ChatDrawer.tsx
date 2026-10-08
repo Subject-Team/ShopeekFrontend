@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Sparkle, X, Send, User, Layers, RefreshCw, Trash2, Lock, Bot, Gauge } from 'lucide-react';
@@ -12,6 +12,18 @@ import { toGroupedPersianDigits, toPersianDigits } from "../../utils/persian";
 import { formatJalaliRangeLabel } from "../../utils/persian/date";
 import { CreditSpendConfirmModal } from '../credits/CreditSpendConfirmModal';
 import { LOW_CREDIT_THRESHOLD, PAYG_COSTS } from '../../config/credits';
+
+/** Splits streamed text at the last blank line so only the newest paragraph animates.
+ * Trailing blank lines are ignored, otherwise the fresh part is always empty. */
+const splitParagraphBatch = (text: string): { stable: string; fresh: string; beat: number } => {
+  const trimmedEnd = text.endsWith('\n\n') ? text.slice(0, -2) : text;
+  const cut = trimmedEnd.lastIndexOf('\n\n');
+  return {
+    stable: cut >= 0 ? text.slice(0, cut + 2) : '',
+    fresh: cut >= 0 ? text.slice(cut + 2) : text,
+    beat: text.split('\n\n').length,
+  };
+};
 
 /** Converts direct string children of a markdown node to Persian digits (۰-۹). */
 const persianText = (children: React.ReactNode): React.ReactNode =>
@@ -96,6 +108,7 @@ export const ChatDrawer: React.FC = () => {
   const [showClearConfirm, setShowClearConfirm] = useState<boolean>(false);
   const [pendingSend, setPendingSend] = useState<string | null>(null);
   const [streamingId, setStreamingId] = useState<string | null>(null);
+  const [finishedId, setFinishedId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const sessionId = 'session_default_user';
   // History rows are isolated per account server-side (user_id + session_id),
@@ -159,6 +172,26 @@ export const ChatDrawer: React.FC = () => {
     return () => cancelAnimationFrame(raf);
   }, [messages, loading, historyLoading]);
 
+  useEffect(() => {
+    if (!finishedId) return;
+    const t = window.setTimeout(() => setFinishedId(null), 1400);
+    return () => window.clearTimeout(t);
+  }, [finishedId]);
+
+  const streamingText = messages.find(m => m.id === streamingId)?.message_content ?? '';
+  const { stable, fresh, beat } = splitParagraphBatch(streamingText);
+  const batchRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    batchRef.current?.animate(
+      [
+        { opacity: '0', clipPath: 'inset(0 0 100% 0)' },
+        { opacity: '1', clipPath: 'inset(0 0 0 0)' },
+      ],
+      { duration: 300, easing: 'ease-in-out' }
+    );
+  }, [beat]);
+
   const sendMessage = async (rawText: string, paygConfirmed = false) => {
     const userText = rawText.trim();
     if (readOnly || !userText || loading) return;
@@ -189,35 +222,39 @@ export const ChatDrawer: React.FC = () => {
       date_range_days: dateRangeDays
     };
 
-    // Batched UI flush: tokens accumulate here, painted ~11x/sec.
+    // Paragraph-driven flush: paint only complete paragraphs (or a long open
+    // line past CUTOFF), so every render is a clean markdown beat. No timer.
     let accumulated = '';
-    const flushTimer = window.setInterval(() => {
-      if (!accumulated) return;
-      const snapshot = accumulated;
+    let shownLen = 0;
+    const CUTOFF = 200;
+    const paint = (upto: number) => {
+      shownLen = upto;
+      const snapshot = accumulated.slice(0, upto);
       setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, message_content: snapshot } : m));
-    }, 90);
-
-    const stopFlush = () => window.clearInterval(flushTimer);
+    };
 
     try {
       const finalMsg = await sendChatMessageStream(
         sessionId,
         userText,
-        delta => { accumulated += delta; },
+        delta => {
+          accumulated += delta;
+          const fresh = accumulated.slice(shownLen);
+          const nl = fresh.lastIndexOf('\n\n');
+          if (nl >= 0) paint(shownLen + nl + 2);
+          else if (fresh.length > CUTOFF) paint(accumulated.length);
+        },
         contextHints,
         { paygConfirmed }
       );
-      stopFlush();
       setMessages(prev => prev.map(m => m.id === assistantId ? finalMsg : m));
     } catch (streamErr: unknown) {
       // Streaming failed (proxy stripped SSE, network hiccup): fall back to blocking call.
       console.warn('Chat stream failed, falling back to blocking message', streamErr instanceof Error ? streamErr.message : streamErr);
       try {
         const response = await sendChatMessage(sessionId, userText, contextHints, paygConfirmed);
-        stopFlush();
         setMessages(prev => prev.map(m => m.id === assistantId ? response : m));
       } catch (err: unknown) {
-        stopFlush();
         console.error('Failed to send chat message', err instanceof Error ? err.message : err);
         setMessages(prev => prev.map(m => m.id === assistantId ? {
           ...m,
@@ -225,8 +262,8 @@ export const ChatDrawer: React.FC = () => {
         } : m));
       }
     } finally {
-      stopFlush();
       setStreamingId(null);
+      setFinishedId(assistantId);
       setLoading(false);
       void refreshBilling();
     }
@@ -408,17 +445,33 @@ export const ChatDrawer: React.FC = () => {
                     msg.sender === 'USER'
                       ? 'bg-indigo-600 text-white rounded-tl-none'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-tr-none border border-slate-200/60 dark:border-slate-700/60'
-                  }`}
+                  }${msg.id === finishedId ? ' chat-flash' : ''}`}
                 >
                   {msg.sender === 'ASSISTANT' ? (
-                    <>
+                    msg.id === streamingId ? (
+                      msg.message_content ? (
+                        <>
+                          <ReactMarkdown remarkPlugins={[remarkGfm]} components={assistantMarkdownComponents}>
+                            {stable}
+                          </ReactMarkdown>
+                          <div ref={batchRef} key={beat} className="chat-stream-batch">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]} components={assistantMarkdownComponents}>
+                              {fresh}
+                            </ReactMarkdown>
+                          </div>
+                          <span className="chat-typing" aria-hidden="true"><span>.</span><span>.</span><span>.</span></span>
+                        </>
+                      ) : (
+                        <>
+                          <span>در حال تفکر</span>{' '}
+                          <span className="chat-typing" aria-hidden="true"><span>.</span><span>.</span><span>.</span></span>
+                        </>
+                      )
+                    ) : (
                       <ReactMarkdown remarkPlugins={[remarkGfm]} components={assistantMarkdownComponents}>
                         {msg.message_content}
                       </ReactMarkdown>
-                      {msg.id === streamingId && (
-                        <span className="chat-caret" aria-hidden="true" />
-                      )}
-                    </>
+                    )
                   ) : (
                     msg.message_content
                   )}
