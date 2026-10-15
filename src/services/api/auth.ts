@@ -7,6 +7,8 @@ import type {
   OtpSendResponse,
   OtpVerifyPayload,
   OtpVerifyResponse,
+  PasswordResetConfirmPayload,
+  PasswordResetConfirmResponse,
   RegisterWithPhonePayload,
   User,
 } from '../../types';
@@ -92,6 +94,24 @@ export const registerWithPhoneApi = async (
   const data = (await res.json()) as AuthTokenResponse;
   if (data.web_session_id) setWebSessionId(data.web_session_id);
   return data;
+};
+
+export const confirmPasswordResetApi = async (
+  payload: PasswordResetConfirmPayload
+): Promise<PasswordResetConfirmResponse> => {
+  const res = await fetch(`${API_BASE}/auth/password-reset/confirm`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({
+      detail: 'خطا در بازیابی کلمه عبور',
+    }));
+    throw new Error(err.detail || 'خطا در بازیابی کلمه عبور');
+  }
+  return res.json();
 };
 
 export const changePassword = async (

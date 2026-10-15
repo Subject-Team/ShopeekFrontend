@@ -81,6 +81,18 @@ export interface OtpVerifyResponse {
   web_session_id?: string | null;
 }
 
+export interface PasswordResetConfirmPayload {
+  phone: string;
+  code: string;
+  new_password: string;
+  confirm_new_password: string;
+}
+
+export interface PasswordResetConfirmResponse {
+  message: string;
+  other_sessions_count: number;
+}
+
 export interface DeleteAccountResponse {
   message: string;
   deleted_at: string;

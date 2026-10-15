@@ -2,6 +2,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { LoginForm } from '../LoginForm';
+import { ToastProvider } from '../../../context/ToastContext';
 import { createMockLoginForm } from './mockLoginForm';
 
 describe('[component] LoginForm', () => {
@@ -61,6 +62,26 @@ describe('[component] LoginForm', () => {
 
     expect(form.setMode).toHaveBeenCalledWith('register');
     expect(form.setRegisterStep).toHaveBeenCalledWith('phone');
+  });
+
+  it('renders the forgot-password button under the password input', () => {
+    render(<LoginForm form={createMockLoginForm()} />);
+
+    expect(screen.getByTestId('forgot-password-btn')).toBeInTheDocument();
+  });
+
+  it('opens the forgot-password modal when the link is clicked', () => {
+    render(
+      <ToastProvider>
+        <LoginForm form={createMockLoginForm()} />
+      </ToastProvider>
+    );
+
+    fireEvent.click(screen.getByTestId('forgot-password-btn'));
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByText('بازیابی کلمه عبور')).toBeInTheDocument();
+    expect(screen.getByTestId('forgot-send-btn')).toBeInTheDocument();
   });
 
   it('marks the phone input with an error after an invalid submit', () => {

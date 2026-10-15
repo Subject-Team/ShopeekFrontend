@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Smartphone, KeyRound } from 'lucide-react';
 import type { LoginPageForm } from '../../hooks/useLoginPage';
 import { PhoneInput } from './PhoneInput';
@@ -6,6 +6,7 @@ import { OtpCodeInput } from './OtpCodeInput';
 import { PasswordInput } from './PasswordInput';
 import { TurnstileWidget } from './TurnstileWidget';
 import { SubmitButton } from './SubmitButton';
+import { ForgotPasswordModal } from './ForgotPasswordModal';
 import { toPersianDigits } from "../../utils/persian";
 
 interface LoginFormProps {
@@ -42,6 +43,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ form }) => {
     handleLoginOtpSend,
     handleLoginOtpVerify,
   } = form;
+
+  const [showForgotPassword, setShowForgotPassword] = useState<boolean>(false);
 
   return (
     <>
@@ -105,6 +108,17 @@ export const LoginForm: React.FC<LoginFormProps> = ({ form }) => {
             hasError={hasSubmitted && !password}
             toggleAriaLabel={showPassword ? 'مخفی‌سازی کلمه عبور' : 'نمایش کلمه عبور'}
           />
+
+          <div className="flex justify-end -mt-2">
+            <button
+              type="button"
+              data-testid="forgot-password-btn"
+              onClick={() => setShowForgotPassword(true)}
+              className="text-xs text-brand-600 hover:text-brand-700 font-bold underline underline-offset-4"
+            >
+              فراموش کردم؟
+            </button>
+          </div>
 
           <TurnstileWidget
             turnstileRef={turnstileRef}
@@ -218,6 +232,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({ form }) => {
             </div>
           )}
         </div>
+      )}
+
+      {/* Mounted only while open: the modal consumes ToastContext, which the
+          bare LoginForm test harness does not provide. */}
+      {showForgotPassword && (
+        <ForgotPasswordModal open onClose={() => setShowForgotPassword(false)} />
       )}
     </>
   );

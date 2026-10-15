@@ -8,6 +8,7 @@ export {
   sendOtpApi,
   verifyOtpApi,
   registerWithPhoneApi,
+  confirmPasswordResetApi,
   changePassword,
 } from './api/auth';
 export { fetchKPISummary, fetchRevenueTrend } from './api/analytics';
