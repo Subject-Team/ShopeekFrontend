@@ -114,7 +114,7 @@ export const MainFooter: React.FC = () => {
             <h3 className="text-sm font-bold text-slate-900 tracking-wide border-b border-slate-200 pb-2">نماد اعتماد الکترونیکی</h3>
             <div className="pt-2">
               <a referrerPolicy="origin" target="_blank" href="https://trustseal.enamad.ir/?id=7579754&Code=Lfk3xisJsBvjf8W8gduTSP9zRBMnddBm">
-                <img referrerPolicy="origin" src="https://trustseal.enamad.ir/logo.aspx?id=7579754&Code=Lfk3xisJsBvjf8W8gduTSP9zRBMnddBm" alt="" style={{ cursor: 'pointer' }} {...{ code: 'Lfk3xisJsBvjf8W8gduTSP9zRBMnddBm' }} />
+                <img referrerPolicy="origin" src="https://trustseal.enamad.ir/logo.aspx?id=7579754&Code=Lfk3xisJsBvjf8W8gduTSP9zRBMnddBm" alt="" style={{ cursor: 'pointer', filter: 'grayscale(1) brightness(0.3)' }} {...{ code: 'Lfk3xisJsBvjf8W8gduTSP9zRBMnddBm' }} />
               </a>
             </div>
           </div>
