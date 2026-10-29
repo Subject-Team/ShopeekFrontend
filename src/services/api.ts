@@ -50,6 +50,7 @@ export {
 export { fetchBillingOverview } from './api/billing';
 export { fetchPublicPlans } from './api/plans';
 export { fetchSchedulePrefs, updateSchedulePrefs } from './api/schedule';
+export { submitFeedbackApi, fetchMyFeedbackApi } from './api/feedback';
 export {
   fetchAdminStats,
   fetchAdminUsers,
@@ -64,4 +65,7 @@ export {
   recordAdminPayment,
   grantAdminCredits,
   adjustAdminWallet,
+  fetchAdminFeedback,
+  updateAdminFeedbackStatus,
+  grantAdminFeedbackReward,
 } from './api/admin';

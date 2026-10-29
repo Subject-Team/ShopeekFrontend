@@ -6,13 +6,15 @@ import {
   Shield,
   AlertTriangle,
   BarChart3,
+  MessageSquare,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { StatsTab } from './admin/StatsTab';
 import { UsersTab } from './admin/UsersTab';
 import { ErrorsTab } from './admin/ErrorsTab';
+import { FeedbackTab } from './admin/FeedbackTab';
 
-type AdminTab = 'stats' | 'users' | 'errors';
+type AdminTab = 'stats' | 'users' | 'errors' | 'feedback';
 
 export const AdminPage: React.FC = () => {
   const { user } = useAuth();
@@ -22,6 +24,7 @@ export const AdminPage: React.FC = () => {
     { key: 'stats', label: 'آمار', icon: BarChart3 },
     { key: 'users', label: 'کاربران', icon: Users },
     { key: 'errors', label: 'خطاها', icon: AlertTriangle },
+    { key: 'feedback', label: 'بازخوردها', icon: MessageSquare },
   ];
 
   return (
@@ -77,6 +80,7 @@ export const AdminPage: React.FC = () => {
         {activeTab === 'stats' && <StatsTab />}
         {activeTab === 'users' && <UsersTab currentUserId={user?.id || ''} />}
         {activeTab === 'errors' && <ErrorsTab />}
+        {activeTab === 'feedback' && <FeedbackTab />}
       </main>
     </div>
   );

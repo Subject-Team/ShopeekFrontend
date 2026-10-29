@@ -20,7 +20,9 @@ import {
   Check,
   X,
   Trash2,
+  MessageSquarePlus,
 } from 'lucide-react';
+import { FeedbackModal } from '../feedback/FeedbackModal';
 import { useGuide } from '../../context/GuideContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
@@ -37,6 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const { user, accounts, switchAccount, removeAccount, logout, logoutAll } = useAuth();
   const location = useLocation();
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState<boolean>(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState<boolean>(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
 
   // Close accounts popover on outside click
@@ -148,6 +151,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 </div>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 font-bold">
                   آموزش
+                </span>
+              </button>
+            </div>
+
+            {/* Quick Feedback & Bug Report Launcher */}
+            <div className="pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsFeedbackOpen(true);
+                  setIsOpen(false);
+                }}
+                className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl font-semibold text-xs transition-all border border-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100"
+                title="ارسال بازخورد، پیشنهاد یا گزارش باگ"
+              >
+                <div className="flex items-center gap-3">
+                  <MessageSquarePlus className="w-4 h-4 text-brand-500" />
+                  <span>ارسال بازخورد و باگ</span>
+                </div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-brand-50 dark:bg-brand-950/80 text-brand-700 dark:text-brand-300 font-bold">
+                  پاداش
                 </span>
               </button>
             </div>
@@ -364,6 +388,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           )}
         </div>
       </aside>
+
+      <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
     </>
   );
 };

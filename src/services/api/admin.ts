@@ -5,6 +5,8 @@ import type {
   AdminTransactionsResponse,
   AdminErrorsResponse,
   AdminUserUpdatePayload,
+  AdminFeedbackItem,
+  AdminFeedbackListResponse,
 } from '../../types/admin';
 import type {
   AdminUserBilling,
@@ -166,6 +168,58 @@ export const adjustAdminWallet = async (
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: 'خطا در تنظیم کیف پول' }));
     throw new Error(err.detail || 'خطا در تنظیم کیف پول');
+  }
+  return res.json();
+};
+
+// --- ADMIN FEEDBACK ---
+
+export const fetchAdminFeedback = async (
+  page = 1,
+  pageSize = 20,
+  status?: string,
+  type?: string
+): Promise<AdminFeedbackListResponse> => {
+  const params = new URLSearchParams();
+  params.set('page', String(page));
+  params.set('page_size', String(pageSize));
+  if (status) params.set('status', status);
+  if (type) params.set('type', type);
+  const res = await authFetch(`${API_BASE}/admin/feedback?${params.toString()}`);
+  if (!res.ok) throw new Error('خطا در دریافت لیست بازخوردها');
+  return res.json();
+};
+
+export const updateAdminFeedbackStatus = async (
+  id: string,
+  status: string,
+  adminNotes?: string
+): Promise<AdminFeedbackItem> => {
+  const res = await authFetch(`${API_BASE}/admin/feedback/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status, admin_notes: adminNotes }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در بروزرسانی وضعیت بازخورد' }));
+    throw new Error(err.detail || 'خطا در بروزرسانی وضعیت بازخورد');
+  }
+  return res.json();
+};
+
+export const grantAdminFeedbackReward = async (
+  id: string,
+  amount: number,
+  note?: string
+): Promise<AdminFeedbackItem> => {
+  const res = await authFetch(`${API_BASE}/admin/feedback/${id}/reward`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ amount, note }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در اعطای پاداش بازخورد' }));
+    throw new Error(err.detail || 'خطا در اعطای پاداش بازخورد');
   }
   return res.json();
 };

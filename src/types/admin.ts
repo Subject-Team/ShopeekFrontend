@@ -86,3 +86,28 @@ export interface AdminUserUpdatePayload {
   full_name?: string;
   role?: 'User' | 'Admin';
 }
+
+export interface AdminFeedbackItem {
+  id: string;
+  user_id?: string | null;
+  user_email?: string | null;
+  user_full_name?: string | null;
+  user_phone?: string | null;
+  type: 'bug_report' | 'feature_request' | 'improvement';
+  title: string;
+  description: string;
+  page_url?: string | null;
+  screenshot_data?: string | null;
+  status: 'pending' | 'reviewed' | 'rewarded' | 'closed';
+  reward_amount: number;
+  admin_notes?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AdminFeedbackListResponse {
+  items: AdminFeedbackItem[];
+  total: number;
+  page: number;
+  page_size: number;
+}

@@ -472,3 +472,31 @@ export interface SchedulePrefs {
 export interface SchedulePrefsUpdatePayload {
   slots?: string[] | null;
 }
+
+// --- User Feedback ---
+
+export type FeedbackType = 'bug_report' | 'feature_request' | 'improvement';
+export type FeedbackStatus = 'pending' | 'reviewed' | 'rewarded' | 'closed';
+
+export interface CreateFeedbackPayload {
+  type: FeedbackType;
+  title: string;
+  description: string;
+  page_url?: string;
+  screenshot_data?: string;
+}
+
+export interface UserFeedback {
+  id: string;
+  user_id?: string | null;
+  type: FeedbackType;
+  title: string;
+  description: string;
+  page_url?: string | null;
+  screenshot_data?: string | null;
+  status: FeedbackStatus;
+  reward_amount: number;
+  admin_notes?: string | null;
+  created_at: string;
+  updated_at: string;
+}
