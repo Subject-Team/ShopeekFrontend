@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
-  UploadCloud,
   ReceiptText,
   Settings as SettingsIcon,
   CreditCard,
@@ -64,7 +63,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     { path: '/dashboard', label: 'داشبورد اصلی', icon: LayoutDashboard },
     { path: '/dashboard/customers', label: 'مدیریت مشتریان (CRM)', icon: Users },
     { path: '/dashboard/invoices', label: 'فاکتورهای فروش', icon: ReceiptText },
-    { path: '/dashboard/ingestion', label: 'ورود داده‌ها (CSV/Excel)', icon: UploadCloud },
     { path: '/dashboard/settings', label: 'تنظیمات', icon: SettingsIcon },
     { path: '/dashboard/subscription', label: 'اشتراک و پرداخت', icon: CreditCard },
   ];

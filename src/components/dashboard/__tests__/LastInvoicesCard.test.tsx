@@ -108,7 +108,7 @@ describe('[component] LastInvoicesCard', () => {
     expect(screen.queryByText('ثبت فاکتور مستقیم')).not.toBeInTheDocument();
   });
 
-  it('navigates to /dashboard/ingestion when clicking "ورود داده‌ها"', async () => {
+  it('navigates to /dashboard/invoices when clicking "ورود داده‌ها"', async () => {
     (api.fetchInvoices as any).mockResolvedValue(mockInvoicesResponse);
 
     render(
@@ -119,7 +119,7 @@ describe('[component] LastInvoicesCard', () => {
 
     const ingestionBtn = screen.getByText('ورود داده‌ها');
     fireEvent.click(ingestionBtn);
-    expect(mockNavigate).toHaveBeenCalledWith('/dashboard/ingestion');
+    expect(mockNavigate).toHaveBeenCalledWith('/dashboard/invoices');
   });
 
   it('navigates to /dashboard/invoices when clicking "مشاهده همه"', async () => {

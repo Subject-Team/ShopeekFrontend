@@ -13,6 +13,9 @@ vi.mock('../../services/api', () => ({
   fetchInvoices: vi.fn(),
   fetchSalesSuggestions: vi.fn(),
   fetchMeApi: vi.fn(),
+  fetchSettings: vi.fn(),
+  previewSalesFile: vi.fn(),
+  uploadSalesFile: vi.fn(),
 }));
 
 describe('[page] InvoicesPage (فاکتورهای فروش)', () => {
@@ -51,6 +54,9 @@ describe('[page] InvoicesPage (فاکتورهای فروش)', () => {
       limit: 20,
       offset: 0,
     });
+    (api.fetchSettings as any).mockResolvedValue({
+      telegram_sessions: [],
+    });
   });
 
   const renderPage = async () => {
@@ -79,6 +85,57 @@ describe('[page] InvoicesPage (فاکتورهای فروش)', () => {
         expect.objectContaining({ limit: 20, offset: 0 })
       );
       expect(screen.getByText('چای')).toBeInTheDocument();
+    });
+  });
+
+  it('renders the compact file upload card without sample data button', async () => {
+    await renderPage();
+
+    expect(screen.getByText(/بارگذاری فایل فاکتورها/i)).toBeInTheDocument();
+    expect(screen.getByText(/شناسایی خودکار ستون‌ها و ورود دسته‌ای/i)).toBeInTheDocument();
+    // Sample download button must be absent in compact mode
+    expect(screen.queryByText(/بارگیری داده‌های نمونه فروش/i)).not.toBeInTheDocument();
+  });
+
+  it('renders the telegram bot card and shows connection status', async () => {
+    (api.fetchSettings as any).mockResolvedValue({
+      telegram_sessions: [
+        { id: 'ts-1', telegram_chat_id: '12345678', created_at: '2026-03-20T10:00:00Z' },
+      ],
+    });
+
+    await renderPage();
+
+    expect(screen.getByText('ثبت فاکتور با ربات تلگرام')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/متصل به ربات/i)).toBeInTheDocument();
+    });
+
+    // Link button to bot
+    const botLink = screen.getByRole('link', { name: /ورود به ربات Shopeek_Bot@/i });
+    expect(botLink).toBeInTheDocument();
+    expect(botLink).toHaveAttribute('href', 'https://t.me/Shopeek_Bot');
+    expect(botLink).toHaveAttribute('target', '_blank');
+  });
+
+  it('opens telegram info modal when info icon is clicked', async () => {
+    await renderPage();
+
+    const infoBtn = screen.getByRole('button', { name: /راهنمای ربات تلگرام/i });
+    fireEvent.click(infoBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText(/راهنمای ثبت فاکتور با ربات تلگرام/i)).toBeInTheDocument();
+      expect(screen.getByText(/ثبت سریع با متن روان/i)).toBeInTheDocument();
+      expect(screen.getByText(/فروش ۲ عدد مانتو به خانم سارا احمدی/i)).toBeInTheDocument();
+    });
+
+    // Close button dismisses modal
+    const closeBtn = screen.getByRole('button', { name: /^بستن$/ });
+    fireEvent.click(closeBtn);
+
+    await waitFor(() => {
+      expect(screen.queryByText(/راهنمای ثبت فاکتور با ربات تلگرام/i)).not.toBeInTheDocument();
     });
   });
 

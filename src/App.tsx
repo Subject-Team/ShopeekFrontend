@@ -26,7 +26,6 @@ const DashboardPage = lazy(() => import('./pages/DashboardPage').then((m) => ({ 
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage').then((m) => ({ default: m.AnalyticsPage })));
 const CustomersPage = lazy(() => import('./pages/CustomersPage').then((m) => ({ default: m.CustomersPage })));
 const InvoicesPage = lazy(() => import('./pages/InvoicesPage').then((m) => ({ default: m.InvoicesPage })));
-const IngestionPage = lazy(() => import('./pages/IngestionPage').then((m) => ({ default: m.IngestionPage })));
 const SettingsPage = lazy(() => import('./pages/SettingsPage').then((m) => ({ default: m.SettingsPage })));
 const SubscriptionPage = lazy(() => import('./pages/SubscriptionPage').then((m) => ({ default: m.SubscriptionPage })));
 const DashboardNotFoundPage = lazy(() => import('./pages/DashboardNotFoundPage').then((m) => ({ default: m.DashboardNotFoundPage })));
@@ -57,7 +56,7 @@ const ProtectedDashboardLayout: React.FC = () => {
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="customers" element={<CustomersPage />} />
           <Route path="invoices" element={<InvoicesPage />} />
-          <Route path="ingestion" element={<IngestionPage />} />
+          <Route path="ingestion" element={<Navigate to="/dashboard/invoices" replace />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="subscription" element={<SubscriptionPage />} />
           <Route path="*" element={<DashboardNotFoundPage />} />

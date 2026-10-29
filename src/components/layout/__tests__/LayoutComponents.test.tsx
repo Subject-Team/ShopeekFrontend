@@ -85,7 +85,7 @@ describe('[component] Layout Components', () => {
     expect(screen.getByText('داشبورد اصلی')).toBeInTheDocument();
     expect(screen.queryByText('تحلیل و آمار فروش')).not.toBeInTheDocument();
     expect(screen.getByText(/مدیریت مشتریان/i)).toBeInTheDocument();
-    expect(screen.getByText(/ورود داده‌ها/i)).toBeInTheDocument();
+    expect(screen.getByText(/فاکتورهای فروش/i)).toBeInTheDocument();
     expect(screen.getByText('راهنمای سامانه')).toBeInTheDocument();
     expect(screen.getByText('ارسال بازخورد و باگ')).toBeInTheDocument();
     expect(screen.queryByText('پاداش')).not.toBeInTheDocument();

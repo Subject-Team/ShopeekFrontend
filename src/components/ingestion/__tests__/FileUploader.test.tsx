@@ -78,6 +78,19 @@ describe('[component] FileUploader Component', () => {
     expect(getDropZone(container)).toBeInTheDocument();
   });
 
+  it('compact mode renders streamlined header and omits sample download button', () => {
+    const { container } = render(
+      <ToastProvider>
+        <FileUploader compact />
+      </ToastProvider>
+    );
+
+    expect(screen.getByText(/بارگذاری فایل فاکتورها/i)).toBeInTheDocument();
+    expect(screen.getByText(/شناسایی خودکار ستون‌ها و ورود دسته‌ای/i)).toBeInTheDocument();
+    expect(screen.queryByText(/بارگیری داده‌های نمونه فروش/i)).not.toBeInTheDocument();
+    expect(getDropZone(container)).toBeInTheDocument();
+  });
+
   it('rejects files larger than 10MB', async () => {
     const { container } = renderComponent();
 

@@ -101,7 +101,7 @@ export const LastInvoicesCard: React.FC<LastInvoicesCardProps> = ({
 
           <button
             type="button"
-            onClick={() => navigate('/dashboard/ingestion')}
+            onClick={() => navigate('/dashboard/invoices')}
             className="py-1.5 px-3 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs shadow-xs border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-center gap-1.5"
           >
             <UploadCloud className="w-3.5 h-3.5" />

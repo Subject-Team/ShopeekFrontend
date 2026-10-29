@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { ReceiptText } from 'lucide-react';
 import { InvoiceListBrowser } from '../components/invoice/InvoiceListBrowser';
 import { InvoiceModal } from '../components/invoice/InvoiceModal';
+import { FileUploader } from '../components/ingestion/FileUploader';
+import { TelegramBotCard } from '../components/invoice/TelegramBotCard';
 import { SEO } from '../components/common/SEO';
 import { useAuth } from '../context/AuthContext';
 
@@ -43,6 +45,16 @@ export const InvoicesPage: React.FC = () => {
             ثبت فاکتور مستقیم
           </button>
         )}
+      </div>
+
+      {/* Quick Entry & Ingestion Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <FileUploader
+          compact
+          onSuccess={() => setRefreshKey((k) => k + 1)}
+          readOnly={readOnly}
+        />
+        <TelegramBotCard />
       </div>
 
       {/* Lazy-loaded, paginated invoice list (newest first) */}

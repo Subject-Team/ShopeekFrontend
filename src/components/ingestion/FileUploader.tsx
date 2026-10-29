@@ -14,6 +14,7 @@ import { toPersianDigits, toGroupedPersianDigits } from "../../utils/persian";
 interface FileUploaderProps {
   onSuccess?: () => void;
   readOnly?: boolean;
+  compact?: boolean;
 }
 
 interface FilePreviewDuplicates {
@@ -107,7 +108,7 @@ const validateFileSecurity = async (file: File): Promise<{ valid: boolean; error
   return { valid: true };
 };
 
-export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly = false }) => {
+export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly = false, compact = false }) => {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<FilePreview | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -263,26 +264,50 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
   };
 
   return (
-    <div className="glass-card p-6 lg:p-8 rounded-3xl shadow-xs space-y-6">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-6">
-        <div>
-          <h3 className="font-extrabold text-slate-900 dark:text-white text-xl">بارگذاری و ورودی فایل فاکتورها (Excel / CSV)</h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            شناسایی خودکار ستون‌های تاریخ، مبلغ، شماره فاکتور و نام مشتری
-          </p>
+    <div
+      className={
+        compact
+          ? 'glass-card p-5 sm:p-6 rounded-2xl shadow-xs space-y-4'
+          : 'glass-card p-6 lg:p-8 rounded-3xl shadow-xs space-y-6'
+      }
+    >
+      {compact ? (
+        <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center shrink-0">
+              <UploadCloud className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base">
+                بارگذاری فایل فاکتورها (Excel / CSV)
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                شناسایی خودکار ستون‌ها و ورود دسته‌ای
+              </p>
+            </div>
+          </div>
         </div>
+      ) : (
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-6">
+          <div>
+            <h3 className="font-extrabold text-slate-900 dark:text-white text-xl">بارگذاری و ورودی فایل فاکتورها (Excel / CSV)</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              شناسایی خودکار ستون‌های تاریخ، مبلغ، شماره فاکتور و نام مشتری
+            </p>
+          </div>
 
-        {/* 1-Click Sample Import Button */}
-        <button
-          data-guide="ingestion-sample-data"
-          onClick={handleDownloadSample}
-          disabled={readOnly}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 border border-indigo-200 dark:border-indigo-800 text-xs font-bold transition-all shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Download className="w-4 h-4 text-indigo-500" />
-          <span>بارگیری داده‌های نمونه فروش</span>
-        </button>
-      </div>
+          {/* 1-Click Sample Import Button */}
+          <button
+            data-guide="ingestion-sample-data"
+            onClick={handleDownloadSample}
+            disabled={readOnly}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 border border-indigo-200 dark:border-indigo-800 text-xs font-bold transition-all shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Download className="w-4 h-4 text-indigo-500" />
+            <span>بارگیری داده‌های نمونه فروش</span>
+          </button>
+        </div>
+      )}
 
       {readOnly && (
         <div className="flex items-start gap-3 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-800 dark:text-rose-200 text-xs leading-relaxed">
@@ -300,21 +325,33 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`border-2 border-dashed rounded-3xl p-10 text-center transition-all flex flex-col items-center justify-center space-y-4 ${
+          className={`border-2 border-dashed text-center transition-all flex flex-col items-center justify-center ${
+            compact ? 'p-6 space-y-3 rounded-2xl' : 'p-10 space-y-4 rounded-3xl'
+          } ${
             isDragging
               ? 'border-brand-500 bg-brand-50/50 dark:bg-brand-950/20 ring-4 ring-brand-500/10'
               : 'border-slate-300 dark:border-slate-700 hover:border-brand-500 dark:hover:border-brand-500 bg-slate-50/50 dark:bg-slate-800/30'
           } ${readOnly ? 'pointer-events-none opacity-60 saturate-50' : ''}`}
         >
-          <div className="w-16 h-16 rounded-3xl bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/10">
-            <UploadCloud className="w-8 h-8" />
+          <div
+            className={`${
+              compact ? 'w-12 h-12 rounded-2xl' : 'w-16 h-16 rounded-3xl'
+            } bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/10`}
+          >
+            <UploadCloud className={compact ? 'w-6 h-6' : 'w-8 h-8'} />
           </div>
           <div className="space-y-1">
-            <p className="font-bold text-slate-800 dark:text-slate-200 text-sm">
+            <p
+              className={`font-bold text-slate-800 dark:text-slate-200 ${
+                compact ? 'text-xs sm:text-sm' : 'text-sm'
+              }`}
+            >
               فایل Excel یا CSV خود را اینجا بکشید یا برای انتخاب کلیک کنید
             </p>
-            <p className="text-xs text-slate-400">
-              پشتیبانی از فایل‌های اکسل (.xlsx) و CSV با سربرگ‌های فارسی یا انگلیسی (حداکثر ۱۰ مگابایت)
+            <p className={`${compact ? 'text-[11px]' : 'text-xs'} text-slate-400`}>
+              {compact
+                ? 'پشتیبانی از فایل‌های اکسل (.xlsx) و CSV (حداکثر ۱۰ مگابایت)'
+                : 'پشتیبانی از فایل‌های اکسل (.xlsx) و CSV با سربرگ‌های فارسی یا انگلیسی (حداکثر ۱۰ مگابایت)'}
             </p>
           </div>
           <label className="cursor-pointer px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition-all">
@@ -330,7 +367,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onSuccess, readOnly 
         </div>
       ) : (
         /* Column Mapping Preview & Import Confirmation */
-        <div className="space-y-6">
+        <div className={compact ? 'space-y-4' : 'space-y-6'}>
           <div className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-900/60">
             <div className="flex items-center gap-3">
               <FileText className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0" />
