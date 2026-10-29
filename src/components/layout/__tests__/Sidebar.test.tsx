@@ -42,7 +42,7 @@ describe('[component] Sidebar', () => {
     await renderWithProviders(<Sidebar isOpen={true} setIsOpen={vi.fn()} />, { withTheme: true });
 
     expect(screen.getByText('داشبورد اصلی')).toBeInTheDocument();
-    expect(screen.getByText('تحلیل و آمار فروش')).toBeInTheDocument();
+    expect(screen.queryByText('تحلیل و آمار فروش')).not.toBeInTheDocument();
     expect(screen.queryByText('پنل مدیریت')).not.toBeInTheDocument();
   });
 
