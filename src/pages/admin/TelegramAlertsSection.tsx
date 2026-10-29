@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
+
   Bell,
   Send,
   Plus,
@@ -217,7 +219,9 @@ export const TelegramAlertsSection: React.FC = () => {
   const activeCount = recipients.filter((r) => r.is_active).length;
 
   return (
-    <div className="glass-card rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/80 mb-6 transition-all">
+    <>
+      <div className="glass-card rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/80 mb-6 transition-all">
+
       {/* Banner / Header Bar */}
       <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-sky-50/50 via-white to-indigo-50/40 dark:from-sky-950/20 dark:via-slate-900/40 dark:to-indigo-950/20">
         <div className="flex items-center gap-3">
@@ -428,11 +432,21 @@ export const TelegramAlertsSection: React.FC = () => {
           </div>
         </div>
       )}
+    </div>
 
-      {/* Add Recipient Modal */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-lg p-5 sm:p-6 shadow-2xl space-y-4">
+    {/* Add Recipient Modal - Portaled to document.body outside card to prevent clipping */}
+    {isAddModalOpen &&
+      typeof document !== 'undefined' &&
+      createPortal(
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsAddModalOpen(false);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in"
+        >
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-lg p-5 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto dir-rtl font-vazir">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <h3 className="text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                 <Plus className="w-4 h-4 text-sky-500" />
@@ -573,8 +587,10 @@ export const TelegramAlertsSection: React.FC = () => {
               </form>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
-    </div>
+    </>
   );
 };
+
