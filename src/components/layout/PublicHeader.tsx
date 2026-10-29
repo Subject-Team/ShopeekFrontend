@@ -70,9 +70,9 @@ export const PublicHeader: React.FC = () => {
             } absolute`}
           >
             {isLanding ? (
-              <a href="#features" className="hover:text-brand-600 transition-colors">قابلیت‌ها</a>
+              <a href="#how-it-works" className="hover:text-brand-600 transition-colors">نحوه کارکرد</a>
             ) : (
-              <Link to="/#features" className="hover:text-brand-600 transition-colors">قابلیت‌ها</Link>
+              <Link to="/#how-it-works" className="hover:text-brand-600 transition-colors">نحوه کارکرد</Link>
             )}
             <Link
               to="/plans"
@@ -96,7 +96,7 @@ export const PublicHeader: React.FC = () => {
               to="/legal"
               className={`transition-colors ${location.pathname.startsWith('/legal') ? 'text-brand-600 font-bold' : 'hover:text-brand-600'}`}
             >
-              قوانین و مقررات
+              حریم خصوصی و شرایط
             </Link>
           </nav>
 
@@ -174,21 +174,21 @@ export const PublicHeader: React.FC = () => {
           <nav className="flex flex-col space-y-2 text-sm font-medium text-slate-700 border-b border-slate-100 pb-4">
             {isLanding ? (
               <a
-                href="#features"
+                href="#how-it-works"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-100 transition-colors"
               >
                 <BarChart3 className="w-4 h-4 text-brand-600" />
-                <span>قابلیت‌های سامانه</span>
+                <span>نحوه کارکرد شاپیک</span>
               </a>
             ) : (
               <Link
-                to="/#features"
+                to="/#how-it-works"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-100 transition-colors"
               >
                 <BarChart3 className="w-4 h-4 text-brand-600" />
-                <span>قابلیت‌های سامانه</span>
+                <span>نحوه کارکرد شاپیک</span>
               </Link>
             )}
 
@@ -233,7 +233,7 @@ export const PublicHeader: React.FC = () => {
               }`}
             >
               <Shield className="w-4 h-4 text-brand-600" />
-              <span>قوانین و مقررات و حریم خصوصی</span>
+              <span>حریم خصوصی و شرایط</span>
             </Link>
           </nav>
 

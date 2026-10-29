@@ -121,13 +121,13 @@ export const MainFooter: React.FC = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 text-center sm:text-right">
+        <div className="pt-8 -mb-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 text-center sm:text-right">
           <p>© {toPersianDigits(new Date().getFullYear())} شاپیک (Shopeek). تمامی حقوق محفوظ است.</p>
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-6">
             <Link to="/blog" className="hover:text-slate-900 transition-colors">وبلاگ</Link>
             <Link to="/contact" className="hover:text-slate-900 transition-colors">تماس با ما</Link>
             <Link to="/plans" className="hover:text-slate-900 transition-colors">طرح‌ها و تعرفه‌ها</Link>
-            <Link to="/legal" className="hover:text-slate-900 transition-colors">قوانین و مقررات</Link>
+            <Link to="/legal" className="hover:text-slate-900 transition-colors">حریم خصوصی و شرایط</Link>
             <Link to="/" className="hover:text-slate-900 transition-colors">صفحه اصلی</Link>
             <Link to="/login" className="hover:text-slate-900 transition-colors">ورود کاربران</Link>
           </div>

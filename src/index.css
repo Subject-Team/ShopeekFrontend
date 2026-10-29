@@ -9,9 +9,17 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
   }
   body {
     font-family: 'Vazirmatn', sans-serif;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
+  }
+  #root {
+    min-height: 100%;
+    overscroll-behavior: none;
   }
 }
 
