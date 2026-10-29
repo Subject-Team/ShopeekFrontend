@@ -29,6 +29,7 @@ const InvoicesPage = lazy(() => import('./pages/InvoicesPage').then((m) => ({ de
 const IngestionPage = lazy(() => import('./pages/IngestionPage').then((m) => ({ default: m.IngestionPage })));
 const SettingsPage = lazy(() => import('./pages/SettingsPage').then((m) => ({ default: m.SettingsPage })));
 const SubscriptionPage = lazy(() => import('./pages/SubscriptionPage').then((m) => ({ default: m.SubscriptionPage })));
+const DashboardNotFoundPage = lazy(() => import('./pages/DashboardNotFoundPage').then((m) => ({ default: m.DashboardNotFoundPage })));
 
 const ProtectedDashboardLayout: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -59,7 +60,7 @@ const ProtectedDashboardLayout: React.FC = () => {
           <Route path="ingestion" element={<IngestionPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="subscription" element={<SubscriptionPage />} />
-          <Route path="*" element={<NotFoundPage />} />
+          <Route path="*" element={<DashboardNotFoundPage />} />
         </Routes>
       </Suspense>
     </Shell>

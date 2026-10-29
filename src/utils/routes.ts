@@ -22,8 +22,11 @@ export const ROUTES: RouteInfo[] = [
 ];
 
 export const getPageTitle = (pathname: string): string => {
-  const route = ROUTES.find(r => r.path === pathname);
-  return route?.title ?? 'داشبورد';
+  const normalized = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+  const route = ROUTES.find(r => r.path === pathname || r.path === normalized);
+  if (route) return route.title;
+  if (pathname.startsWith('/dashboard')) return 'صفحه یافت نشد';
+  return 'داشبورد';
 };
 
 export const getActivePageKey = (pathname: string): string => {
