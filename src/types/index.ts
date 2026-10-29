@@ -178,6 +178,13 @@ export interface ChatMessage {
   created_at: string;
 }
 
+export interface ChatSessionSummary {
+  session_id: string;
+  title: string | null;
+  message_count: number;
+  last_message_at: string;
+}
+
 export interface WebSession {
   id: string;
   device_id: string;

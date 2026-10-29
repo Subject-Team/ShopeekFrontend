@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Sparkle, X, Send, User, Layers, RefreshCw, Trash2, Lock, Bot, Gauge } from 'lucide-react';
+import { Sparkle, X, Send, User, Layers, RefreshCw, Trash2, Lock, Bot, Gauge, History, MessageSquarePlus } from 'lucide-react';
 import { CreditIcon } from '../icons';
 import { usePageContext } from '../../context/PageContext';
 import { useAuth } from '../../context/AuthContext';
 import { useBillingContext } from '../../context/BillingContext';
-import { sendChatMessage, sendChatMessageStream, fetchChatHistory, clearChatHistory } from '../../services/api';
-import type { ChatMessage } from '../../types';
+import { sendChatMessage, sendChatMessageStream, fetchChatHistory, fetchChatSessions, clearChatHistory } from '../../services/api';
+import type { ChatMessage, ChatSessionSummary } from '../../types';
 import { toGroupedPersianDigits, toPersianDigits } from "../../utils/persian";
-import { formatJalaliRangeLabel } from "../../utils/persian/date";
+import { formatJalaliRangeLabel, formatJalaliNumeric } from "../../utils/persian/date";
 import { CreditSpendConfirmModal } from '../credits/CreditSpendConfirmModal';
 import { LOW_CREDIT_THRESHOLD, PAYG_COSTS } from '../../config/credits';
+
+const DEFAULT_SESSION_ID = 'session_default_user';
 
 /** Splits streamed text at the last blank line so only the newest paragraph animates.
  * Trailing blank lines are ignored, otherwise the fresh part is always empty. */
@@ -109,8 +111,11 @@ export const ChatDrawer: React.FC = () => {
   const [pendingSend, setPendingSend] = useState<string | null>(null);
   const [streamingId, setStreamingId] = useState<string | null>(null);
   const [finishedId, setFinishedId] = useState<string | null>(null);
+  const [sessions, setSessions] = useState<ChatSessionSummary[]>([]);
+  const [sessionsOpen, setSessionsOpen] = useState<boolean>(false);
+  const [sessionId, setSessionId] = useState<string>(DEFAULT_SESSION_ID);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const sessionId = 'session_default_user';
+  const conversationPickedRef = useRef<boolean>(false);
   // History rows are isolated per account server-side (user_id + session_id),
   // so the shared key is safe — but the in-memory list must follow account
   // switches, otherwise user B sees user A's messages after a login change.
@@ -136,28 +141,47 @@ export const ChatDrawer: React.FC = () => {
   const overQuota = quotaLimit !== null && quotaLeft !== null && quotaLeft <= 0;
   const blocked = overQuota && remainingCredits < paygCost;
 
-  const buildWelcomeMessage = (): ChatMessage => ({
+  const buildWelcomeMessage = (sid: string): ChatMessage => ({
     id: 'welcome',
-    session_id: sessionId,
+    session_id: sid,
     sender: 'ASSISTANT',
     message_content: 'سلام! من دستیار هوشمند شاپیک هستم. چطور می‌توانم در تحلیل روند فروش یا وضعیت مشتریان به شما کمک کنم؟',
     created_at: new Date().toISOString()
   });
+
+  const refreshSessions = (): void => {
+    fetchChatSessions()
+      .then(data => setSessions(data))
+      .catch(() => null);
+  };
+
+  // Auto-open the most recent conversation; skipped once the user has
+  // explicitly created or switched one.
+  useEffect(() => {
+    if (!isChatOpen) return;
+    fetchChatSessions()
+      .then(data => {
+        setSessions(data);
+        const latest = data.length > 0 ? data[0].session_id : null;
+        if (latest && !conversationPickedRef.current) setSessionId(latest);
+      })
+      .catch(() => null);
+  }, [isChatOpen, userId]);
 
   useEffect(() => {
     if (!isChatOpen) return;
     setHistoryLoading(true);
     fetchChatHistory(sessionId)
       .then(data => {
-        setMessages(data && data.length > 0 ? data : [buildWelcomeMessage()]);
+        setMessages(data && data.length > 0 ? data : [buildWelcomeMessage(sessionId)]);
       })
       .catch(() => {
-        setMessages([buildWelcomeMessage()]);
+        setMessages([buildWelcomeMessage(sessionId)]);
       })
       .finally(() => {
         setHistoryLoading(false);
       });
-  }, [isChatOpen, userId]);
+  }, [isChatOpen, userId, sessionId]);
 
   useEffect(() => {
     if (isChatOpen) {
@@ -266,6 +290,7 @@ export const ChatDrawer: React.FC = () => {
       setFinishedId(assistantId);
       setLoading(false);
       void refreshBilling();
+      refreshSessions();
     }
   };
 
@@ -328,12 +353,27 @@ export const ChatDrawer: React.FC = () => {
     setClearing(true);
     try {
       await clearChatHistory(sessionId);
-      setMessages([buildWelcomeMessage()]);
+      setMessages([buildWelcomeMessage(sessionId)]);
+      refreshSessions();
     } catch (err: unknown) {
       console.error('Failed to clear chat history', err);
     } finally {
       setClearing(false);
     }
+  };
+
+  const startNewChat = (): void => {
+    const newId = `session_${crypto.randomUUID()}`;
+    conversationPickedRef.current = true;
+    setSessionId(newId);
+    setMessages([buildWelcomeMessage(newId)]);
+    setSessionsOpen(false);
+  };
+
+  const openSession = (sid: string): void => {
+    conversationPickedRef.current = true;
+    setSessionId(sid);
+    setSessionsOpen(false);
   };
 
   if (!isChatOpen) return null;
@@ -346,7 +386,7 @@ export const ChatDrawer: React.FC = () => {
       />
 
       <div className="absolute inset-y-0 right-0 max-w-full flex pr-0 h-full">
-        <div className="w-screen max-w-md h-full max-h-[100dvh] bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col justify-between">
+        <div className="relative w-screen max-w-md h-full max-h-[100dvh] bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col justify-between">
 
           {/* Header */}
           <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/80 dark:bg-slate-800/80">
@@ -407,6 +447,23 @@ export const ChatDrawer: React.FC = () => {
                 )
               )}
               <button
+                onClick={() => setSessionsOpen(true)}
+                title="گفتگوهای اخیر"
+                aria-label="گفتگوهای اخیر"
+                className="p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition-colors"
+              >
+                <History className="w-5 h-5" />
+              </button>
+              <button
+                onClick={startNewChat}
+                disabled={readOnly}
+                title={readOnly ? 'در حالت فقط-خواندنی امکان شروع گفتگوی جدید وجود ندارد.' : 'گفتگوی جدید'}
+                aria-label="گفتگوی جدید"
+                className="p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition-colors disabled:opacity-50"
+              >
+                <MessageSquarePlus className="w-5 h-5" />
+              </button>
+              <button
                 onClick={handleClearChat}
                 disabled={clearing || loading || readOnly}
                 title={readOnly ? 'در حالت فقط-خواندنی امکان پاک کردن گفتگو وجود ندارد.' : 'پاک کردن گفتگو'}
@@ -423,6 +480,47 @@ export const ChatDrawer: React.FC = () => {
               </button>
             </div>
           </div>
+
+          {/* Recent conversations panel */}
+          {sessionsOpen && (
+            <div className="absolute inset-0 z-20 flex flex-col bg-white dark:bg-slate-900">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/80 px-4 py-3">
+                <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">گفتگوهای اخیر</h4>
+                <button
+                  onClick={() => setSessionsOpen(false)}
+                  title="بازگشت به گفتگو"
+                  aria-label="بازگشت به گفتگو"
+                  className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                {sessions.length === 0 ? (
+                  <p className="pt-10 text-center text-xs text-slate-400">گفتگویی ذخیره نشده است.</p>
+                ) : (
+                  sessions.map(s => (
+                    <button
+                      key={s.session_id}
+                      onClick={() => openSession(s.session_id)}
+                      className={`block w-full text-start p-3 rounded-xl border transition-colors ${
+                        s.session_id === sessionId
+                          ? 'border-indigo-300 dark:border-indigo-700 bg-indigo-50 dark:bg-indigo-950/40'
+                          : 'border-slate-200/70 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+                      }`}
+                    >
+                      <span className="block truncate text-xs font-bold text-slate-800 dark:text-slate-100">
+                        {s.title || 'گفتگوی بدون عنوان'}
+                      </span>
+                      <span className="mt-1 block text-[10px] text-slate-400">
+                        {toPersianDigits(formatJalaliNumeric(s.last_message_at))}
+                      </span>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Messages Body */}
           <div className="flex-1 p-4 overflow-y-auto space-y-4">

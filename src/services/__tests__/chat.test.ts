@@ -1,7 +1,7 @@
 // @test-type service
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ReadableStream as WebReadableStream } from 'node:stream/web';
-import { sendChatMessage, sendChatMessageStream, fetchChatHistory, clearChatHistory } from '../api';
+import { sendChatMessage, sendChatMessageStream, fetchChatHistory, fetchChatSessions, clearChatHistory } from '../api';
 
 describe('[service] chat API', () => {
   const originalFetch = window.fetch;
@@ -32,6 +32,27 @@ describe('[service] chat API', () => {
     window.fetch = vi.fn().mockResolvedValue(errJson(500, {}));
     const history = await fetchChatHistory('sess-1');
     expect(history).toEqual([]);
+  });
+
+  it('fetchChatSessions GETs the session index', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => [
+        { session_id: 'session_x', title: 'سلام', message_count: 2, last_message_at: '2026-01-01T10:00:00' }
+      ]
+    });
+    window.fetch = fetchMock;
+
+    const sessions = await fetchChatSessions();
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/chat/sessions', expect.anything());
+    expect(sessions[0].session_id).toBe('session_x');
+  });
+
+  it('fetchChatSessions returns an empty list on failure', async () => {
+    window.fetch = vi.fn().mockResolvedValue(errJson(500, {}));
+    const sessions = await fetchChatSessions();
+    expect(sessions).toEqual([]);
   });
 
   it('clearChatHistory DELETEs the history', async () => {

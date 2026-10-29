@@ -11,6 +11,7 @@ import type { ChatMessage, BillingOverview, BillingWallet, BillingUsage } from '
 
 vi.mock('../../../services/api', () => ({
   fetchChatHistory: vi.fn(),
+  fetchChatSessions: vi.fn().mockResolvedValue([]),
   sendChatMessage: vi.fn(),
   clearChatHistory: vi.fn(),
   fetchBillingOverview: vi.fn().mockResolvedValue({
@@ -75,6 +76,7 @@ describe('[component] ChatDrawer Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (api.fetchChatHistory as any).mockResolvedValue([]);
+    (api.fetchChatSessions as any).mockResolvedValue([]);
     (api.fetchBillingOverview as any).mockResolvedValue(makeBilling(null));
   });
 
@@ -312,5 +314,64 @@ describe('[component] ChatDrawer Component', () => {
     await waitFor(() => {
       expect(screen.getByText('پاسخ هوش مصنوعی')).toBeInTheDocument();
     });
+  });
+
+  it('auto-opens the most recent conversation on drawer open', async () => {
+    (api.fetchChatSessions as any).mockResolvedValue([
+      { session_id: 'session_recent', title: 'گفتگوی قبلی', message_count: 2, last_message_at: '2026-01-15T10:00:00' },
+    ]);
+    (api.fetchChatHistory as any).mockResolvedValue([
+      makeMsg({ session_id: 'session_recent', message_content: 'پیام گفتگوی قبلی' }),
+    ]);
+
+    await openChat();
+
+    await waitFor(() => {
+      expect(api.fetchChatHistory).toHaveBeenCalledWith('session_recent');
+      expect(screen.getByText('پیام گفتگوی قبلی')).toBeInTheDocument();
+    });
+  });
+
+  it('starts a fresh conversation via the new chat button', async () => {
+    (api.fetchChatHistory as any).mockResolvedValue([
+      makeMsg({ message_content: 'پاسخ قبلی' }),
+    ]);
+
+    await openChat();
+
+    await waitFor(() => {
+      expect(screen.getByText('پاسخ قبلی')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'گفتگوی جدید' }));
+
+    await waitFor(() => {
+      expect(api.fetchChatHistory).toHaveBeenLastCalledWith(expect.stringMatching(/^session_/));
+      expect(screen.queryByText('پاسخ قبلی')).not.toBeInTheDocument();
+      expect(screen.getByText(/سلام! من دستیار هوشمند شاپیک هستم/i)).toBeInTheDocument();
+    });
+  });
+
+  it('lists recent conversations and switches to the selected one', async () => {
+    (api.fetchChatSessions as any).mockResolvedValue([
+      { session_id: 'session_newest', title: 'سوال درباره فروش', message_count: 4, last_message_at: '2026-01-15T10:00:00' },
+      { session_id: 'session_older', title: 'تحلیل مشتریان', message_count: 2, last_message_at: '2026-01-01T09:00:00' },
+    ]);
+
+    await openChat();
+
+    fireEvent.click(screen.getByRole('button', { name: 'گفتگوهای اخیر' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('سوال درباره فروش')).toBeInTheDocument();
+      expect(screen.getByText('تحلیل مشتریان')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('تحلیل مشتریان'));
+
+    await waitFor(() => {
+      expect(api.fetchChatHistory).toHaveBeenCalledWith('session_older');
+    });
+    expect(screen.queryByText('سوال درباره فروش')).not.toBeInTheDocument();
   });
 });

@@ -1,4 +1,4 @@
-import type { ChatMessage } from '../../types';
+import type { ChatMessage, ChatSessionSummary } from '../../types';
 import { authFetch } from './client';
 
 const API_BASE = '/api/v1';
@@ -68,6 +68,12 @@ export const sendChatMessageStream = async (
 
 export const fetchChatHistory = async (sessionId: string): Promise<ChatMessage[]> => {
   const res = await authFetch(`${API_BASE}/chat/history?session_id=${sessionId}`);
+  if (!res.ok) return [];
+  return res.json();
+};
+
+export const fetchChatSessions = async (): Promise<ChatSessionSummary[]> => {
+  const res = await authFetch(`${API_BASE}/chat/sessions`);
   if (!res.ok) return [];
   return res.json();
 };
