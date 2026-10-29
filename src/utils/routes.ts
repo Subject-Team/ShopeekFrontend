@@ -9,6 +9,8 @@ export interface RouteInfo {
  * Consumers: Topbar (page title) and GuideContext (active guide page key).
  */
 export const ROUTES: RouteInfo[] = [
+  { path: '/admin', key: 'admin', title: 'پنل مدیریت' },
+  { path: '/admin/', key: 'admin', title: 'پنل مدیریت' },
   { path: '/dashboard', key: 'dashboard', title: 'داشبورد اصلی' },
   { path: '/dashboard/', key: 'dashboard', title: 'داشبورد اصلی' },
   { path: '/dashboard/analytics', key: 'analytics', title: 'تحلیل و آمار فروش' },

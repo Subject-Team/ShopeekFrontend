@@ -87,6 +87,11 @@ describe('[component] Layout Components', () => {
     expect(screen.getByText(/مدیریت مشتریان/i)).toBeInTheDocument();
     expect(screen.getByText(/ورود داده‌ها/i)).toBeInTheDocument();
     expect(screen.getByText('راهنمای سامانه')).toBeInTheDocument();
+    expect(screen.getByText('ارسال بازخورد و باگ')).toBeInTheDocument();
+    expect(screen.queryByText('پاداش')).not.toBeInTheDocument();
+    expect(screen.getByText('پشتیبانی و تمدید اشتراک')).toBeInTheDocument();
+    expect(screen.getByText('صفحه اصلی سایت')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /شاپیک تحلیل هوشمند فروش/i })).toHaveAttribute('href', '/dashboard');
     expect(screen.getByTitle(/تغییر به حالت/i)).toBeInTheDocument();
   });
 

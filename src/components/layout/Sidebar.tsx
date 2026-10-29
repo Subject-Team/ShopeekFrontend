@@ -21,6 +21,7 @@ import {
   X,
   Trash2,
   MessageSquarePlus,
+  Shield,
 } from 'lucide-react';
 import { FeedbackModal } from '../feedback/FeedbackModal';
 import { useGuide } from '../../context/GuideContext';
@@ -36,7 +37,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const { startGuide, isGuideOpen } = useGuide();
   const { theme, toggleTheme } = useTheme();
-  const { user, accounts, switchAccount, removeAccount, logout, logoutAll } = useAuth();
+  const { user, isLoading, accounts, switchAccount, removeAccount, logout, logoutAll } = useAuth();
   const location = useLocation();
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState<boolean>(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState<boolean>(false);
@@ -57,7 +58,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     };
   }, [isAccountMenuOpen]);
 
+  const isAdmin = !isLoading && user?.role === 'Admin';
+
   const navItems = [
+    ...(isAdmin ? [{ path: '/admin', label: 'پنل مدیریت', icon: Shield }] : []),
     { path: '/dashboard', label: 'داشبورد اصلی', icon: LayoutDashboard },
     { path: '/dashboard/analytics', label: 'تحلیل و آمار فروش', icon: TrendingUp },
     { path: '/dashboard/customers', label: 'مدیریت مشتریان (CRM)', icon: Users },
@@ -91,7 +95,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             >
               <ChevronRight className="w-6 h-6" />
             </button>
-            <Link to="/" className="flex items-center gap-3">
+            <Link
+              to="/dashboard"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3"
+            >
               <img src="/images/logo.svg" alt="logo" width={50} height={50} />
               <div>
                 <span className="font-bold text-lg leading-tight text-slate-900 dark:text-white block">
@@ -108,7 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               const Icon = item.icon;
               const isActive =
                 location.pathname === item.path ||
-                (item.path === '/dashboard' && location.pathname === '/dashboard/');
+                location.pathname === `${item.path}/`;
               return (
                 <Link
                   key={item.path}
@@ -130,54 +138,48 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               );
             })}
 
-            {/* Quick In-App Guide Launcher */}
-            <div className="pt-2">
+            {/* Support, Guide, Feedback and Home Links */}
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 mt-3 space-y-1">
               <button
+                type="button"
                 data-guide="sidebar-guide-btn"
                 onClick={() => {
                   startGuide();
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl font-semibold text-xs transition-all border ${
+                className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl font-medium text-xs transition-all ${
                   isGuideOpen
-                    ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 border-transparent hover:text-slate-900 dark:hover:text-slate-100'
+                    ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold'
+                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
                 }`}
                 title="شروع یا بازبینی تور راهنمای سامانه"
               >
-                <div className="flex items-center gap-3">
-                  <HelpCircle className="w-4 h-4 text-amber-500" />
+                <div className="flex items-center gap-3.5">
+                  <HelpCircle
+                    className={`w-4 h-4 shrink-0 ${
+                      isGuideOpen ? 'text-amber-500' : 'text-slate-400'
+                    }`}
+                  />
                   <span>راهنمای سامانه</span>
                 </div>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 font-bold">
                   آموزش
                 </span>
               </button>
-            </div>
 
-            {/* Quick Feedback & Bug Report Launcher */}
-            <div className="pt-1">
               <button
                 type="button"
                 onClick={() => {
                   setIsFeedbackOpen(true);
                   setIsOpen(false);
                 }}
-                className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl font-semibold text-xs transition-all border border-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100"
+                className="w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl font-medium text-xs text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100 transition-all"
                 title="ارسال بازخورد، پیشنهاد یا گزارش باگ"
               >
-                <div className="flex items-center gap-3">
-                  <MessageSquarePlus className="w-4 h-4 text-brand-500" />
-                  <span>ارسال بازخورد و باگ</span>
-                </div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-brand-50 dark:bg-brand-950/80 text-brand-700 dark:text-brand-300 font-bold">
-                  پاداش
-                </span>
+                <MessageSquarePlus className="w-4 h-4 shrink-0 text-slate-400" />
+                <span>ارسال بازخورد و باگ</span>
               </button>
-            </div>
 
-            {/* Support and Home Links */}
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 mt-3 space-y-1">
               <Link
                 to="/contact"
                 onClick={() => setIsOpen(false)}
