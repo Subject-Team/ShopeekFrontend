@@ -63,10 +63,16 @@ export const LandingPage: React.FC = () => {
   const howItWorksRef = useRef<HTMLDivElement>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activeMock, setActiveMock] = useState<MockId>('telegram');
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
+  const [isTourVisible, setIsTourVisible] = useState(false);
 
   const telegramMockRef = useRef<HTMLDivElement>(null);
   const webMockRef = useRef<HTMLDivElement>(null);
   const excelMockRef = useRef<HTMLDivElement>(null);
+
+  const step1Ref = useRef<HTMLDivElement>(null);
+  const step2Ref = useRef<HTMLDivElement>(null);
+  const step3Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if ((location.hash === '#how-it-works' || location.hash === '#features') && howItWorksRef.current) {
@@ -79,37 +85,86 @@ export const LandingPage: React.FC = () => {
   useEffect(() => {
     if (typeof window === 'undefined' || !('IntersectionObserver' in window)) return;
 
-    const visibleRatios = new Map<MockId, number>([
+    // Observe whether tour section is in view
+    const tourObserver = new IntersectionObserver(
+      ([entry]) => {
+        setIsTourVisible(entry.isIntersecting);
+      },
+      { rootMargin: '-5% 0px -5% 0px', threshold: 0 }
+    );
+    if (howItWorksRef.current) tourObserver.observe(howItWorksRef.current);
+
+    // Observe which of the 3 major steps is currently active
+    const stepHeights = new Map<1 | 2 | 3, number>([
+      [1, 0],
+      [2, 0],
+      [3, 0],
+    ]);
+
+    const stepsObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const step = Number(entry.target.getAttribute('data-step')) as 1 | 2 | 3;
+          if (step) {
+            stepHeights.set(step, entry.isIntersecting ? entry.intersectionRect.height : 0);
+          }
+        });
+
+        let maxHeight = 0;
+        let candidate: 1 | 2 | 3 | null = null;
+        stepHeights.forEach((height, step) => {
+          if (height > maxHeight) {
+            maxHeight = height;
+            candidate = step;
+          }
+        });
+
+        if (candidate && maxHeight > 60) {
+          setCurrentStep(candidate);
+        }
+      },
+      {
+        rootMargin: '-10% 0px -15% 0px',
+        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+      }
+    );
+
+    if (step1Ref.current) stepsObserver.observe(step1Ref.current);
+    if (step2Ref.current) stepsObserver.observe(step2Ref.current);
+    if (step3Ref.current) stepsObserver.observe(step3Ref.current);
+
+    // Observe which mockup in Step 1 is in view
+    const mockHeights = new Map<MockId, number>([
       ['telegram', 0],
       ['web', 0],
       ['excel', 0],
     ]);
 
-    const observer = new IntersectionObserver(
+    const mockObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           const id = entry.target.getAttribute('data-mock-id') as MockId;
           if (id) {
-            visibleRatios.set(id, entry.isIntersecting ? entry.intersectionRatio : 0);
+            mockHeights.set(id, entry.isIntersecting ? entry.intersectionRect.height : 0);
           }
         });
 
-        let highestRatio = 0;
+        let maxHeight = 0;
         let candidate: MockId | null = null;
-        visibleRatios.forEach((ratio, id) => {
-          if (ratio > highestRatio) {
-            highestRatio = ratio;
+        mockHeights.forEach((height, id) => {
+          if (height > maxHeight) {
+            maxHeight = height;
             candidate = id;
           }
         });
 
-        if (candidate && highestRatio > 0.1) {
+        if (candidate && maxHeight > 50) {
           setActiveMock(candidate);
         }
       },
       {
-        rootMargin: '-15% 0px -25% 0px',
-        threshold: [0.1, 0.25, 0.5, 0.75, 1.0],
+        rootMargin: '-15% 0px -20% 0px',
+        threshold: [0, 0.15, 0.3, 0.5, 0.7, 0.85, 1.0],
       }
     );
 
@@ -120,10 +175,14 @@ export const LandingPage: React.FC = () => {
     ];
 
     elements.forEach(({ ref }) => {
-      if (ref.current) observer.observe(ref.current);
+      if (ref.current) mockObserver.observe(ref.current);
     });
 
-    return () => observer.disconnect();
+    return () => {
+      tourObserver.disconnect();
+      stepsObserver.disconnect();
+      mockObserver.disconnect();
+    };
   }, []);
 
   const scrollToTour = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -174,32 +233,32 @@ export const LandingPage: React.FC = () => {
       {/* Sticky Header */}
       <PublicHeader />
 
-      {/* Hero Section */}
-      <section className="relative pt-20 pb-16 md:pt-32 md:pb-24 px-4 sm:px-6 max-w-5xl mx-auto w-full flex flex-col items-center text-center">
+      {/* Hero Section: Fits exact window height accounting for header */}
+      <section className="relative min-h-[calc(100dvh-4rem)] sm:min-h-[calc(100dvh-5rem)] mt-0 py-4 sm:py-6 px-4 sm:px-6 max-w-4xl mx-auto w-full flex flex-col items-center justify-center text-center">
         {/* Ambient Light Glows */}
-        <div className="absolute top-12 left-1/2 -translate-x-1/2 w-3/4 max-w-3xl h-72 bg-gradient-to-r from-brand-500/15 via-indigo-500/15 to-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 max-w-3xl h-64 bg-gradient-to-r from-brand-500/15 via-indigo-500/15 to-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* Feature Pill Badge */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200/90 text-brand-700 text-xs font-semibold mb-6 shadow-2xs">
+        <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-brand-50 border border-brand-200/90 text-brand-700 text-xs font-semibold mb-4 sm:mb-5 shadow-2xs">
           <Sparkle className="w-3.5 h-3.5 text-brand-600 shrink-0" />
           <span>تحلیل خودکار فروش • دستیار هوش مصنوعی • تقویم و ارقام شمسی</span>
         </div>
 
         {/* Single H1 requirement */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 leading-[1.25] sm:leading-[1.2] md:leading-[1.18] tracking-tight mb-6 max-w-4xl">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 leading-[1.25] sm:leading-[1.2] md:leading-[1.18] tracking-tight mb-4 sm:mb-5 max-w-3xl">
           شاپیک؛ دستیار هوشمند و پلتفرم تحلیل فروش کسب‌وکارها
         </h1>
 
-        <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-2xl leading-relaxed mb-10">
+        <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-xl leading-relaxed mb-6 sm:mb-8">
           از داده‌های پراکنده فروش و فایل‌های اکسل تا داشبورد شفاف و توصیه‌های هوش مصنوعی؛ بدون نیاز به حسابدار یا دانش فنی.
         </p>
 
         {/* Hero Single CTA: Leads straight into the explanation tour */}
-        <div className="flex flex-col items-center justify-center gap-5">
+        <div className="flex flex-col items-center justify-center gap-3 sm:gap-4">
           <a
             href="#how-it-works"
             onClick={scrollToTour}
-            className="hover:translate-y-0.5 group px-8 py-4 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-base shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40 transition-all flex items-center justify-center gap-3 cursor-pointer"
+            className="hover:translate-y-0.5 group px-7 py-3.5 sm:px-8 sm:py-4 rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-sm sm:text-base shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40 transition-all flex items-center justify-center gap-2.5 cursor-pointer"
           >
             <span>چطور انجامش می‌دهیم؟</span>
             <ArrowDown className="w-4 h-4 transition-transform" />
@@ -212,7 +271,7 @@ export const LandingPage: React.FC = () => {
       <section
         ref={howItWorksRef}
         id="how-it-works"
-        className="py-16 md:py-24 px-4 sm:px-6 max-w-6xl mx-auto w-full"
+        className="pt-2 pb-16 md:pb-24 px-4 sm:px-6 max-w-6xl mx-auto w-full"
       >
         {/* Section Header */}
         <div className="text-center space-y-3 mb-16 md:mb-20">
@@ -229,15 +288,19 @@ export const LandingPage: React.FC = () => {
         </div>
 
         {/* Step-by-Step Zigzag Rows */}
-        <div className="space-y-16 md:space-y-24">
+        <div className="space-y-16 md:space-y-24 px-6 sm:px-8 md:px-10 lg:px-8">
           {/* STEP 1: Data Ingestion (Text Right, Mockup Left) */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
+          <div
+            ref={step1Ref}
+            data-step="1"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch scroll-mt-24"
+          >
             {/* Text description: Full-height track container so sticky child can travel */}
             <div className="relative">
               <div className="space-y-6 text-right lg:sticky lg:top-28">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold">
                   <span>گام ۱</span>
-                  <span className="text-blue-300">•</span>
+                  <span className="text-indigo-300">•</span>
                   <span>ورود فوق‌العاده آسان داده‌ها</span>
                 </div>
                 <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 leading-snug">
@@ -253,17 +316,17 @@ export const LandingPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => scrollToMock('telegram')}
-                    className={`w-full text-right p-3 sm:p-3.5 rounded-2xl border transition-all duration-300 flex items-start gap-3 cursor-pointer ${
+                    className={`w-full text-right p-3 sm:p-3.5 rounded-2xl border transition-all duration-300 flex items-start gap-3 cursor-pointer bg-white border-slate-200/80 shadow-2xs hover:border-slate-300 hover:bg-slate-50/50 ${
                       activeMock === 'telegram'
-                        ? 'bg-gradient-to-l from-sky-50/90 via-sky-50/30 to-white border-sky-400 shadow-md shadow-sky-500/10 ring-2 ring-sky-300/60 scale-[1.01]'
-                        : 'bg-white border-slate-200/80 shadow-2xs hover:border-slate-300 hover:bg-slate-50/50 opacity-80 hover:opacity-100'
+                        ? 'lg:bg-gradient-to-l lg:from-sky-50/90 lg:via-sky-50/30 lg:to-white lg:border-sky-400 lg:shadow-md lg:shadow-sky-500/10 lg:ring-2 lg:ring-sky-300/60 lg:scale-[1.01] lg:opacity-100'
+                        : 'lg:opacity-80 lg:hover:opacity-100'
                     }`}
                   >
                     <div
-                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 transition-colors bg-sky-50 text-sky-600 border border-sky-200 ${
                         activeMock === 'telegram'
-                          ? 'bg-sky-500 text-white shadow-sm shadow-sky-500/25'
-                          : 'bg-sky-50 text-sky-600 border border-sky-200'
+                          ? 'lg:bg-sky-500 lg:text-white lg:shadow-sm lg:shadow-sky-500/25'
+                          : ''
                       }`}
                     >
                       <Bot className="w-4 h-4" />
@@ -280,17 +343,17 @@ export const LandingPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => scrollToMock('web')}
-                    className={`w-full text-right p-3 sm:p-3.5 rounded-2xl border transition-all duration-300 flex items-start gap-3 cursor-pointer ${
+                    className={`w-full text-right p-3 sm:p-3.5 rounded-2xl border transition-all duration-300 flex items-start gap-3 cursor-pointer bg-white border-slate-200/80 shadow-2xs hover:border-slate-300 hover:bg-slate-50/50 ${
                       activeMock === 'web'
-                        ? 'bg-gradient-to-l from-brand-50/90 via-brand-50/30 to-white border-brand-400 shadow-md shadow-brand-500/10 ring-2 ring-brand-300/60 scale-[1.01]'
-                        : 'bg-white border-slate-200/80 shadow-2xs hover:border-slate-300 hover:bg-slate-50/50 opacity-80 hover:opacity-100'
+                        ? 'lg:bg-gradient-to-l lg:from-brand-50/90 lg:via-brand-50/30 lg:to-white lg:border-brand-400 lg:shadow-md lg:shadow-brand-500/10 lg:ring-2 lg:ring-brand-300/60 lg:scale-[1.01] lg:opacity-100'
+                        : 'lg:opacity-80 lg:hover:opacity-100'
                     }`}
                   >
                     <div
-                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 transition-colors bg-brand-50 text-brand-600 border border-brand-200 ${
                         activeMock === 'web'
-                          ? 'bg-brand-600 text-white shadow-sm shadow-brand-500/25'
-                          : 'bg-brand-50 text-brand-600 border border-brand-200'
+                          ? 'lg:bg-brand-600 lg:text-white lg:shadow-sm lg:shadow-brand-500/25'
+                          : ''
                       }`}
                     >
                       <Laptop className="w-4 h-4" />
@@ -307,17 +370,17 @@ export const LandingPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => scrollToMock('web')}
-                    className={`w-full text-right p-3 sm:p-3.5 rounded-2xl border transition-all duration-300 flex items-start gap-3 cursor-pointer ${
+                    className={`w-full text-right p-3 sm:p-3.5 rounded-2xl border transition-all duration-300 flex items-start gap-3 cursor-pointer bg-white border-slate-200/80 shadow-2xs hover:border-slate-300 hover:bg-slate-50/50 ${
                       activeMock === 'web'
-                        ? 'bg-gradient-to-l from-indigo-50/90 via-indigo-50/30 to-white border-indigo-400 shadow-md shadow-indigo-500/10 ring-2 ring-indigo-300/60 scale-[1.01]'
-                        : 'bg-white border-slate-200/80 shadow-2xs hover:border-slate-300 hover:bg-slate-50/50 opacity-80 hover:opacity-100'
+                        ? 'lg:bg-gradient-to-l lg:from-indigo-50/90 lg:via-indigo-50/30 lg:to-white lg:border-indigo-400 lg:shadow-md lg:shadow-indigo-500/10 lg:ring-2 lg:ring-indigo-300/60 lg:scale-[1.01] lg:opacity-100'
+                        : 'lg:opacity-80 lg:hover:opacity-100'
                     }`}
                   >
                     <div
-                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 transition-colors bg-indigo-50 text-indigo-600 border border-indigo-200 ${
                         activeMock === 'web'
-                          ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/25'
-                          : 'bg-indigo-50 text-indigo-600 border border-indigo-200'
+                          ? 'lg:bg-indigo-600 lg:text-white lg:shadow-sm lg:shadow-indigo-500/25'
+                          : ''
                       }`}
                     >
                       <Smartphone className="w-4 h-4" />
@@ -334,17 +397,17 @@ export const LandingPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => scrollToMock('excel')}
-                    className={`w-full text-right p-3 sm:p-3.5 rounded-2xl border transition-all duration-300 flex items-start gap-3 cursor-pointer ${
+                    className={`w-full text-right p-3 sm:p-3.5 rounded-2xl border transition-all duration-300 flex items-start gap-3 cursor-pointer bg-white border-slate-200/80 shadow-2xs hover:border-slate-300 hover:bg-slate-50/50 ${
                       activeMock === 'excel'
-                        ? 'bg-gradient-to-l from-emerald-50/90 via-emerald-50/30 to-white border-emerald-400 shadow-md shadow-emerald-500/10 ring-2 ring-emerald-300/60 scale-[1.01]'
-                        : 'bg-white border-slate-200/80 shadow-2xs hover:border-slate-300 hover:bg-slate-50/50 opacity-80 hover:opacity-100'
+                        ? 'lg:bg-gradient-to-l lg:from-emerald-50/90 lg:via-emerald-50/30 lg:to-white lg:border-emerald-400 lg:shadow-md lg:shadow-emerald-500/10 lg:ring-2 lg:ring-emerald-300/60 lg:scale-[1.01] lg:opacity-100'
+                        : 'lg:opacity-80 lg:hover:opacity-100'
                     }`}
                   >
                     <div
-                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 transition-colors bg-emerald-50 text-emerald-600 border border-emerald-200 ${
                         activeMock === 'excel'
-                          ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-500/25'
-                          : 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                          ? 'lg:bg-emerald-600 lg:text-white lg:shadow-sm lg:shadow-emerald-500/25'
+                          : ''
                       }`}
                     >
                       <FileSpreadsheet className="w-4 h-4" />
@@ -369,7 +432,7 @@ export const LandingPage: React.FC = () => {
                 className={`rounded-3xl bg-white p-5 sm:p-6 transition-all duration-300 relative space-y-3.5 scroll-mt-28 ${
                   activeMock === 'telegram'
                     ? 'border-2 border-sky-400 ring-4 ring-sky-100/80 shadow-2xl shadow-sky-500/15 scale-[1.01]'
-                    : 'border border-slate-200/90 shadow-md opacity-70 hover:opacity-100 scale-100'
+                    : 'border border-slate-200/90 shadow-md opacity-70 hover:opacity-100 hover:border-sky-300 hover:ring-4 hover:ring-sky-50 hover:shadow-xl scale-100'
                 }`}
               >
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -388,9 +451,6 @@ export const LandingPage: React.FC = () => {
                       <div className="text-[10px] text-slate-400">همیشه آنلاین • ثبت سریع با زبان محاوره‌ای</div>
                     </div>
                   </div>
-                  <span className="text-[10px] text-sky-700 font-semibold bg-sky-50 border border-sky-200 px-2.5 py-0.5 rounded-full">
-                    ثبت مکالمه‌ای
-                  </span>
                 </div>
 
                 <div className="p-3.5 sm:p-4 rounded-2xl bg-sky-50/50 border border-sky-100/80 space-y-3">
@@ -441,7 +501,7 @@ export const LandingPage: React.FC = () => {
                 className={`rounded-3xl bg-white p-5 sm:p-6 transition-all duration-300 relative space-y-3.5 scroll-mt-28 ${
                   activeMock === 'web'
                     ? 'border-2 border-brand-400 ring-4 ring-brand-100/80 shadow-2xl shadow-brand-500/15 scale-[1.01]'
-                    : 'border border-slate-200/90 shadow-md opacity-70 hover:opacity-100 scale-100'
+                    : 'border border-slate-200/90 shadow-md opacity-70 hover:opacity-100 hover:border-brand-300 hover:ring-4 hover:ring-brand-50 hover:shadow-xl scale-100'
                 }`}
               >
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -454,9 +514,6 @@ export const LandingPage: React.FC = () => {
                       <div className="text-[10px] text-slate-400">پنل سریع برای کامپیوتر فروشگاه و گوشی همراه</div>
                     </div>
                   </div>
-                  <span className="text-[10px] font-semibold text-brand-700 bg-brand-50 border border-brand-200 px-2.5 py-0.5 rounded-full">
-                    لحظه‌ای و آنلاین
-                  </span>
                 </div>
 
                 <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5">
@@ -497,7 +554,7 @@ export const LandingPage: React.FC = () => {
                 className={`rounded-3xl bg-white p-5 sm:p-6 transition-all duration-300 relative space-y-3.5 scroll-mt-28 ${
                   activeMock === 'excel'
                     ? 'border-2 border-emerald-400 ring-4 ring-emerald-100/80 shadow-2xl shadow-emerald-500/15 scale-[1.01]'
-                    : 'border border-slate-200/90 shadow-md opacity-70 hover:opacity-100 scale-100'
+                    : 'border border-slate-200/90 shadow-md opacity-70 hover:opacity-100 hover:border-emerald-300 hover:ring-4 hover:ring-emerald-50 hover:shadow-xl scale-100'
                 }`}
               >
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -510,9 +567,6 @@ export const LandingPage: React.FC = () => {
                       <div className="text-[10px] text-slate-400">انتقال صدها فاکتور با انطباق هوشمند ستون‌ها</div>
                     </div>
                   </div>
-                  <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-                    تشخیص خودکار
-                  </span>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5">
@@ -539,7 +593,11 @@ export const LandingPage: React.FC = () => {
           </div>
 
           {/* STEP 2: Automated Analytics & CRM (Mockup Right, Text Left on desktop) */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <div
+            ref={step2Ref}
+            data-step="2"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center scroll-mt-24"
+          >
             {/* Text description (Order-1 on desktop to alternate) */}
             <div className="space-y-5 text-right lg:order-2">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
@@ -570,7 +628,13 @@ export const LandingPage: React.FC = () => {
             </div>
 
             {/* Mockup: Dashboard KPI & Chart Preview */}
-            <div className="rounded-3xl bg-white border border-slate-200/90 p-5 sm:p-6 shadow-xl shadow-slate-200/50 space-y-4 lg:order-1">
+            <div
+              className={`rounded-3xl bg-white p-5 sm:p-6 space-y-4 lg:order-1 transition-all duration-300 group ${
+                currentStep === 2
+                  ? 'border-2 border-emerald-400 ring-4 ring-emerald-100/80 shadow-2xl shadow-emerald-500/15 scale-[1.01]'
+                  : 'border border-slate-200/90 shadow-md opacity-70 hover:opacity-100 hover:border-emerald-300 hover:ring-4 hover:ring-emerald-50 hover:shadow-xl scale-100'
+              }`}
+            >
               <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
@@ -581,7 +645,7 @@ export const LandingPage: React.FC = () => {
 
               {/* 3 mini KPI boxes */}
               <div className="grid grid-cols-3 gap-2.5 text-right">
-                <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50/40 hover:shadow-xs">
                   <div className="text-[10px] text-slate-500 mb-0.5">فروش کل</div>
                   <div className="text-xs sm:text-sm font-black text-slate-900">۱۲۸.۵ م</div>
                   <div className="text-[9px] text-emerald-600 font-semibold flex items-center gap-0.5 mt-0.5">
@@ -589,12 +653,12 @@ export const LandingPage: React.FC = () => {
                     <span>+۱۴.۵٪</span>
                   </div>
                 </div>
-                <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50/40 hover:shadow-xs">
                   <div className="text-[10px] text-slate-500 mb-0.5">تعداد سفارش</div>
                   <div className="text-xs sm:text-sm font-black text-slate-900">۴۵۲ عدد</div>
                   <div className="text-[9px] text-indigo-600 font-semibold mt-0.5">۳۸ مشتری جدید</div>
                 </div>
-                <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50/40 hover:shadow-xs">
                   <div className="text-[10px] text-slate-500 mb-0.5">میانگین سبد (AOV)</div>
                   <div className="text-xs sm:text-sm font-black text-slate-900">۲۸۴ هزار</div>
                   <div className="text-[9px] text-slate-500 mt-0.5">۱۴ روز گذشته</div>
@@ -602,7 +666,7 @@ export const LandingPage: React.FC = () => {
               </div>
 
               {/* Mini Trend Bar Visualization */}
-              <div className="p-3.5 rounded-2xl bg-slate-50/70 border border-slate-200/70">
+              <div className="p-3.5 rounded-2xl bg-slate-50/70 border border-slate-200/70 transition-all duration-200 hover:border-emerald-300/80 hover:bg-slate-50 hover:shadow-xs">
                 <div className="flex items-center justify-between text-[11px] mb-2 font-bold text-slate-700">
                   <span>روند درآمد ۷ روز اخیر</span>
                   <span className="text-emerald-600 text-[10px]">بیشترین فروش: سه‌شنبه</span>
@@ -628,7 +692,7 @@ export const LandingPage: React.FC = () => {
               </div>
 
               {/* CRM Loyalty highlight */}
-              <div className="p-3 rounded-2xl bg-emerald-50/80 border border-emerald-100 flex items-center justify-between text-xs">
+              <div className="p-3 rounded-2xl bg-emerald-50/80 border border-emerald-100 flex items-center justify-between text-xs transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-100/70 hover:shadow-xs">
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold">
                     م
@@ -644,7 +708,11 @@ export const LandingPage: React.FC = () => {
           </div>
 
           {/* STEP 3: AI Advisor & Intelligent Forecasting (Text Right, Mockup Left) */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <div
+            ref={step3Ref}
+            data-step="3"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center scroll-mt-24"
+          >
             {/* Text description */}
             <div className="space-y-5 text-right">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-purple-50 border border-purple-200 text-purple-700 text-xs font-bold">
@@ -675,7 +743,13 @@ export const LandingPage: React.FC = () => {
             </div>
 
             {/* Mockup: AI Advisory & Chat Snippet */}
-            <div className="rounded-3xl bg-white border border-slate-200/90 p-5 sm:p-6 shadow-xl shadow-slate-200/50 space-y-4">
+            <div
+              className={`rounded-3xl bg-white p-5 sm:p-6 space-y-4 transition-all duration-300 group ${
+                currentStep === 3
+                  ? 'border-2 border-purple-400 ring-4 ring-purple-100/80 shadow-2xl shadow-purple-500/15 scale-[1.01]'
+                  : 'border border-slate-200/90 shadow-md opacity-70 hover:opacity-100 hover:border-purple-300 hover:ring-4 hover:ring-purple-50 hover:shadow-xl scale-100'
+              }`}
+            >
               {/* AI Card Header */}
               <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div className="flex items-center gap-2">
@@ -684,13 +758,10 @@ export const LandingPage: React.FC = () => {
                   </div>
                   <span className="text-xs font-bold text-slate-900">مشاور هوش مصنوعی شاپیک</span>
                 </div>
-                <span className="text-[10px] text-brand-700 bg-brand-50 border border-brand-200 px-2.5 py-0.5 rounded-full font-semibold">
-                  تحلیل دوره ۳ ساعته
-                </span>
               </div>
 
               {/* AI Insight Box */}
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50/80 to-purple-50/60 border border-indigo-100/90 space-y-2">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50/80 to-purple-50/60 border border-indigo-100/90 space-y-2 transition-all duration-200 hover:border-indigo-300 hover:shadow-xs">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-950">
                   <Sparkle className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                   <span>پیشنهاد استراتژیک سیستم:</span>
@@ -701,13 +772,13 @@ export const LandingPage: React.FC = () => {
               </div>
 
               {/* Chat snippet */}
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5 transition-all duration-200 hover:border-indigo-300/80 hover:shadow-xs">
                 <div className="text-[10px] font-bold text-slate-500 mb-1">گفتگوی مستقیم با دستیار شاپیک:</div>
-                <div className="bg-white p-2.5 rounded-xl border border-slate-200/80 text-xs text-slate-800 shadow-2xs">
+                <div className="bg-white p-2.5 rounded-xl border border-slate-200/80 text-xs text-slate-800 shadow-2xs transition-colors duration-150 hover:border-brand-200">
                   <span className="text-brand-600 font-bold block text-[11px] mb-0.5">پرسش شما:</span>
                   <span>کدوم مشتری‌ها در ماه گذشته سفارشی ثبت نکرده‌اند؟</span>
                 </div>
-                <div className="bg-brand-50/80 p-2.5 rounded-xl border border-brand-100 text-xs text-slate-800 space-y-1">
+                <div className="bg-brand-50/80 p-2.5 rounded-xl border border-brand-100 text-xs text-slate-800 space-y-1 transition-colors duration-150 hover:border-brand-200">
                   <span className="text-indigo-900 font-bold block text-[11px]">پاسخ شاپیک:</span>
                   <p className="text-slate-700 text-[11px] leading-relaxed">
                     ۱۲ مشتری وفادار بیش از ۳۰ روز است که خریدی نداشته‌اند. پیشنهاد می‌کنم یک پیامک یادآوری با کد تخفیف ویژه برای این گروه ارسال شود.
@@ -901,6 +972,163 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Floating 3-Step Navigation Indicator on the right edge */}
+      <aside
+        className={`fixed right-2 sm:right-3 top-1/2 -translate-y-1/2 z-40 transition-all duration-300 select-none ${
+          isTourVisible
+            ? 'opacity-100 translate-x-0 pointer-events-auto'
+            : 'opacity-0 translate-x-3 pointer-events-none'
+        }`}
+        aria-label="راهنمای گام‌های شاپیک"
+      >
+        <div className="w-5 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-md shadow-slate-900/5 flex flex-col items-center gap-1.5">
+          {/* STEP 1 - DESKTOP (lg:): Never split, always a single compact dot */}
+          <button
+            type="button"
+            onClick={() => {
+              setCurrentStep(1);
+              step1Ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }}
+            className="hidden lg:flex group relative items-center justify-center w-4 h-4 rounded-full cursor-pointer focus:outline-none"
+            aria-label="رفتن به گام ۱: ورود داده‌ها"
+          >
+            <span
+              className={`block rounded-full transition-all duration-200 ${
+                currentStep === 1
+                  ? 'w-2 h-2 bg-indigo-600 ring-2 ring-indigo-200 ring-offset-1 scale-110'
+                  : 'w-1.5 h-1.5 bg-slate-300 hover:bg-slate-400'
+              }`}
+            />
+            <span className="absolute right-full mr-2 px-2 py-0.5 rounded-md bg-slate-900/90 text-white text-[10px] font-medium whitespace-nowrap shadow-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+              گام ۱: ورود داده‌ها
+            </span>
+          </button>
+
+          {/* STEP 1 - MOBILE (< lg): Expands into 3 sub-dots when in Step 1, collapses when in Step 2 or 3 */}
+          <div className="lg:hidden flex flex-col items-center">
+            {currentStep === 1 ? (
+              <div className="flex flex-col items-center gap-1 transition-all duration-200">
+                {/* Sub-dot 1: Telegram */}
+                <button
+                  type="button"
+                  onClick={() => scrollToMock('telegram')}
+                  className="group relative flex items-center justify-center w-4 h-4 rounded-full cursor-pointer focus:outline-none"
+                  aria-label="گام ۱: ربات تلگرام"
+                >
+                  <span
+                    className={`block rounded-full transition-all duration-200 ${
+                      activeMock === 'telegram'
+                        ? 'w-2 h-2 bg-sky-500 ring-2 ring-sky-300 ring-offset-0.5 scale-110'
+                        : 'w-1.5 h-1.5 bg-sky-300 hover:bg-sky-400'
+                    }`}
+                  />
+                  <span className="absolute right-full mr-2 px-2 py-0.5 rounded-md bg-slate-900/90 text-white text-[10px] font-medium whitespace-nowrap shadow-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                    گام ۱: تلگرام
+                  </span>
+                </button>
+
+                {/* Sub-dot 2: Web & Mobile */}
+                <button
+                  type="button"
+                  onClick={() => scrollToMock('web')}
+                  className="group relative flex items-center justify-center w-4 h-4 rounded-full cursor-pointer focus:outline-none"
+                  aria-label="گام ۱: پنل وب و موبایل"
+                >
+                  <span
+                    className={`block rounded-full transition-all duration-200 ${
+                      activeMock === 'web'
+                        ? 'w-2 h-2 bg-brand-600 ring-2 ring-brand-300 ring-offset-0.5 scale-110'
+                        : 'w-1.5 h-1.5 bg-brand-300 hover:bg-brand-400'
+                    }`}
+                  />
+                  <span className="absolute right-full mr-2 px-2 py-0.5 rounded-md bg-slate-900/90 text-white text-[10px] font-medium whitespace-nowrap shadow-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                    گام ۱: وب و موبایل
+                  </span>
+                </button>
+
+                {/* Sub-dot 3: Excel & CSV */}
+                <button
+                  type="button"
+                  onClick={() => scrollToMock('excel')}
+                  className="group relative flex items-center justify-center w-4 h-4 rounded-full cursor-pointer focus:outline-none"
+                  aria-label="گام ۱: فایل اکسل و CSV"
+                >
+                  <span
+                    className={`block rounded-full transition-all duration-200 ${
+                      activeMock === 'excel'
+                        ? 'w-2 h-2 bg-emerald-500 ring-2 ring-emerald-300 ring-offset-0.5 scale-110'
+                        : 'w-1.5 h-1.5 bg-emerald-300 hover:bg-emerald-400'
+                    }`}
+                  />
+                  <span className="absolute right-full mr-2 px-2 py-0.5 rounded-md bg-slate-900/90 text-white text-[10px] font-medium whitespace-nowrap shadow-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                    گام ۱: اکسل و CSV
+                  </span>
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentStep(1);
+                  step1Ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}
+                className="group relative flex items-center justify-center w-4 h-4 rounded-full cursor-pointer focus:outline-none"
+                aria-label="رفتن به گام ۱: ورود داده‌ها"
+              >
+                <span className="block w-1.5 h-1.5 rounded-full bg-slate-300 hover:bg-slate-400 transition-all duration-200" />
+                <span className="absolute right-full mr-2 px-2 py-0.5 rounded-md bg-slate-900/90 text-white text-[10px] font-medium whitespace-nowrap shadow-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                  گام ۱: ورود داده‌ها
+                </span>
+              </button>
+            )}
+          </div>
+
+          {/* STEP 2: Analytics & CRM */}
+          <button
+            type="button"
+            onClick={() => {
+              setCurrentStep(2);
+              step2Ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }}
+            className="group relative flex items-center justify-center w-4 h-4 rounded-full cursor-pointer focus:outline-none"
+            aria-label="رفتن به گام ۲: تحلیل و داشبورد"
+          >
+            <span
+              className={`block rounded-full transition-all duration-200 ${
+                currentStep === 2
+                  ? 'w-2 h-2 bg-emerald-500 ring-2 ring-emerald-200 ring-offset-1 scale-110'
+                  : 'w-1.5 h-1.5 bg-slate-300 hover:bg-slate-400'
+              }`}
+            />
+            <span className="absolute right-full mr-2 px-2 py-0.5 rounded-md bg-slate-900/90 text-white text-[10px] font-medium whitespace-nowrap shadow-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+              گام ۲: تحلیل و داشبورد
+            </span>
+          </button>
+
+          {/* STEP 3: AI Advisor */}
+          <button
+            type="button"
+            onClick={() => {
+              setCurrentStep(3);
+              step3Ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }}
+            className="group relative flex items-center justify-center w-4 h-4 rounded-full cursor-pointer focus:outline-none"
+            aria-label="رفتن به گام ۳: مشاوره هوشمند"
+          >
+            <span
+              className={`block rounded-full transition-all duration-200 ${
+                currentStep === 3
+                  ? 'w-2 h-2 bg-purple-600 ring-2 ring-purple-200 ring-offset-1 scale-110'
+                  : 'w-1.5 h-1.5 bg-slate-300 hover:bg-slate-400'
+              }`}
+            />
+            <span className="absolute right-full mr-2 px-2 py-0.5 rounded-md bg-slate-900/90 text-white text-[10px] font-medium whitespace-nowrap shadow-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+              گام ۳: مشاوره هوشمند
+            </span>
+          </button>
+        </div>
+      </aside>
 
       {/* Main Footer */}
       <MainFooter />

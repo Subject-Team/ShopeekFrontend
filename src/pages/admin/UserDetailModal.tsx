@@ -252,14 +252,12 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, onClose,
           <div className="flex gap-2 flex-wrap">
             <button
               onClick={() => handleToggle('email_verified')}
-              disabled={isSelf}
               className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors disabled:opacity-50"
             >
               {user.email_verified ? 'لغو تأیید ایمیل' : 'تأیید ایمیل'}
             </button>
             <button
               onClick={() => handleToggle('phone_verified')}
-              disabled={isSelf}
               className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors disabled:opacity-50"
             >
               {user.phone_verified ? 'لغو تأیید تلفن' : 'تأیید تلفن'}
@@ -283,13 +281,11 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, onClose,
                 <select
                   value={formRole}
                   onChange={(e) => setFormRole(e.target.value as 'User' | 'Admin')}
-                  disabled={isSelf}
                   className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50"
                 >
                   <option value="User">کاربر</option>
                   <option value="Admin">مدیر</option>
                 </select>
-                {isSelf && <p className="text-[11px] text-amber-600 dark:text-amber-400 mt-1">امکان تغییر نقش حساب خودتان وجود ندارد</p>}
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">تاریخ انقضا اشتراک</label>
@@ -390,7 +386,7 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, onClose,
           {isSelf && (
             <p className="text-[11px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
               <Shield className="w-3 h-3" />
-              حساب خودتان — حذف و تغییر نقش غیرفعال است
+              حساب خودتان — حذف غیرفعال است
             </p>
           )}
 

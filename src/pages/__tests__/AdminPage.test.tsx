@@ -643,14 +643,15 @@ describe('UserDetailModal', () => {
     await vi.waitFor(() => expect(screen.getByText('خطای بازیابی')).toBeTruthy());
   });
 
-  it('disables destructive actions for own account', async () => {
+  it('disables deletion for own account while allowing edit', async () => {
     const self = makeUser({ id: 'u-1', full_name: 'Admin', email: 'admin@test.com' });
 
     await openUserModal(self);
 
-    expect(screen.getByText('حساب خودتان — حذف و تغییر نقش غیرفعال است')).toBeTruthy();
+    expect(screen.getByText('حساب خودتان — حذف غیرفعال است')).toBeTruthy();
     expect(screen.queryByText('حذف کاربر')).toBeNull();
-    expect(screen.getByText('لغو تأیید ایمیل').closest('button')).toBeDisabled();
+    expect(screen.getByText('لغو تأیید ایمیل').closest('button')).not.toBeDisabled();
+    expect(screen.getByText('لغو تأیید تلفن').closest('button')).not.toBeDisabled();
   });
 
   it('closes the modal', async () => {
