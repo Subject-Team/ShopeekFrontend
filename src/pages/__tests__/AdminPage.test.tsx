@@ -23,7 +23,15 @@ vi.mock('../../services/api', () => ({
   recordAdminPayment: vi.fn(),
   grantAdminCredits: vi.fn(),
   adjustAdminWallet: vi.fn(),
+  fetchAdminAlertRecipients: vi.fn(),
+  createAdminAlertRecipient: vi.fn(),
+  updateAdminAlertRecipient: vi.fn(),
+  deleteAdminAlertRecipient: vi.fn(),
+  sendAdminAlertTest: vi.fn(),
+  sendAdminAlertBroadcast: vi.fn(),
+  fetchAdminCandidateUsers: vi.fn(),
 }));
+
 
 // Silence expected console.error output from caught error paths.
 vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -165,7 +173,10 @@ describe('[page] AdminGuard', () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
+    (api.fetchAdminAlertRecipients as ReturnType<typeof vi.fn>).mockResolvedValue({ items: [], total: 0 });
+    (api.fetchAdminCandidateUsers as ReturnType<typeof vi.fn>).mockResolvedValue([]);
   });
+
 
   it('redirects to /login when unauthenticated', async () => {
     (api.fetchMeApi as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('no session'));

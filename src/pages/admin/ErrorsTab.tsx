@@ -10,8 +10,10 @@ import { fetchAdminErrors } from '../../services/api';
 import type { AdminErrorEvent } from '../../types/admin';
 import { toPersianDigits, toGroupedPersianDigits } from '../../utils/persian';
 import { utcStringToPersianDate } from '../../utils/persian/date';
+import { TelegramAlertsSection } from './TelegramAlertsSection';
 
 export const ErrorsTab: React.FC = () => {
+
   const [errors, setErrors] = useState<AdminErrorEvent[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
@@ -56,8 +58,12 @@ export const ErrorsTab: React.FC = () => {
 
   return (
     <div className="space-y-4">
+      {/* Real-time Alert System & Telegram Messaging */}
+      <TelegramAlertsSection />
+
       {/* Filters */}
       <div className="flex gap-2 sm:gap-3 flex-wrap">
+
         <select
           value={severity}
           onChange={(e) => { setSeverity(e.target.value); setPage(1); }}

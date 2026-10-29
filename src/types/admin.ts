@@ -111,3 +111,64 @@ export interface AdminFeedbackListResponse {
   page: number;
   page_size: number;
 }
+
+export interface AdminAlertRecipient {
+  id: string;
+  user_id: string;
+  user_name: string;
+  user_email: string;
+  user_phone?: string | null;
+  telegram_chat_id: string;
+  label?: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface AdminAlertRecipientListResponse {
+  items: AdminAlertRecipient[];
+  total: number;
+}
+
+export interface AdminAlertRecipientCreatePayload {
+  user_id: string;
+  telegram_chat_id?: string;
+  label?: string;
+  is_active?: boolean;
+}
+
+export interface AdminAlertRecipientPatchPayload {
+  telegram_chat_id?: string;
+  label?: string;
+  is_active?: boolean;
+}
+
+export interface AdminAlertBroadcastPayload {
+  message: string;
+  recipient_ids?: string[];
+}
+
+export interface AdminAlertBroadcastResponse {
+  ok: boolean;
+  sent_count: number;
+  failed_count: number;
+  total: number;
+}
+
+export interface AdminAlertTestResponse {
+  ok: boolean;
+  sent_count: number;
+  failed_count: number;
+  message: string;
+}
+
+export interface AdminCandidateUser {
+  id: string;
+  full_name: string;
+  email: string;
+  phone?: string | null;
+  has_telegram_session: boolean;
+  telegram_chat_id?: string | null;
+  is_recipient: boolean;
+}
+

@@ -7,7 +7,16 @@ import type {
   AdminUserUpdatePayload,
   AdminFeedbackItem,
   AdminFeedbackListResponse,
+  AdminAlertRecipient,
+  AdminAlertRecipientListResponse,
+  AdminAlertRecipientCreatePayload,
+  AdminAlertRecipientPatchPayload,
+  AdminAlertBroadcastPayload,
+  AdminAlertBroadcastResponse,
+  AdminAlertTestResponse,
+  AdminCandidateUser,
 } from '../../types/admin';
+
 import type {
   AdminUserBilling,
   AdminPaymentPayload,
@@ -223,3 +232,93 @@ export const grantAdminFeedbackReward = async (
   }
   return res.json();
 };
+
+// --- ADMIN TELEGRAM ALERTS & MESSAGING ---
+
+export const fetchAdminAlertRecipients = async (): Promise<AdminAlertRecipientListResponse> => {
+  const res = await authFetch(`${API_BASE}/admin/alerts/recipients`);
+  if (!res.ok) throw new Error('خطا در دریافت لیست گیرندگان هشدار');
+  return res.json();
+};
+
+export const createAdminAlertRecipient = async (
+  payload: AdminAlertRecipientCreatePayload
+): Promise<AdminAlertRecipient> => {
+  const res = await authFetch(`${API_BASE}/admin/alerts/recipients`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در ثبت گیرنده هشدار' }));
+    throw new Error(err.detail || 'خطا در ثبت گیرنده هشدار');
+  }
+  return res.json();
+};
+
+export const updateAdminAlertRecipient = async (
+  id: string,
+  payload: AdminAlertRecipientPatchPayload
+): Promise<AdminAlertRecipient> => {
+  const res = await authFetch(`${API_BASE}/admin/alerts/recipients/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در بروزرسانی گیرنده هشدار' }));
+    throw new Error(err.detail || 'خطا در بروزرسانی گیرنده هشدار');
+  }
+  return res.json();
+};
+
+export const deleteAdminAlertRecipient = async (id: string): Promise<{ ok: boolean }> => {
+  const res = await authFetch(`${API_BASE}/admin/alerts/recipients/${id}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در حذف گیرنده هشدار' }));
+    throw new Error(err.detail || 'خطا در حذف گیرنده هشدار');
+  }
+  return res.json();
+};
+
+export const sendAdminAlertTest = async (
+  recipientId?: string
+): Promise<AdminAlertTestResponse> => {
+  const query = recipientId ? `?recipient_id=${encodeURIComponent(recipientId)}` : '';
+  const res = await authFetch(`${API_BASE}/admin/alerts/test${query}`, {
+    method: 'POST',
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در ارسال پیام تست' }));
+    throw new Error(err.detail || 'خطا در ارسال پیام تست');
+  }
+  return res.json();
+};
+
+export const sendAdminAlertBroadcast = async (
+  payload: AdminAlertBroadcastPayload
+): Promise<AdminAlertBroadcastResponse> => {
+  const res = await authFetch(`${API_BASE}/admin/alerts/broadcast`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'خطا در ارسال پیام' }));
+    throw new Error(err.detail || 'خطا در ارسال پیام');
+  }
+  return res.json();
+};
+
+export const fetchAdminCandidateUsers = async (
+  search = ''
+): Promise<AdminCandidateUser[]> => {
+  const params = new URLSearchParams();
+  if (search) params.set('search', search);
+  const res = await authFetch(`${API_BASE}/admin/alerts/candidates?${params.toString()}`);
+  if (!res.ok) throw new Error('خطا در دریافت لیست کاربران');
+  return res.json();
+};
+
