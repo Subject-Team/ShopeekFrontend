@@ -133,6 +133,54 @@ export interface RevenuePoint {
   forecast_revenue?: number | null;
 }
 
+export interface TrendMetricPoint {
+  date: string;
+  revenue: number | null;
+  orders: number;
+  aov: number;
+  unique_customers: number;
+  prev_date?: string | null;
+  prev_revenue?: number | null;
+  prev_orders?: number | null;
+  prev_aov?: number | null;
+  prev_unique_customers?: number | null;
+  forecast_revenue?: number | null;
+}
+
+export interface DayOfWeekDistribution {
+  day_index: number;
+  day_name: string;
+  revenue: number;
+  orders: number;
+  revenue_percentage: number;
+}
+
+export interface TopProductBreakdown {
+  name: string;
+  revenue: number;
+  units: number;
+  share_percentage: number;
+}
+
+export interface CustomerTypeMetrics {
+  new_customers_revenue: number;
+  new_customers_orders: number;
+  returning_customers_revenue: number;
+  returning_customers_orders: number;
+  new_customers_share: number;
+  returning_customers_share: number;
+}
+
+export interface AdvancedAnalyticsOverview {
+  kpi: KPISummary;
+  trend: TrendMetricPoint[];
+  day_of_week: DayOfWeekDistribution[];
+  top_products: TopProductBreakdown[];
+  customer_breakdown: CustomerTypeMetrics;
+  smart_insight: string;
+}
+
+
 export interface Interaction {
   id: string;
   customer_id: string;

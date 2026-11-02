@@ -11,7 +11,7 @@ export {
   confirmPasswordResetApi,
   changePassword,
 } from './api/auth';
-export { fetchKPISummary, fetchRevenueTrend } from './api/analytics';
+export { fetchKPISummary, fetchRevenueTrend, fetchAdvancedAnalytics } from './api/analytics';
 export {
   fetchCustomers,
   fetchCustomerDetail,

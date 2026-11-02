@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
+  TrendingUp,
   Users,
   ReceiptText,
   Settings as SettingsIcon,
@@ -61,6 +62,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const navItems = [
     ...(isAdmin ? [{ path: '/admin', label: 'پنل مدیریت', icon: Shield }] : []),
     { path: '/dashboard', label: 'داشبورد اصلی', icon: LayoutDashboard },
+    { path: '/dashboard/analytics', label: 'تحلیل و آمار فروش', icon: TrendingUp },
     { path: '/dashboard/customers', label: 'مدیریت مشتریان (CRM)', icon: Users },
     { path: '/dashboard/invoices', label: 'فاکتورهای فروش', icon: ReceiptText },
     { path: '/dashboard/settings', label: 'تنظیمات', icon: SettingsIcon },

@@ -18,6 +18,7 @@ import { User } from '../../types';
 vi.mock('../../services/api', () => ({
   fetchKPISummary: vi.fn(),
   fetchRevenueTrend: vi.fn(),
+  fetchAdvancedAnalytics: vi.fn(),
   fetchLatestAdvisory: vi.fn(),
   fetchAdvisoryHistory: vi.fn(),
   fetchCustomers: vi.fn(),
@@ -98,6 +99,33 @@ describe('[page] Dashboard Pages', () => {
       { date: '2026-03-20', revenue: 5000000, orders: 10, forecast_revenue: null },
       { date: '2026-03-21', revenue: 10000000, orders: 15, forecast_revenue: null },
     ]);
+    (api.fetchAdvancedAnalytics as any).mockResolvedValue({
+      kpi: {
+        total_revenue: 15000000,
+        revenue_change_percentage: 12.5,
+        revenue_change_absolute: 1500000,
+        order_count: 25,
+        order_count_change_percentage: 5.0,
+        average_order_value: 600000,
+        aov_change_percentage: 7.2,
+        total_customers: 10,
+        customer_count_change_percentage: 8.1,
+      },
+      trend: [
+        { date: '2026-03-20', revenue: 5000000, orders: 10, aov: 500000, unique_customers: 5, forecast_revenue: null },
+      ],
+      day_of_week: [],
+      top_products: [],
+      customer_breakdown: {
+        new_customers_revenue: 5000000,
+        new_customers_orders: 10,
+        returning_customers_revenue: 10000000,
+        returning_customers_orders: 15,
+        new_customers_share: 33.3,
+        returning_customers_share: 66.7,
+      },
+      smart_insight: 'تست هوش',
+    });
     (api.fetchLatestAdvisory as any).mockResolvedValue({
       id: 'adv-1',
       summary: 'عملکرد فروش عالی است',
@@ -161,7 +189,7 @@ describe('[page] Dashboard Pages', () => {
     renderPage(<AnalyticsPage />, '/dashboard/analytics');
 
     await waitFor(() => {
-      expect(screen.getByText(/تحلیل جامع و نمودارهای مقایسه‌ای/i)).toBeInTheDocument();
+      expect(screen.getByText(/هوش فروش و تحلیل آماری/i)).toBeInTheDocument();
     });
   });
 

@@ -1,4 +1,4 @@
-import type { KPISummary, RevenuePoint } from '../../types';
+import type { KPISummary, RevenuePoint, AdvancedAnalyticsOverview } from '../../types';
 import { authFetch } from './client';
 
 const API_BASE = '/api/v1';
@@ -32,3 +32,18 @@ export const fetchRevenueTrend = async (
   if (!res.ok) throw new Error('خطا در دریافت نمودار روند فروش');
   return res.json();
 };
+
+export const fetchAdvancedAnalytics = async (
+  days: number = 30,
+  startDate?: string,
+  endDate?: string
+): Promise<AdvancedAnalyticsOverview> => {
+  let url = `${API_BASE}/analytics/overview?days=${days}`;
+  if (startDate && endDate) {
+    url += `&start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`;
+  }
+  const res = await authFetch(url);
+  if (!res.ok) throw new Error('خطا در دریافت اطلاعات جامع تحلیلی فروش');
+  return res.json();
+};
+
