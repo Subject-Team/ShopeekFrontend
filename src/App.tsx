@@ -31,7 +31,7 @@ const SubscriptionPage = lazy(() => import('./pages/SubscriptionPage').then((m) 
 const DashboardNotFoundPage = lazy(() => import('./pages/DashboardNotFoundPage').then((m) => ({ default: m.DashboardNotFoundPage })));
 
 const ProtectedDashboardLayout: React.FC = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -40,11 +40,13 @@ const ProtectedDashboardLayout: React.FC = () => {
     }
   }, [isLoading, isAuthenticated, showToast]);
 
-  if (isLoading) {
+  // If we don't have a cached session and auth is still resolving, show the loader.
+  // When a cached user exists, render the dashboard shell optimistically without blocking.
+  if (isLoading && !user) {
     return <FullPageLoader />;
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !isLoading) {
     return <Navigate to="/login" replace />;
   }
 

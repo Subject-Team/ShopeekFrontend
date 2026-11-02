@@ -36,6 +36,8 @@ vi.mock('../services/api', () => ({
     ledger: [],
     stats: { total_granted: 100, total_spent: 0, spend_by_feature: {} },
   }),
+  fetchBusinessProfile: vi.fn().mockResolvedValue(null),
+  fetchSalesSuggestions: vi.fn().mockResolvedValue([]),
   fetchMeApi: vi.fn().mockResolvedValue({
     id: 'u-1',
     email: 'test@shopeek.ir',
@@ -108,6 +110,33 @@ describe('[component] App Root and Routing', () => {
 
     // Verify public header is NOT rendered inside dashboard shell
     expect(screen.queryByText('ثبت‌نام رایگان')).not.toBeInTheDocument();
+
+    unmount();
+  });
+
+  it('renders dashboard directly on reload without showing FullPageLoader when session is cached', async () => {
+    localStorage.setItem('shopeek_token', 'mock-token');
+    localStorage.setItem(
+      'shopeek_user',
+      JSON.stringify({
+        id: 'u-1',
+        email: 'test@shopeek.ir',
+        full_name: 'کاربر تست',
+        role: 'User',
+        is_subscription_active: true,
+        remaining_days: 30,
+      })
+    );
+
+    window.history.replaceState({}, 'Dashboard', '/dashboard');
+    const { unmount, container } = render(<App />);
+
+    // Full-viewport blocking loader (bg-slate-900) must never be rendered
+    expect(container.querySelector('.min-h-screen.w-full.bg-slate-900')).toBeNull();
+
+    await waitFor(() => {
+      expect(screen.getByText('داشبورد مدیریت و تحلیل فروش')).toBeInTheDocument();
+    });
 
     unmount();
   });
