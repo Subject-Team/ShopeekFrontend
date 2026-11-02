@@ -132,6 +132,7 @@ describe('[component] Campaign Components', () => {
             start_date: '2026-10-10T10:00:00Z',
             end_date: '2026-10-12T10:00:00Z',
             created_at: '2026-10-10T09:00:00Z',
+            notes: 'سناریوی استوری با تخفیف ویژه پاییزی',
             metrics: {
               total_sales: 8000000,
               baseline_sales: 2000000,
@@ -163,6 +164,7 @@ describe('[component] Campaign Components', () => {
       expect(screen.getByText(/بسیار موفق \(عالی\)/)).toBeInTheDocument();
       expect(screen.getByText(/۳[.,٫]۰۰ برابر/)).toBeInTheDocument();
       expect(screen.getByText(/۱۰ نفر/)).toBeInTheDocument();
+      expect(screen.getByText(/سناریوی استوری با تخفیف ویژه پاییزی/)).toBeInTheDocument();
     });
   });
 
@@ -180,6 +182,7 @@ describe('[component] Campaign Components', () => {
           start_date: new Date().toISOString(),
           end_date: new Date(Date.now() + 24 * 3600000).toISOString(),
           created_at: new Date().toISOString(),
+          notes: 'همکاری با مهسا در حوزه اکسسوری',
           metrics: {
             total_sales: 7000000,
             baseline_sales: 2000000,
@@ -209,6 +212,7 @@ describe('[component] Campaign Components', () => {
 
       expect(screen.getByText('پایش لحظه‌ای فروش در طول بازه کمپین فعال است')).toBeInTheDocument();
       expect(screen.getByText(/۱[.,٫]۶۷ برابر/)).toBeInTheDocument();
+      expect(screen.getByText(/همکاری با مهسا در حوزه اکسسوری/)).toBeInTheDocument();
     });
   });
 });

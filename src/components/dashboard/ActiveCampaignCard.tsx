@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Megaphone, Plus, Sparkles } from 'lucide-react';
+import { Megaphone, Plus, Sparkles, FileText } from 'lucide-react';
 import { fetchCampaignsOverview } from '../../services/api';
 import { CampaignsOverview } from '../../types';
 import { CreateCampaignModal } from '../campaign/CreateCampaignModal';
@@ -91,6 +91,16 @@ export const ActiveCampaignCard: React.FC<ActiveCampaignCardProps> = ({ onCampai
               </span>
             </div>
           </div>
+
+          {active.notes && (
+            <div className="p-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-300 flex items-start gap-2">
+              <FileText className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+              <span className="leading-relaxed">
+                <strong className="text-slate-700 dark:text-slate-200 ml-1">توضیحات:</strong>
+                {active.notes}
+              </span>
+            </div>
+          )}
         </div>
       ) : (
         <div className="p-3.5 rounded-xl bg-slate-50/70 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 flex items-center justify-between gap-3">

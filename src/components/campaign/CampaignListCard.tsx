@@ -7,6 +7,7 @@ import {
   Sparkles,
   AlertCircle,
   Loader2,
+  FileText,
 } from 'lucide-react';
 import { fetchCampaignsOverview, deleteCampaign } from '../../services/api';
 import { CampaignsOverview, AdCampaign, CampaignPerformanceStatus } from '../../types';
@@ -314,6 +315,17 @@ export const CampaignListCard: React.FC<CampaignListCardProps> = ({ onCampaignCr
                         </span>
                       </div>
                     </div>
+
+                    {/* Notes if provided */}
+                    {camp.notes && (
+                      <div className="flex items-start gap-2 p-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 text-[11px] text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800">
+                        <FileText className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                        <span className="leading-relaxed">
+                          <strong className="text-slate-700 dark:text-slate-200 ml-1">توضیحات:</strong>
+                          {camp.notes}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 );
               })}
