@@ -9,6 +9,7 @@ import { PlanCreditOverviewCard } from '../components/dashboard/PlanCreditOvervi
 import { LatestArticleCard } from '../components/dashboard/LatestArticleCard';
 import { BusinessProfileBanner } from '../components/dashboard/BusinessProfileBanner';
 import { LastInvoicesCard } from '../components/dashboard/LastInvoicesCard';
+import { ActiveCampaignCard } from '../components/dashboard/ActiveCampaignCard';
 import { usePageContext } from '../context/PageContext';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -274,6 +275,8 @@ export const DashboardPage: React.FC = () => {
 
         {/* Side Widget: Top Customers Summary, Subscription Card, & Latest Article */}
         <div className="space-y-6">
+          <ActiveCampaignCard onCampaignCreated={loadDashboardData} />
+
           <div className="glass-card p-5 rounded-2xl shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="font-extrabold text-slate-900 dark:text-white text-sm">مشتریان برتر (LTV)</h4>

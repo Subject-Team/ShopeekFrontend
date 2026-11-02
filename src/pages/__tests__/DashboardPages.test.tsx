@@ -33,6 +33,11 @@ vi.mock('../../services/api', () => ({
   fetchBusinessProfile: vi.fn(),
   fetchBillingOverview: vi.fn(),
   fetchInvoices: vi.fn(),
+  fetchCampaignsOverview: vi.fn().mockResolvedValue({
+    campaigns: [],
+    active_campaign: null,
+    summary: { total_cost: 0, total_lift: 0, avg_roas: 0, total_new_customers: 0, active_campaigns_count: 0 },
+  }),
 }));
 
 const activeBillingOverview = {

@@ -12,6 +12,11 @@ import * as api from '../../services/api';
 vi.mock('../../services/api', () => ({
   fetchAdvancedAnalytics: vi.fn(),
   fetchMeApi: vi.fn(),
+  fetchCampaignsOverview: vi.fn().mockResolvedValue({
+    campaigns: [],
+    active_campaign: null,
+    summary: { total_cost: 0, total_lift: 0, avg_roas: 0, total_new_customers: 0, active_campaigns_count: 0 },
+  }),
 }));
 
 const MOCK_OVERVIEW = {

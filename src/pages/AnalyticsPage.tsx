@@ -15,6 +15,7 @@ import { AnalyticsHeroChart } from '../components/analytics/AnalyticsHeroChart';
 import { DayOfWeekCard } from '../components/analytics/DayOfWeekCard';
 import { CustomerRetentionCard } from '../components/analytics/CustomerRetentionCard';
 import { TopProductsCard } from '../components/analytics/TopProductsCard';
+import { CampaignListCard } from '../components/campaign/CampaignListCard';
 import { KpiCard } from '../components/dashboard/KpiCard';
 import { fetchAdvancedAnalytics } from '../services/api';
 import { AdvancedAnalyticsOverview } from '../types';
@@ -219,6 +220,11 @@ export const AnalyticsPage: React.FC = () => {
             <DayOfWeekCard data={data.day_of_week} />
             <CustomerRetentionCard data={data.customer_breakdown} />
             <TopProductsCard products={data.top_products} />
+          </div>
+
+          {/* Campaign Intelligence & Ad Spend (ROAS / CAC) Card */}
+          <div data-guide="analytics-campaigns">
+            <CampaignListCard onCampaignCreated={loadAnalytics} />
           </div>
         </>
       )}

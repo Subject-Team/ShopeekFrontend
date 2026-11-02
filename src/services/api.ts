@@ -76,3 +76,10 @@ export {
   sendAdminAlertBroadcast,
   fetchAdminCandidateUsers,
 } from './api/admin';
+export {
+  fetchCampaignsOverview,
+  createCampaign,
+  fetchCampaign,
+  updateCampaign,
+  deleteCampaign,
+} from './api/campaigns';
