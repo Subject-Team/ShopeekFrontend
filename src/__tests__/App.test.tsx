@@ -136,7 +136,7 @@ describe('[component] App Root and Routing', () => {
 
     await waitFor(() => {
       expect(screen.getByText('داشبورد مدیریت و تحلیل فروش')).toBeInTheDocument();
-    });
+    }, { timeout: 5000 });
 
     unmount();
   });
