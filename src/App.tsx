@@ -73,6 +73,7 @@ const AppRoutes: React.FC = () => {
     <Routes>
       {/* Root Landing Page */}
       <Route path="/" element={<LandingPage />} />
+      <Route path="/landing" element={<LandingPage />} />
 
       {/* Auth Login / Register Page */}
       <Route path="/login" element={<LoginPage />} />
